@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Flame
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.RestaurantMenu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -90,7 +90,7 @@ fun LoginScreen(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            Icons.Default.Flame,
+                            Icons.Default.RestaurantMenu,
                             contentDescription = "Logo",
                             tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(36.dp)

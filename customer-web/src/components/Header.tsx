@@ -18,12 +18,12 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenOrderTracking,
 }) => {
   return (
-    <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-cream-200 shadow-xs transition-all">
+    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-cream-200 shadow-2xs transition-all">
       <div className="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
         {/* Brand */}
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center shadow-md shadow-brand-500/20">
-            <Flame className="w-6 h-6" />
+          <div className="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center shadow-md shadow-brand-500/25">
+            <Flame className="w-5 h-5" />
           </div>
           <div>
             <h1 className="font-extrabold text-base md:text-lg text-charcoal tracking-tight leading-tight">
@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
           {activeOrderNumber && (
             <button
               onClick={onOpenOrderTracking}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-50 text-amber-800 border border-amber-200/80 text-xs font-bold hover:bg-amber-100 transition-all shadow-xs"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 text-xs font-bold hover:bg-amber-100 transition-all shadow-2xs"
             >
               <Clock className="w-4 h-4 animate-pulse text-amber-600" />
               <span className="hidden sm:inline">Status Pesanan</span>
@@ -49,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
           )}
 
           {tableNumber && (
-            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-50 text-brand-700 border border-brand-200/80 text-xs font-bold shadow-xs">
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-50 text-brand-700 border border-brand-200 text-xs font-bold shadow-2xs">
               <MapPin className="w-4 h-4 text-brand-500" />
               <span>{tableNumber}</span>
             </div>
@@ -58,12 +58,12 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Order Type Toggle Bar */}
-      <div className="bg-cream-100/60 border-t border-cream-200/80 py-2 px-4">
+      <div className="bg-cream-100/70 border-t border-cream-200 py-2.5 px-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <span className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider">
+          <span className="text-xs font-bold text-charcoal-muted uppercase tracking-wider">
             Tipe Pesanan:
           </span>
-          <div className="bg-white p-1 rounded-xl border border-cream-200/85 flex gap-1 shadow-xs">
+          <div className="bg-white p-1 rounded-xl border border-cream-200 flex gap-1 shadow-2xs">
             <button
               onClick={() => onOrderTypeChange('DINE_IN')}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${

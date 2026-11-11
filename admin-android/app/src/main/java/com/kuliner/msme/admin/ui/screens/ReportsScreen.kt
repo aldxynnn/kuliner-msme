@@ -69,7 +69,7 @@ fun ReportsScreen() {
         ) {
             Column {
                 Text("Laporan Keuangan", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Text("Surplus operasional usaha kuliner", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Surplus operasional usaha AROMA POS", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             }
 
             IconButton(onClick = { loadData() }) {
@@ -87,12 +87,12 @@ fun ReportsScreen() {
             FilterChip(
                 selected = period == "daily",
                 onClick = { period = "daily" },
-                label = { Text("Laporan Harian") }
+                label = { Text("Laporan Harian", fontWeight = FontWeight.Bold, fontSize = 12.sp) }
             )
             FilterChip(
                 selected = period == "monthly",
                 onClick = { period = "monthly" },
-                label = { Text("Laporan Bulanan") }
+                label = { Text("Laporan Bulanan", fontWeight = FontWeight.Bold, fontSize = 12.sp) }
             )
         }
 
@@ -118,10 +118,11 @@ fun ReportsScreen() {
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
-                        text = "Surplus Operasional (${if (r.period == "daily") "Hari Ini" else "Bulan Ini"})",
-                        fontSize = 12.sp,
+                        text = "SURPLUS OPERASIONAL (${if (r.period == "daily") "HARI INI" else "BULAN INI"})",
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                        letterSpacing = 0.5.sp
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -134,6 +135,7 @@ fun ReportsScreen() {
                     Text(
                         text = r.note,
                         fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                     )
                 }
@@ -152,10 +154,10 @@ fun ReportsScreen() {
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Total Omzet Lunas", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                        Text("Total Omzet Lunas", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(formatRp(r.totalRevenue), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
-                        Text("${r.transactionCount} Transaksi", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                        Text(formatRp(r.totalRevenue), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
+                        Text("${r.transactionCount} Transaksi", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
                     }
                 }
 
@@ -165,10 +167,10 @@ fun ReportsScreen() {
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Total Pengeluaran", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                        Text("Total Pengeluaran", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(formatRp(r.totalExpenses), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.error)
-                        Text("${r.expenses.size} Catatan Biaya", fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                        Text(formatRp(r.totalExpenses), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.error)
+                        Text("${r.expenses.size} Catatan Biaya", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.kuliner.msme.admin.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -57,10 +58,15 @@ fun TablesScreen() {
         scope.launch {
             try {
                 val api = RetrofitClient.getApiService(context)
-                api.deleteTable(id)
-                loadData()
+                val res = api.deleteTable(id)
+                if (res.isSuccessful) {
+                    Toast.makeText(context, "Meja berhasil dihapus", Toast.LENGTH_SHORT).show()
+                    loadData()
+                } else {
+                    Toast.makeText(context, "Gagal menghapus meja", Toast.LENGTH_SHORT).show()
+                }
             } catch (e: Exception) {
-                // Ignore
+                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -75,7 +81,7 @@ fun TablesScreen() {
         ) {
             Column {
                 Text("Kelola Meja & QR Code", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Text("Daftar meja pelanggan untuk scan QR", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Meja pelanggan AROMA untuk scan QR", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             }
 
             FloatingActionButton(
@@ -116,7 +122,7 @@ fun TablesScreen() {
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(table.tableNumber, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(table.tableNumber, fontWeight = FontWeight.Bold, fontSize = 15.sp)
 
                             Spacer(modifier = Modifier.height(12.dp))
 
@@ -126,9 +132,10 @@ fun TablesScreen() {
                             ) {
                                 OutlinedButton(
                                     onClick = { selectedQrTable = table },
-                                    modifier = Modifier.weight(1f)
+                                    modifier = Modifier.weight(1f),
+                                    shape = RoundedCornerShape(8.dp)
                                 ) {
-                                    Text("QR", fontSize = 11.sp)
+                                    Text("Lihat QR", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                 }
                                 Spacer(modifier = Modifier.width(4.dp))
                                 IconButton(onClick = { handleDelete(table.id) }) {
@@ -147,14 +154,15 @@ fun TablesScreen() {
 
         AlertDialog(
             onDismissRequest = { isDialogVisible = false },
-            title = { Text("Tambah Meja Baru") },
+            title = { Text("Tambah Meja Baru", fontWeight = FontWeight.Bold) },
             text = {
                 OutlinedTextField(
                     value = tableNum,
                     onValueChange = { tableNum = it },
                     label = { Text("Nomor / Nama Meja") },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
                 )
             },
             confirmButton = {
@@ -163,12 +171,18 @@ fun TablesScreen() {
                         if (tableNum.isNotBlank()) {
                             scope.launch {
                                 val api = RetrofitClient.getApiService(context)
-                                api.createTable(CreateTableRequest(tableNum.trim()))
-                                isDialogVisible = false
-                                loadData()
+                                val res = api.createTable(CreateTableRequest(tableNum.trim()))
+                                if (res.isSuccessful) {
+                                    Toast.makeText(context, "Meja berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+                                    isDialogVisible = false
+                                    loadData()
+                                } else {
+                                    Toast.makeText(context, "Gagal menambah meja", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
-                    }
+                    },
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Text("Simpan")
                 }
@@ -184,19 +198,19 @@ fun TablesScreen() {
     if (selectedQrTable != null) {
         AlertDialog(
             onDismissRequest = { selectedQrTable = null },
-            title = { Text("QR Code - ${selectedQrTable!!.tableNumber}") },
+            title = { Text("QR Code - ${selectedQrTable!!.tableNumber}", fontWeight = FontWeight.Bold) },
             text = {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Tautan URL QR Code Meja:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                    Text("URL QR Code Pemesanan Meja:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(selectedQrTable!!.qrCode, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(selectedQrTable!!.qrCode, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 }
             },
             confirmButton = {
-                Button(onClick = { selectedQrTable = null }) {
+                Button(onClick = { selectedQrTable = null }, shape = RoundedCornerShape(10.dp)) {
                     Text("Tutup")
                 }
             }

@@ -45,7 +45,7 @@ fun OrdersScreen() {
                     orders = response.body()!!
                 }
             } catch (e: Exception) {
-                // Ignore for dev
+                // Ignore
             } finally {
                 isLoading = false
             }
@@ -127,7 +127,7 @@ fun OrdersScreen() {
         ) {
             Column {
                 Text("Kelola Pesanan", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Text("Pantau status pesanan pelanggan", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Pantau alur status pesanan pelanggan AROMA", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             }
             IconButton(onClick = { loadOrders() }) {
                 Icon(Icons.Default.Refresh, contentDescription = "Refresh")
@@ -144,7 +144,11 @@ fun OrdersScreen() {
                 FilterChip(
                     selected = selectedStatusFilter == statusVal,
                     onClick = { selectedStatusFilter = statusVal },
-                    label = { Text(statusName, fontSize = 12.sp) }
+                    label = { Text(statusName, fontSize = 12.sp, fontWeight = FontWeight.Bold) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 )
             }
         }
@@ -157,7 +161,7 @@ fun OrdersScreen() {
             }
         } else if (orders.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Tidak ada pesanan ditemukan", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Tidak ada pesanan ditemukan", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Medium)
             }
         } else {
             LazyColumn(
@@ -182,19 +186,20 @@ fun OrdersScreen() {
         AlertDialog(
             onDismissRequest = { selectedOrderForDetails = null },
             title = {
-                Text("Detail Pesanan #${ord.orderNumber}", fontWeight = FontWeight.Bold)
+                Text("Detail Pesanan #${ord.orderNumber}", fontWeight = FontWeight.ExtraBold, fontSize = 17.sp)
             },
             text = {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text("Pelanggan: ${ord.customerName ?: "Pelanggan"}", fontSize = 13.sp)
+                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("Pelanggan: ${ord.customerName ?: "Pelanggan"}", fontSize = 13.sp, fontWeight = FontWeight.Medium)
                     Text(
                         "Tipe: ${if (ord.orderType == "DINE_IN") "Dine In (${ord.table?.tableNumber ?: "-"})" else "Take Away"}",
-                        fontSize = 13.sp
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium
                     )
-                    Text("Metode: ${ord.paymentMethod} (${ord.paymentStatus})", fontSize = 13.sp)
-                    Text("Status: ${ord.orderStatus}", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text("Metode Pembayaran: ${ord.paymentMethod} (${ord.paymentStatus})", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                    Text("Status Pesanan: ${ord.orderStatus}", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
 
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = MaterialTheme.colorScheme.outlineVariant)
 
                     Text("Item Pesanan:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     ord.orderDetails.forEach { item ->
@@ -213,7 +218,8 @@ fun OrdersScreen() {
                         if (ord.orderStatus == "MENUNGGU_DIPROSES") {
                             Button(
                                 onClick = { handleUpdateStatus(ord.id, "DIPROSES") },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(10.dp)
                             ) {
                                 Text("Proses di Dapur (Diproses)")
                             }
@@ -221,7 +227,8 @@ fun OrdersScreen() {
                         if (ord.orderStatus == "DIPROSES") {
                             Button(
                                 onClick = { handleUpdateStatus(ord.id, "SIAP_DISAJIKAN") },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(10.dp)
                             ) {
                                 Text("Tandai Siap Disajikan")
                             }
@@ -229,21 +236,24 @@ fun OrdersScreen() {
                         if (ord.orderStatus == "SIAP_DISAJIKAN") {
                             Button(
                                 onClick = { handleUpdateStatus(ord.id, "SELESAI") },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(10.dp)
                             ) {
                                 Text("Selesaikan Pesanan")
                             }
                         }
                     } else {
                         Text(
-                            "Pesanan belum lunas. Lakukan konfirmasi pembayaran di menu Pembayaran terlebih dahulu.",
+                            "Pesanan belum lunas. Lakukan konfirmasi pembayaran terlebih dahulu.",
                             fontSize = 11.sp,
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.Medium
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         OutlinedButton(
                             onClick = { handleCancelOrder(ord.id) },
                             modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
                         ) {
                             Text("Batalkan Pesanan")
@@ -253,7 +263,7 @@ fun OrdersScreen() {
             },
             confirmButton = {
                 TextButton(onClick = { selectedOrderForDetails = null }) {
-                    Text("Tutup")
+                    Text("Tutup", fontWeight = FontWeight.Bold)
                 }
             }
         )
@@ -319,6 +329,7 @@ fun OrderCardItem(
             Text(
                 text = "${order.customerName ?: "Pelanggan"} • ${if (order.orderType == "DINE_IN") "Dine In (${order.table?.tableNumber ?: "-"})" else "Take Away"}",
                 fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
 

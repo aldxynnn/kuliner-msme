@@ -68,7 +68,7 @@ fun CashierOrderScreen(
                     if (tables.isNotEmpty()) selectedTableNumber = tables.first().tableNumber
                 }
             } catch (e: Exception) {
-                // Ignore error
+                // Ignore
             }
         }
     }
@@ -87,7 +87,6 @@ fun CashierOrderScreen(
         val existing = cartItems.find { it.product.id == product.id }
         if (existing != null) {
             existing.quantity += 1
-            // Force recompose
             val idx = cartItems.indexOf(existing)
             cartItems[idx] = existing.copy(quantity = existing.quantity)
         } else {
@@ -129,7 +128,7 @@ fun CashierOrderScreen(
                     onOrderCreated()
                 }
             } catch (e: Exception) {
-                // Ignore error
+                // Ignore
             } finally {
                 isSubmitting = false
             }
@@ -149,8 +148,8 @@ fun CashierOrderScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("Pesan Baru (Kasir)", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Text("Buat pesanan langsung di kasir", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Kasir POS (Pesan Baru)", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
+                Text("Input pesanan manual pelanggan AROMA", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             }
         }
 
@@ -159,25 +158,26 @@ fun CashierOrderScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(
                         selected = selectedOrderType == "DINE_IN",
                         onClick = { selectedOrderType = "DINE_IN" },
-                        label = { Text("Dine In (Makan di Tempat)") }
+                        label = { Text("Dine In (Makan di Tempat)", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
                     )
                     FilterChip(
                         selected = selectedOrderType == "TAKE_AWAY",
                         onClick = { selectedOrderType = "TAKE_AWAY" },
-                        label = { Text("Take Away") }
+                        label = { Text("Take Away", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
                     )
                 }
 
                 if (selectedOrderType == "DINE_IN" && tables.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Pilih Meja:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text("Pilih Meja Pelanggan:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                         modifier = Modifier.padding(top = 4.dp)
@@ -205,14 +205,14 @@ fun CashierOrderScreen(
                 FilterChip(
                     selected = selectedCategoryId == null,
                     onClick = { selectedCategoryId = null },
-                    label = { Text("Semua") }
+                    label = { Text("Semua", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                 )
             }
             items(categories) { cat ->
                 FilterChip(
                     selected = selectedCategoryId == cat.id,
                     onClick = { selectedCategoryId = cat.id },
-                    label = { Text(cat.name) }
+                    label = { Text(cat.name, fontSize = 12.sp, fontWeight = FontWeight.Bold) }
                 )
             }
         }
@@ -269,7 +269,7 @@ fun CashierOrderScreen(
                                 enabled = product.isAvailable,
                                 shape = RoundedCornerShape(10.dp)
                             ) {
-                                Text(if (product.isAvailable) "Tambah" else "Habis", fontSize = 11.sp)
+                                Text(if (product.isAvailable) "Tambah" else "Habis", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -303,7 +303,7 @@ fun CashierOrderScreen(
                             checked = isCashConfirmedImmediately,
                             onCheckedChange = { isCashConfirmedImmediately = it }
                         )
-                        Text("Konfirmasi Pembayaran Lunas Langsung", fontSize = 12.sp)
+                        Text("Konfirmasi Pembayaran Lunas Langsung", fontSize = 12.sp, fontWeight = FontWeight.Medium)
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -319,7 +319,7 @@ fun CashierOrderScreen(
                         if (isSubmitting) {
                             CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(20.dp))
                         } else {
-                            Text("Buat Pesanan Kasir", fontWeight = FontWeight.Bold)
+                            Text("Buat Pesanan Kasir", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                         }
                     }
                 }

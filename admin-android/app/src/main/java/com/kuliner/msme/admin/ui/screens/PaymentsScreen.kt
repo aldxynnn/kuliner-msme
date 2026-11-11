@@ -92,7 +92,7 @@ fun PaymentsScreen() {
         ) {
             Column {
                 Text("Konfirmasi Pembayaran", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Text("Verifikasi pembayaran tunai & QRIS", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Verifikasi pembayaran tunai & QRIS AROMA", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             }
             IconButton(onClick = { loadData() }) {
                 Icon(Icons.Default.Refresh, contentDescription = null)
@@ -132,7 +132,7 @@ fun PaymentsScreen() {
         } else if (selectedTab == 0) {
             if (unpaidOrders.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Semua pesanan telah lunas!", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                    Text("Semua pesanan telah lunas!", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Medium)
                 }
             } else {
                 LazyColumn(
@@ -198,7 +198,7 @@ fun PaymentsScreen() {
         } else {
             if (paymentHistory.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Belum ada riwayat pembayaran", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                    Text("Belum ada riwayat pembayaran", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Medium)
                 }
             } else {
                 LazyColumn(

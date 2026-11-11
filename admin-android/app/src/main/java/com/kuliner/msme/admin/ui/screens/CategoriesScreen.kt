@@ -1,5 +1,6 @@
 package com.kuliner.msme.admin.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -56,10 +57,16 @@ fun CategoriesScreen() {
         scope.launch {
             try {
                 val api = RetrofitClient.getApiService(context)
-                api.deleteCategory(id)
-                loadData()
+                val res = api.deleteCategory(id)
+                if (res.isSuccessful) {
+                    Toast.makeText(context, "Kategori berhasil dihapus", Toast.LENGTH_SHORT).show()
+                    loadData()
+                } else {
+                    val err = res.errorBody()?.string() ?: res.message()
+                    Toast.makeText(context, "Gagal menghapus: $err", Toast.LENGTH_LONG).show()
+                }
             } catch (e: Exception) {
-                // Ignore
+                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -74,7 +81,7 @@ fun CategoriesScreen() {
         ) {
             Column {
                 Text("Kelola Kategori Menu", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Text("Kategori hidangan cafe/resto", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Kategori hidangan AROMA POS", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             }
 
             FloatingActionButton(
@@ -116,6 +123,9 @@ fun CategoriesScreen() {
                                 if (!category.description.isNullOrBlank()) {
                                     Text(category.description, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                                 }
+                                if (category.count != null) {
+                                    Text("${category.count.products} Produk", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                                }
                             }
 
                             Row {
@@ -142,7 +152,7 @@ fun CategoriesScreen() {
 
         AlertDialog(
             onDismissRequest = { isDialogVisible = false },
-            title = { Text(if (editingCategory != null) "Edit Kategori" else "Tambah Kategori") },
+            title = { Text(if (editingCategory != null) "Edit Kategori" else "Tambah Kategori Baru", fontWeight = FontWeight.Bold) },
             text = {
                 Column {
                     OutlinedTextField(
@@ -150,14 +160,16 @@ fun CategoriesScreen() {
                         onValueChange = { name = it },
                         label = { Text("Nama Kategori") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = description,
                         onValueChange = { description = it },
                         label = { Text("Deskripsi") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
                 }
             },
@@ -168,16 +180,22 @@ fun CategoriesScreen() {
                             scope.launch {
                                 val api = RetrofitClient.getApiService(context)
                                 val req = CreateCategoryRequest(name.trim(), description.ifBlank { null })
-                                if (editingCategory != null) {
+                                val res = if (editingCategory != null) {
                                     api.updateCategory(editingCategory!!.id, req)
                                 } else {
                                     api.createCategory(req)
                                 }
-                                isDialogVisible = false
-                                loadData()
+                                if (res.isSuccessful) {
+                                    Toast.makeText(context, "Kategori berhasil disimpan", Toast.LENGTH_SHORT).show()
+                                    isDialogVisible = false
+                                    loadData()
+                                } else {
+                                    Toast.makeText(context, "Gagal menyimpan kategori", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
-                    }
+                    },
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Text("Simpan")
                 }

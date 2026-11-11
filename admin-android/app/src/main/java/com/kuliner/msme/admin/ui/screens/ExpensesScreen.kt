@@ -1,5 +1,6 @@
 package com.kuliner.msme.admin.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -56,10 +57,15 @@ fun ExpensesScreen() {
         scope.launch {
             try {
                 val api = RetrofitClient.getApiService(context)
-                api.deleteExpense(id)
-                loadData()
+                val res = api.deleteExpense(id)
+                if (res.isSuccessful) {
+                    Toast.makeText(context, "Pengeluaran berhasil dihapus", Toast.LENGTH_SHORT).show()
+                    loadData()
+                } else {
+                    Toast.makeText(context, "Gagal menghapus pengeluaran", Toast.LENGTH_SHORT).show()
+                }
             } catch (e: Exception) {
-                // Ignore
+                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -81,8 +87,8 @@ fun ExpensesScreen() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("Pencatatan Pengeluaran", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Text("Kelola biaya operasional & bahan baku", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Pencatatan Biaya Operasional", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
+                Text("Kelola pengeluaran AROMA POS", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             }
 
             FloatingActionButton(
@@ -102,7 +108,8 @@ fun ExpensesScreen() {
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("Total Pengeluaran Dicatat", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onErrorContainer)
+                Text("TOTAL PENGELUARAN DITAMBAHKAN", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onErrorContainer, letterSpacing = 0.5.sp)
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(formatRp(totalExpense), fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onErrorContainer)
             }
         }
@@ -115,7 +122,7 @@ fun ExpensesScreen() {
             }
         } else if (expenses.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Belum ada pengeluaran dicatat", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Belum ada pengeluaran dicatat", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Medium)
             }
         } else {
             LazyColumn(
@@ -160,7 +167,7 @@ fun ExpensesScreen() {
 
         AlertDialog(
             onDismissRequest = { isDialogVisible = false },
-            title = { Text("Catat Pengeluaran Baru") },
+            title = { Text("Catat Pengeluaran Baru", fontWeight = FontWeight.Bold) },
             text = {
                 Column {
                     OutlinedTextField(
@@ -168,7 +175,8 @@ fun ExpensesScreen() {
                         onValueChange = { description = it },
                         label = { Text("Keterangan Pengeluaran") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
@@ -176,7 +184,8 @@ fun ExpensesScreen() {
                         onValueChange = { amountStr = it },
                         label = { Text("Nominal (Rp)") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
@@ -184,7 +193,8 @@ fun ExpensesScreen() {
                         onValueChange = { category = it },
                         label = { Text("Kategori (e.g. Bahan Baku / Operasional)") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
                     )
                 }
             },
@@ -195,12 +205,18 @@ fun ExpensesScreen() {
                         if (description.isNotBlank() && amt > 0) {
                             scope.launch {
                                 val api = RetrofitClient.getApiService(context)
-                                api.createExpense(CreateExpenseRequest(description.trim(), amt, category.trim()))
-                                isDialogVisible = false
-                                loadData()
+                                val res = api.createExpense(CreateExpenseRequest(description.trim(), amt, category.trim()))
+                                if (res.isSuccessful) {
+                                    Toast.makeText(context, "Pengeluaran dicatat", Toast.LENGTH_SHORT).show()
+                                    isDialogVisible = false
+                                    loadData()
+                                } else {
+                                    Toast.makeText(context, "Gagal mencatat pengeluaran", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
-                    }
+                    },
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Text("Simpan")
                 }

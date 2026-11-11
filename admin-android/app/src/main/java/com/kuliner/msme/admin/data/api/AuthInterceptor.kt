@@ -8,14 +8,10 @@ class AuthInterceptor(private val tokenManager: TokenManager) : Interceptor {
         val requestBuilder = chain.request().newBuilder()
 
         val token = tokenManager.getToken()
-        if (!token.isNull meEmpty()) {
+        if (!token.isNullOrBlank()) {
             requestBuilder.addHeader("Authorization", "Bearer $token")
         }
 
         return chain.proceed(requestBuilder.build())
-    }
-
-    private fun String?.isNull meEmpty(): Boolean {
-        return this == null || this.trim().isEmpty()
     }
 }

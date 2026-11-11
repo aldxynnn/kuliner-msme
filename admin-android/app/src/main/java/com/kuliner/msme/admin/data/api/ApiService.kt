@@ -22,7 +22,7 @@ interface ApiService {
     suspend fun updateCategory(@Path("id") id: String, @Body request: CreateCategoryRequest): Response<Category>
 
     @DELETE("categories/{id}")
-    suspend fun deleteCategory(@Path("id") id: String): Response<Unit>
+    suspend fun deleteCategory(@Path("id") id: String): Response<Any>
 
     // Products
     @GET("products")
@@ -41,7 +41,7 @@ interface ApiService {
     suspend fun toggleAvailability(@Path("id") id: String, @Body request: ToggleAvailabilityRequest): Response<Product>
 
     @DELETE("products/{id}")
-    suspend fun deleteProduct(@Path("id") id: String): Response<Unit>
+    suspend fun deleteProduct(@Path("id") id: String): Response<Any>
 
     // Tables
     @GET("tables")
@@ -54,7 +54,7 @@ interface ApiService {
     suspend fun updateTable(@Path("id") id: String, @Body request: CreateTableRequest): Response<Table>
 
     @DELETE("tables/{id}")
-    suspend fun deleteTable(@Path("id") id: String): Response<Unit>
+    suspend fun deleteTable(@Path("id") id: String): Response<Any>
 
     // Orders
     @POST("orders/cashier")
@@ -103,7 +103,7 @@ interface ApiService {
     suspend fun updateExpense(@Path("id") id: String, @Body request: CreateExpenseRequest): Response<Expense>
 
     @DELETE("expenses/{id}")
-    suspend fun deleteExpense(@Path("id") id: String): Response<Unit>
+    suspend fun deleteExpense(@Path("id") id: String): Response<Any>
 
     // Reports
     @GET("reports/dashboard")

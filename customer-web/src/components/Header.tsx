@@ -1,5 +1,5 @@
 import React from 'react';
-import { UtensilsCrossed, MapPin, ShoppingBag, Clock } from 'lucide-react';
+import { Flame, MapPin, Clock } from 'lucide-react';
 import { OrderType } from '../types';
 
 interface HeaderProps {
@@ -18,61 +18,68 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenOrderTracking,
 }) => {
   return (
-    <header className="sticky top-0 z-20 bg-white border-b border-cream-200 shadow-sm">
-      <div className="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
+    <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-cream-200 shadow-xs transition-all">
+      <div className="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
         {/* Brand */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center shadow-sm">
-            <UtensilsCrossed className="w-5 h-5" />
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center shadow-md shadow-brand-500/20">
+            <Flame className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="font-bold text-base text-charcoal leading-tight">AROMA</h1>
-            <p className="text-[11px] text-charcoal-muted">Gurih Rempahnya, Hangat Rasanya.</p>
+            <h1 className="font-extrabold text-base md:text-lg text-charcoal tracking-tight leading-tight">
+              AROMA
+            </h1>
+            <p className="text-[11px] font-medium text-charcoal-muted tracking-wide">
+              Ayam Goreng Lengkuas
+            </p>
           </div>
         </div>
 
-        {/* Status / Active Order / Table */}
-        <div className="flex items-center gap-2">
+        {/* Status & Table Badge */}
+        <div className="flex items-center gap-2.5">
           {activeOrderNumber && (
             <button
               onClick={onOpenOrderTracking}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-semibold hover:bg-amber-100 transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-50 text-amber-800 border border-amber-200/80 text-xs font-bold hover:bg-amber-100 transition-all shadow-xs"
             >
-              <Clock className="w-3.5 h-3.5 animate-pulse text-amber-600" />
-              <span>Status Pesanan</span>
+              <Clock className="w-4 h-4 animate-pulse text-amber-600" />
+              <span className="hidden sm:inline">Status Pesanan</span>
+              <span className="sm:hidden">Status</span>
             </button>
           )}
 
           {tableNumber && (
-            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200 text-xs font-semibold">
-              <MapPin className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-50 text-brand-700 border border-brand-200/80 text-xs font-bold shadow-xs">
+              <MapPin className="w-4 h-4 text-brand-500" />
               <span>{tableNumber}</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Order Type Toggle Banner */}
-      <div className="bg-cream-50 border-t border-cream-200 py-2 px-4">
-        <div className="max-w-xl mx-auto flex items-center justify-between">
-          <span className="text-xs font-medium text-charcoal-muted">Tipe Pesanan:</span>
-          <div className="bg-white p-1 rounded-lg border border-cream-200 flex gap-1 text-xs">
+      {/* Order Type Toggle Bar */}
+      <div className="bg-cream-100/60 border-t border-cream-200/80 py-2 px-4">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <span className="text-xs font-semibold text-charcoal-muted uppercase tracking-wider">
+            Tipe Pesanan:
+          </span>
+          <div className="bg-white p-1 rounded-xl border border-cream-200/85 flex gap-1 shadow-xs">
             <button
               onClick={() => onOrderTypeChange('DINE_IN')}
-              className={`px-3 py-1.5 rounded-md font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 orderType === 'DINE_IN'
                   ? 'bg-brand-500 text-white shadow-sm'
-                  : 'text-charcoal-muted hover:text-charcoal'
+                  : 'text-charcoal-muted hover:text-charcoal hover:bg-cream-50'
               }`}
             >
               Dine In (Makan di Tempat)
             </button>
             <button
               onClick={() => onOrderTypeChange('TAKE_AWAY')}
-              className={`px-3 py-1.5 rounded-md font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 orderType === 'TAKE_AWAY'
                   ? 'bg-brand-500 text-white shadow-sm'
-                  : 'text-charcoal-muted hover:text-charcoal'
+                  : 'text-charcoal-muted hover:text-charcoal hover:bg-cream-50'
               }`}
             >
               Take Away (Bawa Pulang)

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/create-category.dto';
 
@@ -43,7 +43,10 @@ export class CategoriesService {
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    const category = await this.findOne(id);
+    if (category.products && category.products.length > 0) {
+      throw new BadRequestException('Kategori tidak dapat dihapus karena masih digunakan oleh produk');
+    }
     return this.prisma.category.delete({
       where: { id },
     });

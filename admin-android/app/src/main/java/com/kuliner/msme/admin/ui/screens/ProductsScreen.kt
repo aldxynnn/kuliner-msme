@@ -100,7 +100,7 @@ fun ProductsScreen() {
         ) {
             Column {
                 Text("Kelola Produk Menu", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Text("Atur harga dan ketersediaan menu", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Atur harga dan ketersediaan menu AROMA", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             }
 
             FloatingActionButton(
@@ -166,7 +166,12 @@ fun ProductsScreen() {
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(product.name, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Text(product.description ?: "", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), maxLines = 1)
+                                Text(
+                                    text = "${product.category?.name ?: "Kategori"} • ${product.description ?: ""}",
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                    maxLines = 1
+                                )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(formatRp(product.price), fontWeight = FontWeight.ExtraBold, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                             }
@@ -261,6 +266,18 @@ fun ProductFormDialog(
         title = { Text(if (product != null) "Edit Produk Menu" else "Tambah Produk Baru") },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
+                Text("Pilih Kategori:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(4.dp))
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(categories) { cat ->
+                        FilterChip(
+                            selected = categoryId == cat.id,
+                            onClick = { categoryId = cat.id },
+                            label = { Text(cat.name, fontSize = 11.sp) }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },

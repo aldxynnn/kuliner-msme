@@ -26,8 +26,8 @@ export const Header: React.FC<HeaderProps> = ({
             <UtensilsCrossed className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="font-bold text-lg text-charcoal leading-tight">Kuliner Resto</h1>
-            <p className="text-xs text-charcoal-muted">Sistem Pemesanan QR Online</p>
+            <h1 className="font-bold text-base text-charcoal leading-tight">AROMA</h1>
+            <p className="text-[11px] text-charcoal-muted">Gurih Rempahnya, Hangat Rasanya.</p>
           </div>
         </div>
 

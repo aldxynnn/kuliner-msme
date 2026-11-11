@@ -1,5 +1,6 @@
 package com.kuliner.msme.admin.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -10,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.data.api.TokenManager
 import com.kuliner.msme.admin.ui.screens.*
-import androidx.compose.ui.unit.dp
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Dashboard : Screen("dashboard", "Beranda", Icons.Default.Dashboard)
@@ -57,7 +58,7 @@ fun MainScreen(
                         )
                         Text(
                             text = when (currentRoute) {
-                                Screen.Dashboard.route -> "Beranda & Ringkasan"
+                                Screen.Dashboard.route -> "Beranda & Ringkasan Resto"
                                 Screen.Orders.route -> "Kelola Pesanan Masuk"
                                 Screen.CashierOrder.route -> "Kasir & Pemesanan Manual"
                                 Screen.Payments.route -> "Konfirmasi Pembayaran"
@@ -65,8 +66,8 @@ fun MainScreen(
                                 Screen.Categories.route -> "Manajemen Kategori"
                                 Screen.Tables.route -> "Manajemen Meja & QR"
                                 Screen.Expenses.route -> "Pencatatan Biaya Operasional"
-                                Screen.Reports.route -> "Laporan & Surplus Keuangan"
-                                else -> "Manajemen Resto"
+                                Screen.Reports.route -> "Laporan Keuangan & Surplus"
+                                else -> "AROMA Restaurant POS"
                             },
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
@@ -87,7 +88,7 @@ fun MainScreen(
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 8.dp
+                tonalElevation = 4.dp
             ) {
                 bottomNavItems.forEach { screen ->
                     NavigationBarItem(
@@ -98,6 +99,7 @@ fun MainScreen(
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = MaterialTheme.colorScheme.primary,
                             selectedTextColor = MaterialTheme.colorScheme.primary,
+                            indicatorColor = MaterialTheme.colorScheme.primaryContainer,
                             unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                             unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
@@ -107,7 +109,9 @@ fun MainScreen(
         }
     ) { innerPadding ->
         Surface(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier
+                .padding(innerPadding)
+                .background(MaterialTheme.colorScheme.background),
             color = MaterialTheme.colorScheme.background
         ) {
             when (currentRoute) {

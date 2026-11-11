@@ -5,16 +5,16 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
 private val LightColorScheme = lightColorScheme(
-    primary = TerracottaPrimary,
-    onPrimary = SurfaceWhite,
-    primaryContainer = TerracottaLight,
-    onPrimaryContainer = TerracottaDark,
-    secondary = TerracottaDark,
-    background = WarmIvoryBg,
-    surface = SurfaceWhite,
-    onBackground = DarkCharcoal,
-    onSurface = DarkCharcoal,
-    error = ErrorRed
+    primary = PosPrimary,
+    onPrimary = PosSurface,
+    primaryContainer = PosSoftAccent,
+    onPrimaryContainer = PosPrimary,
+    secondary = PosPrimaryAccent,
+    background = PosBg,
+    surface = PosSurface,
+    onBackground = PosMainText,
+    onSurface = PosMainText,
+    error = PosError
 )
 
 @Composable

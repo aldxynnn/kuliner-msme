@@ -73,19 +73,19 @@ fun LoginScreen(
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(32.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(
                 modifier = Modifier
-                    .padding(32.dp)
+                    .padding(28.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Surface(
-                    modifier = Modifier.size(64.dp),
-                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.size(60.dp),
+                    shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.primary
                 ) {
                     Box(contentAlignment = Alignment.Center) {
@@ -93,19 +93,18 @@ fun LoginScreen(
                             Icons.Default.RestaurantMenu,
                             contentDescription = "Logo",
                             tint = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(36.dp)
+                            modifier = Modifier.size(32.dp)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
                     text = "AROMA POS",
                     fontWeight = FontWeight.ExtraBold,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    letterSpacing = (-0.5).sp
+                    fontSize = 22.sp,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "Gurih Rempahnya, Hangat Rasanya.",
@@ -115,20 +114,20 @@ fun LoginScreen(
                     modifier = Modifier.padding(top = 2.dp)
                 )
 
-                Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 if (errorMessage != null) {
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         color = MaterialTheme.colorScheme.errorContainer,
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
                             text = errorMessage!!,
                             color = MaterialTheme.colorScheme.onErrorContainer,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(14.dp)
+                            modifier = Modifier.padding(12.dp)
                         )
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -141,10 +140,10 @@ fun LoginScreen(
                     leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(12.dp)
                 )
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedTextField(
                     value = password,
@@ -154,28 +153,28 @@ fun LoginScreen(
                     visualTransformation = PasswordVisualTransformation(),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(12.dp)
                 )
 
-                Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
                     onClick = { handleLogin() },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp),
+                        .height(48.dp),
                     enabled = !isLoading,
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(22.dp),
+                            modifier = Modifier.size(20.dp),
                             color = MaterialTheme.colorScheme.onPrimary,
-                            strokeWidth = 2.5.dp
+                            strokeWidth = 2.dp
                         )
                     } else {
-                        Text("Masuk Sistem POS", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text("Masuk Kasir POS", fontWeight = FontWeight.Bold, fontSize = 15.sp)
                     }
                 }
             }

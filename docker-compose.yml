@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kuliner-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kuliner_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kuliner_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-kuliner_db}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kuliner_user} -d ${POSTGRES_DB:-kuliner_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

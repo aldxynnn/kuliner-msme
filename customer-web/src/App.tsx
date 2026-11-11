@@ -237,10 +237,12 @@ export const App: React.FC = () => {
         onCheckout={handleCheckout}
       />
 
-      <OrderTrackingModal
-        order={activeOrder}
-        onClose={() => setIsTrackingModalOpen(false)}
-      />
+      {isTrackingModalOpen && activeOrder && (
+        <OrderTrackingModal
+          order={activeOrder}
+          onClose={() => setIsTrackingModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

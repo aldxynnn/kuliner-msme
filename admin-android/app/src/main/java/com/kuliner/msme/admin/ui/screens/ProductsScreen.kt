@@ -43,10 +43,19 @@ fun ProductsScreen() {
                 val catRes = api.getCategories()
                 val prodRes = api.getProducts(categoryId = selectedCategoryId)
 
-                if (catRes.isSuccessful && catRes.body() != null) categories = catRes.body()!!
-                if (prodRes.isSuccessful && prodRes.body() != null) products = prodRes.body()!!
+                if (catRes.isSuccessful && catRes.body() != null) {
+                    categories = catRes.body()!!
+                } else {
+                    Toast.makeText(context, "Gagal memuat kategori: ${catRes.code()}", Toast.LENGTH_SHORT).show()
+                }
+
+                if (prodRes.isSuccessful && prodRes.body() != null) {
+                    products = prodRes.body()!!
+                } else {
+                    Toast.makeText(context, "Gagal memuat produk: ${prodRes.code()}", Toast.LENGTH_SHORT).show()
+                }
             } catch (e: Exception) {
-                Toast.makeText(context, "Gagal memuat data: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error koneksi: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             } finally {
                 isLoading = false
             }
@@ -63,13 +72,14 @@ fun ProductsScreen() {
                 val api = RetrofitClient.getApiService(context)
                 val res = api.toggleAvailability(productId, ToggleAvailabilityRequest(isAvailable))
                 if (res.isSuccessful) {
-                    Toast.makeText(context, "Status ketersediaan diperbarui", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Status ketersediaan berhasil diubah", Toast.LENGTH_SHORT).show()
                     loadData()
                 } else {
-                    Toast.makeText(context, "Gagal memperbarui status", Toast.LENGTH_SHORT).show()
+                    val errorBody = res.errorBody()?.string() ?: res.message()
+                    Toast.makeText(context, "Gagal ubah status (${res.code()}): $errorBody", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -83,10 +93,11 @@ fun ProductsScreen() {
                     Toast.makeText(context, "Menu berhasil dihapus", Toast.LENGTH_SHORT).show()
                     loadData()
                 } else {
-                    Toast.makeText(context, "Gagal menghapus menu", Toast.LENGTH_SHORT).show()
+                    val errorBody = res.errorBody()?.string() ?: res.message()
+                    Toast.makeText(context, "Gagal menghapus (${res.code()}): $errorBody", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -270,7 +281,8 @@ fun ProductFormDialog(
                     Toast.makeText(context, if (product != null) "Menu berhasil diperbarui" else "Menu berhasil ditambahkan", Toast.LENGTH_SHORT).show()
                     onSave()
                 } else {
-                    errorMessage = "Gagal menyimpan: ${response.errorBody()?.string() ?: response.message()}"
+                    val errBody = response.errorBody()?.string() ?: response.message()
+                    errorMessage = "Gagal (${response.code()}): $errBody"
                 }
             } catch (e: Exception) {
                 errorMessage = "Terjadi kesalahan: ${e.localizedMessage}"

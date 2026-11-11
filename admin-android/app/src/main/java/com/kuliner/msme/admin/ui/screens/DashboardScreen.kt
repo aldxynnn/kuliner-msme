@@ -40,7 +40,7 @@ fun DashboardScreen(
                     summary = response.body()
                 }
             } catch (e: Exception) {
-                // Ignore error for dev
+                // Ignore
             } finally {
                 isLoading = false
             }
@@ -61,7 +61,7 @@ fun DashboardScreen(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(20.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -70,14 +70,15 @@ fun DashboardScreen(
         ) {
             Column {
                 Text(
-                    text = "Dashboard Kasir",
+                    text = "AROMA – POS Resto",
                     fontWeight = FontWeight.ExtraBold,
-                    fontSize = 20.sp
+                    fontSize = 22.sp
                 )
                 Text(
-                    text = "Ringkasan Penjualan Hari Ini",
+                    text = "Gurih Rempahnya, Hangat Rasanya.",
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -86,33 +87,35 @@ fun DashboardScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Revenue Card Highlight
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
         ) {
-            Column(modifier = Modifier.padding(20.dp)) {
+            Column(modifier = Modifier.padding(24.dp)) {
                 Text(
-                    text = "Pendapatan Lunas Hari Ini",
-                    fontSize = 12.sp,
+                    text = "PENDAPATAN HARI INI (LUNAS)",
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
+                    letterSpacing = 1.sp
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = formatRp(summary?.todayRevenue ?: 0),
-                    fontSize = 26.sp,
+                    fontSize = 30.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    text = "${summary?.todayTransactionCount ?: 0} transaksi berhasil",
+                    text = "${summary?.todayTransactionCount ?: 0} transaksi pembayaran berhasil",
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f)
                 )
             }
         }
@@ -120,7 +123,7 @@ fun DashboardScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Grid Metrics
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             DashboardMetricCard(
                 modifier = Modifier.weight(1f),
                 title = "Belum Bayar",
@@ -137,39 +140,45 @@ fun DashboardScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Aksi Cepat Kasir",
-            fontWeight = FontWeight.Bold,
+            text = "Menu Cepat Kasir",
+            fontWeight = FontWeight.ExtraBold,
             fontSize = 16.sp
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         // Quick Actions Grid
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             QuickActionButton(
-                title = "Pesan Baru / Kasir Manual",
+                title = "Kasir Manual (Pesan Baru)",
                 subtitle = "Buat pesanan langsung di meja kasir",
                 icon = Icons.Default.AddShoppingCart,
                 onClick = { onNavigateTo("cashier_order") }
             )
             QuickActionButton(
                 title = "Konfirmasi Pembayaran",
-                subtitle = "Verifikasi pembayaran QRIS atau Cash",
+                subtitle = "Verifikasi QRIS & pembayaran tunai",
                 icon = Icons.Default.Payments,
                 onClick = { onNavigateTo("payments") }
             )
             QuickActionButton(
-                title = "Kelola Produk & Kategori",
-                subtitle = "Ubah harga & ketersediaan menu",
+                title = "Manajemen Produk Menu",
+                subtitle = "Atur harga, kategori, dan ketersediaan",
                 icon = Icons.Default.Fastfood,
                 onClick = { onNavigateTo("products") }
             )
             QuickActionButton(
+                title = "Kelola Kategori",
+                subtitle = "Tambah atau ubah kategori Makanan, Minuman, Tambahan",
+                icon = Icons.Default.Category,
+                onClick = { onNavigateTo("categories") }
+            )
+            QuickActionButton(
                 title = "Laporan & Pengeluaran",
-                subtitle = "Catat pengeluaran & lihat surplus operasional",
+                subtitle = "Catat biaya operasional & surplus keuangan",
                 icon = Icons.Default.Assessment,
                 onClick = { onNavigateTo("reports") }
             )
@@ -187,14 +196,14 @@ fun DashboardMetricCard(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(24.dp))
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(value, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp)
-            Text(title, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+        Column(modifier = Modifier.padding(18.dp)) {
+            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(26.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(value, fontWeight = FontWeight.ExtraBold, fontSize = 24.sp)
+            Text(title, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
         }
     }
 }
@@ -209,18 +218,18 @@ fun QuickActionButton(
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                modifier = Modifier.size(42.dp),
-                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.size(46.dp),
+                shape = RoundedCornerShape(14.dp),
                 color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -228,12 +237,12 @@ fun QuickActionButton(
                         icon,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(title, fontWeight = FontWeight.Bold, fontSize = 14.sp)

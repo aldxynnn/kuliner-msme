@@ -1,5 +1,6 @@
 package com.kuliner.msme.admin.ui
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -8,17 +9,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.data.api.TokenManager
 import com.kuliner.msme.admin.ui.screens.*
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Dashboard : Screen("dashboard", "Beranda", Icons.Default.Dashboard)
     object Orders : Screen("orders", "Pesanan", Icons.Default.ReceiptLong)
-    object CashierOrder : Screen("cashier_order", "Kasir POS", Icons.Default.AddShoppingCart)
+    object CashierOrder : Screen("cashier_order", "POS", Icons.Default.AddShoppingCart)
     object Payments : Screen("payments", "Bayar", Icons.Default.Payments)
-    object Products : Screen("products", "Produk", Icons.Default.Fastfood)
+    object Products : Screen("products", "Menu", Icons.Default.Fastfood)
     object Categories : Screen("categories", "Kategori", Icons.Default.Category)
-    object Tables : Screen("tables", "Meja QR", Icons.Default.QrCode)
+    object Tables : Screen("tables", "Meja", Icons.Default.QrCode)
     object Expenses : Screen("expenses", "Biaya", Icons.Default.MoneyOff)
     object Reports : Screen("reports", "Laporan", Icons.Default.Assessment)
 }
@@ -44,39 +47,59 @@ fun MainScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        when (currentRoute) {
-                            Screen.Dashboard.route -> "Kuliner POS Kasir"
-                            Screen.Orders.route -> "Kelola Pesanan"
-                            Screen.CashierOrder.route -> "Kasir Manual"
-                            Screen.Payments.route -> "Konfirmasi Pembayaran"
-                            Screen.Products.route -> "Daftar Produk Menu"
-                            Screen.Categories.route -> "Kategori Menu"
-                            Screen.Tables.route -> "Meja Pelanggan"
-                            Screen.Expenses.route -> "Pengeluaran Operasional"
-                            Screen.Reports.route -> "Laporan Keuangan"
-                            else -> "Kuliner Kasir POS"
-                        }
-                    )
+                    Column {
+                        Text(
+                            text = "AROMA POS",
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 17.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = when (currentRoute) {
+                                Screen.Dashboard.route -> "Beranda & Ringkasan"
+                                Screen.Orders.route -> "Kelola Pesanan Masuk"
+                                Screen.CashierOrder.route -> "Kasir & Pemesanan Manual"
+                                Screen.Payments.route -> "Konfirmasi Pembayaran"
+                                Screen.Products.route -> "Manajemen Produk Menu"
+                                Screen.Categories.route -> "Manajemen Kategori"
+                                Screen.Tables.route -> "Manajemen Meja & QR"
+                                Screen.Expenses.route -> "Pencatatan Biaya Operasional"
+                                Screen.Reports.route -> "Laporan & Surplus Keuangan"
+                                else -> "Manajemen Resto"
+                            },
+                            fontSize = 11.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
                 actions = {
                     IconButton(onClick = {
                         tokenManager.clear()
                         onLogout()
                     }) {
-                        Icon(Icons.Default.Logout, contentDescription = "Keluar")
+                        Icon(Icons.Default.Logout, contentDescription = "Keluar", tint = MaterialTheme.colorScheme.error)
                     }
                 }
             )
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = MaterialTheme.colorScheme.surface,
+                tonalElevation = 8.dp
+            ) {
                 bottomNavItems.forEach { screen ->
                     NavigationBarItem(
                         icon = { Icon(screen.icon, contentDescription = screen.title) },
-                        label = { Text(screen.title) },
+                        label = { Text(screen.title, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                         selected = currentRoute == screen.route,
-                        onClick = { currentRoute = screen.route }
+                        onClick = { currentRoute = screen.route },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        )
                     )
                 }
             }

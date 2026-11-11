@@ -89,7 +89,8 @@ data class Payment(
     val paymentMethod: String,
     val status: String,
     val confirmedAt: String?,
-    val confirmedByUser: User?
+    val confirmedByUser: User?,
+    val order: Order? = null
 )
 
 data class Order(

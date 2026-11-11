@@ -1,5 +1,6 @@
 package com.kuliner.msme.admin.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -45,7 +46,7 @@ fun ProductsScreen() {
                 if (catRes.isSuccessful && catRes.body() != null) categories = catRes.body()!!
                 if (prodRes.isSuccessful && prodRes.body() != null) products = prodRes.body()!!
             } catch (e: Exception) {
-                // Ignore
+                Toast.makeText(context, "Gagal memuat data: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             } finally {
                 isLoading = false
             }
@@ -62,10 +63,13 @@ fun ProductsScreen() {
                 val api = RetrofitClient.getApiService(context)
                 val res = api.toggleAvailability(productId, ToggleAvailabilityRequest(isAvailable))
                 if (res.isSuccessful) {
+                    Toast.makeText(context, "Status ketersediaan diperbarui", Toast.LENGTH_SHORT).show()
                     loadData()
+                } else {
+                    Toast.makeText(context, "Gagal memperbarui status", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                // Ignore
+                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -76,10 +80,13 @@ fun ProductsScreen() {
                 val api = RetrofitClient.getApiService(context)
                 val res = api.deleteProduct(productId)
                 if (res.isSuccessful) {
+                    Toast.makeText(context, "Menu berhasil dihapus", Toast.LENGTH_SHORT).show()
                     loadData()
+                } else {
+                    Toast.makeText(context, "Gagal menghapus menu", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                // Ignore
+                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -230,12 +237,18 @@ fun ProductFormDialog(
     var priceStr by remember { mutableStateOf(product?.price?.toString() ?: "15000") }
     var categoryId by remember { mutableStateOf(product?.categoryId ?: categories.firstOrNull()?.id ?: "") }
     var isSubmitting by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     fun handleSave() {
         val price = priceStr.toIntOrNull() ?: 0
-        if (name.isBlank() || categoryId.isBlank() || price <= 0) return
+        if (name.isBlank() || categoryId.isBlank() || price <= 0) {
+            errorMessage = "Mohon lengkapi nama, kategori, dan harga yang valid"
+            return
+        }
 
         isSubmitting = true
+        errorMessage = null
+
         scope.launch {
             try {
                 val api = RetrofitClient.getApiService(context)
@@ -247,14 +260,20 @@ fun ProductFormDialog(
                     isAvailable = product?.isAvailable ?: true
                 )
 
-                if (product != null) {
+                val response = if (product != null) {
                     api.updateProduct(product.id, req)
                 } else {
                     api.createProduct(req)
                 }
-                onSave()
+
+                if (response.isSuccessful) {
+                    Toast.makeText(context, if (product != null) "Menu berhasil diperbarui" else "Menu berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+                    onSave()
+                } else {
+                    errorMessage = "Gagal menyimpan: ${response.errorBody()?.string() ?: response.message()}"
+                }
             } catch (e: Exception) {
-                // Ignore
+                errorMessage = "Terjadi kesalahan: ${e.localizedMessage}"
             } finally {
                 isSubmitting = false
             }
@@ -266,6 +285,22 @@ fun ProductFormDialog(
         title = { Text(if (product != null) "Edit Produk Menu" else "Tambah Produk Baru") },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
+                if (errorMessage != null) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.errorContainer,
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = errorMessage!!,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            fontSize = 11.sp,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
                 Text("Pilih Kategori:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(4.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -304,7 +339,11 @@ fun ProductFormDialog(
         },
         confirmButton = {
             Button(onClick = { handleSave() }, enabled = !isSubmitting) {
-                Text("Simpan")
+                if (isSubmitting) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), color = MaterialTheme.colorScheme.onPrimary)
+                } else {
+                    Text("Simpan")
+                }
             }
         },
         dismissButton = {

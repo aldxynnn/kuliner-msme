@@ -294,18 +294,23 @@ fun ProductsScreen() {
         ) { uri: Uri? ->
             if (uri != null) {
                 selectedImageUri = uri
-                // Automatically upload photo
                 isUploadingPhoto = true
                 scope.launch {
                     try {
-                        val file = File(context.cacheDir, "upload_product.jpg")
+                        val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
+                        val extension = when {
+                            mimeType.contains("png") -> ".png"
+                            mimeType.contains("webp") -> ".webp"
+                            else -> ".jpg"
+                        }
+                        val file = File(context.cacheDir, "upload_product_${System.currentTimeMillis()}$extension")
                         context.contentResolver.openInputStream(uri)?.use { input ->
                             FileOutputStream(file).use { output ->
                                 input.copyTo(output)
                             }
                         }
 
-                        val reqFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                        val reqFile = file.asRequestBody(mimeType.toMediaTypeOrNull())
                         val body = MultipartBody.Part.createFormData("file", file.name, reqFile)
 
                         val api = RetrofitClient.getApiService(context)
@@ -314,10 +319,11 @@ fun ProductsScreen() {
                             imageUrl = uploadRes.body()!!.imageUrl
                             Toast.makeText(context, "Foto berhasil diunggah", Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(context, "Gagal mengunggah foto", Toast.LENGTH_SHORT).show()
+                            val errBody = uploadRes.errorBody()?.string() ?: uploadRes.message()
+                            Toast.makeText(context, "Gagal mengunggah foto (${uploadRes.code()}): $errBody", Toast.LENGTH_LONG).show()
                         }
                     } catch (e: Exception) {
-                        Toast.makeText(context, "Error upload: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Error upload: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
                     } finally {
                         isUploadingPhoto = false
                     }

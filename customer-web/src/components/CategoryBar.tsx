@@ -21,7 +21,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
   };
 
   return (
-    <div className="sticky top-[102px] sm:top-[106px] z-20 bg-[#FAF8F5] py-3.5 border-b border-cream-200 shadow-2xs">
+    <div className="sticky top-[108px] sm:top-[112px] z-20 bg-[#FAF8F5] py-3.5 border-b border-cream-200 shadow-2xs">
       <div className="max-w-4xl mx-auto px-4 overflow-x-auto no-scrollbar flex items-center gap-2.5">
         <button
           onClick={() => onSelectCategory(null)}

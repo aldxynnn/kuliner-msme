@@ -61,47 +61,47 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
   const statusInfo = getStatusBadge();
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-lg rounded-[32px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+      <div className="bg-white w-full max-w-lg rounded-[28px] sm:rounded-[32px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="p-5 border-b border-cream-200 bg-cream-50 flex items-center justify-between shrink-0">
-          <div>
-            <span className="text-[10px] font-extrabold text-brand-600 uppercase tracking-widest">
+        <div className="p-4 sm:p-5 border-b border-cream-200 bg-cream-50 flex items-center justify-between gap-3 shrink-0">
+          <div className="min-w-0 flex-1">
+            <span className="text-[10px] font-extrabold text-brand-600 uppercase tracking-widest block">
               Status Live Pesanan
             </span>
-            <h3 className="font-extrabold text-lg text-charcoal break-all">{order.orderNumber}</h3>
+            <h3 className="font-extrabold text-base sm:text-lg text-charcoal break-all leading-tight mt-0.5">{order.orderNumber}</h3>
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-cream-200 text-charcoal flex items-center justify-center hover:bg-cream-300 transition-colors shadow-xs shrink-0"
+            className="w-9 h-9 rounded-full bg-cream-200 text-charcoal flex items-center justify-center hover:bg-cream-300 transition-colors shadow-2xs shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-5">
           {/* Status Banner */}
-          <div className={`p-4.5 rounded-2xl border ${statusInfo.color} space-y-2 shadow-xs`}>
+          <div className={`p-4 rounded-2xl border ${statusInfo.color} space-y-2 shadow-2xs`}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-              <span className="font-extrabold text-sm">{statusInfo.label}</span>
+              <span className="font-extrabold text-xs sm:text-sm break-words">{statusInfo.label}</span>
               <span className="text-[11px] font-semibold opacity-75 shrink-0">
                 {formatDate(order.createdAt)}
               </span>
             </div>
-            <p className="text-xs opacity-90 leading-relaxed font-medium">{statusInfo.desc}</p>
+            <p className="text-xs opacity-90 leading-relaxed font-medium break-words">{statusInfo.desc}</p>
           </div>
 
           {/* QRIS Payment Card */}
           {order.paymentMethod === 'QRIS' && order.paymentStatus === 'PENDING' && (
-            <div className="p-5 rounded-3xl border border-brand-200 bg-brand-50/60 text-center space-y-3.5 shadow-sm">
+            <div className="p-4 sm:p-5 rounded-3xl border border-brand-200 bg-brand-50/60 text-center space-y-3 shadow-2xs">
               <div className="flex items-center justify-center gap-1.5 text-brand-700 font-extrabold text-xs">
                 <QrCode className="w-4 h-4" />
                 <span>Pindai QRIS untuk Membayar</span>
               </div>
 
               {/* QR Image Placeholder */}
-              <div className="w-48 h-48 mx-auto bg-white p-3 rounded-2xl border border-brand-200 shadow-md flex items-center justify-center">
+              <div className="w-44 h-44 sm:w-48 sm:h-48 mx-auto bg-white p-3 rounded-2xl border border-brand-200 shadow-sm flex items-center justify-center">
                 <img
                   src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=AROMA-MSME-QRIS-MOCK"
                   alt="QRIS Payment"
@@ -125,7 +125,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
 
             <div className="divide-y divide-cream-100 border border-cream-200 rounded-2xl overflow-hidden bg-cream-50/40">
               {order.orderDetails.map((detail) => (
-                <div key={detail.id} className="p-3.5 flex items-center justify-between gap-3 text-xs">
+                <div key={detail.id} className="p-3 sm:p-3.5 flex items-center justify-between gap-3 text-xs">
                   <div className="min-w-0 flex-1">
                     <span className="font-extrabold text-charcoal">{detail.quantity}x </span>
                     <span className="font-semibold text-charcoal break-words">{detail.productName}</span>
@@ -143,7 +143,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
             </div>
 
             {/* Receipt Summary */}
-            <div className="p-4 rounded-2xl bg-cream-100/70 text-xs space-y-2 border border-cream-200/80">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-cream-100/70 text-xs space-y-2 border border-cream-200/80">
               <div className="flex justify-between text-charcoal-muted font-medium">
                 <span>Tipe Pemesanan</span>
                 <span className="font-bold text-charcoal">
@@ -177,7 +177,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
         </div>
 
         {/* Footer */}
-        <div className="p-5 border-t border-cream-200 bg-cream-50 shrink-0">
+        <div className="p-4 sm:p-5 border-t border-cream-200 bg-cream-50 shrink-0">
           <button
             onClick={onClose}
             className="w-full py-3.5 rounded-2xl bg-charcoal text-white font-extrabold text-xs hover:bg-black transition-colors shadow-md shadow-charcoal/10"

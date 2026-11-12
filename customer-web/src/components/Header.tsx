@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flame, MapPin, Clock } from 'lucide-react';
+import { MapPin, Clock } from 'lucide-react';
 import { OrderType } from '../types';
 
 interface HeaderProps {
@@ -22,9 +22,11 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
         {/* Brand */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center shadow-md shadow-brand-500/25">
-            <Flame className="w-5 h-5" />
-          </div>
+          <img
+            src="/logo-aroma.png"
+            alt="AROMA Logo"
+            className="w-11 h-11 rounded-2xl object-cover shadow-sm border border-cream-200"
+          />
           <div>
             <h1 className="font-extrabold text-base md:text-lg text-charcoal tracking-tight leading-tight">
               AROMA

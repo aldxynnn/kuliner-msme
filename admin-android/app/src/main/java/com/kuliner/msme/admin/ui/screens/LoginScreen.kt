@@ -1,21 +1,25 @@
 package com.kuliner.msme.admin.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.RestaurantMenu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kuliner.msme.admin.R
 import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.api.TokenManager
 import com.kuliner.msme.admin.data.model.LoginRequest
@@ -84,18 +88,16 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Surface(
-                    modifier = Modifier.size(60.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.primary
+                    modifier = Modifier.size(72.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    color = MaterialTheme.colorScheme.surface
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            Icons.Default.RestaurantMenu,
-                            contentDescription = "Logo",
-                            tint = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_aroma),
+                        contentDescription = "Logo AROMA",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(18.dp))
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))

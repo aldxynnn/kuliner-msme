@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as express from 'express';
 
 async function bootstrap() {
   // Ensure uploads directory exists
@@ -12,6 +13,9 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create(AppModule);
+
+  // Serve uploaded images statically
+  app.use('/uploads', express.static(uploadsDir));
 
   // Enable CORS for frontend and mobile access
   app.enableCors({

@@ -135,18 +135,31 @@ fun OrdersScreen() {
             }
         }
 
-        // Status filter pills
+        // Status filter pills with Terracotta Brand Colors
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             items(statusFilterList) { (statusVal, statusName) ->
+                val isSelected = selectedStatusFilter == statusVal
                 FilterChip(
-                    selected = selectedStatusFilter == statusVal,
+                    selected = isSelected,
                     onClick = { selectedStatusFilter = statusVal },
                     label = { Text(statusName, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(10.dp),
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        labelColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = isSelected,
+                        selectedBorderColor = MaterialTheme.colorScheme.primary,
+                        borderColor = MaterialTheme.colorScheme.outlineVariant
+                    )
                 )
             }
         }

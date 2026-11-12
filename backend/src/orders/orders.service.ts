@@ -236,9 +236,9 @@ export class OrdersService {
 
     return {
       storeInfo: {
-        name: 'Kuliner MSME Cafe & Resto',
-        address: 'Jl. Malioboro No. 123, Yogyakarta',
-        phone: '0812-3456-7890',
+        name: 'Ayam Goreng Lengkuas Aroma',
+        address: 'Ruko Puri Cempaka Blok R1 No. 10, Panancangan, Kec. Cipocok Jaya, Kota Serang, Banten 42124',
+        phone: '0821-1215-2744',
       },
       orderNumber: order.orderNumber,
       dateTime: order.createdAt,

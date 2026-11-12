@@ -2,7 +2,6 @@ package com.kuliner.msme.admin.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -15,10 +14,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.model.*
 import kotlinx.coroutines.launch
@@ -139,54 +141,83 @@ fun CashierOrderScreen(
     val filteredProducts = if (selectedCategoryId == null) products else products.filter { it.categoryId == selectedCategoryId }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text("Kasir POS (Pesan Baru)", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Text("Input pesanan manual pelanggan AROMA", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-            }
-        }
-
         // Options bar: Order type & table selection
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(16.dp),
+                .padding(12.dp),
+            shape = RoundedCornerShape(14.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val isDineIn = selectedOrderType == "DINE_IN"
                     FilterChip(
-                        selected = selectedOrderType == "DINE_IN",
+                        selected = isDineIn,
                         onClick = { selectedOrderType = "DINE_IN" },
-                        label = { Text("Dine In (Makan di Tempat)", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+                        label = { Text("Dine In (Makan di Tempat)", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                        shape = RoundedCornerShape(8.dp),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.primary,
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            labelColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isDineIn,
+                            selectedBorderColor = MaterialTheme.colorScheme.primary,
+                            borderColor = MaterialTheme.colorScheme.outlineVariant
+                        )
                     )
+
+                    val isTakeAway = selectedOrderType == "TAKE_AWAY"
                     FilterChip(
-                        selected = selectedOrderType == "TAKE_AWAY",
+                        selected = isTakeAway,
                         onClick = { selectedOrderType = "TAKE_AWAY" },
-                        label = { Text("Take Away", fontSize = 11.sp, fontWeight = FontWeight.Bold) }
+                        label = { Text("Take Away", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                        shape = RoundedCornerShape(8.dp),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.primary,
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            labelColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = isTakeAway,
+                            selectedBorderColor = MaterialTheme.colorScheme.primary,
+                            borderColor = MaterialTheme.colorScheme.outlineVariant
+                        )
                     )
                 }
 
                 if (selectedOrderType == "DINE_IN" && tables.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text("Pilih Meja Pelanggan:", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text("Pilih Meja Pelanggan:", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
                         items(tables) { table ->
+                            val isTableSelected = selectedTableNumber == table.tableNumber
                             FilterChip(
-                                selected = selectedTableNumber == table.tableNumber,
+                                selected = isTableSelected,
                                 onClick = { selectedTableNumber = table.tableNumber },
-                                label = { Text(table.tableNumber, fontSize = 11.sp) }
+                                label = { Text(table.tableNumber, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    selectedLabelColor = MaterialTheme.colorScheme.primary,
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    labelColor = MaterialTheme.colorScheme.onSurface
+                                ),
+                                border = FilterChipDefaults.filterChipBorder(
+                                    enabled = true,
+                                    selected = isTableSelected,
+                                    selectedBorderColor = MaterialTheme.colorScheme.primary,
+                                    borderColor = MaterialTheme.colorScheme.outlineVariant
+                                )
                             )
                         }
                     }
@@ -194,53 +225,110 @@ fun CashierOrderScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
         // Categories Row
         LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            contentPadding = PaddingValues(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             item {
+                val isSelected = selectedCategoryId == null
                 FilterChip(
-                    selected = selectedCategoryId == null,
+                    selected = isSelected,
                     onClick = { selectedCategoryId = null },
-                    label = { Text("Semua", fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    label = { Text("Semua", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        labelColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = isSelected,
+                        selectedBorderColor = MaterialTheme.colorScheme.primary,
+                        borderColor = MaterialTheme.colorScheme.outlineVariant
+                    )
                 )
             }
             items(categories) { cat ->
+                val isSelected = selectedCategoryId == cat.id
                 FilterChip(
-                    selected = selectedCategoryId == cat.id,
+                    selected = isSelected,
                     onClick = { selectedCategoryId = cat.id },
-                    label = { Text(cat.name, fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    label = { Text(cat.name, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        labelColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = isSelected,
+                        selectedBorderColor = MaterialTheme.colorScheme.primary,
+                        borderColor = MaterialTheme.colorScheme.outlineVariant
+                    )
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
-        // Products Catalog Grid
+        // Products Catalog Grid with Product Photo Preview
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(filteredProducts) { product ->
                 val inCart = cartItems.find { it.product.id == product.id }
+                val imageUrl = if (!product.image.isNullOrBlank()) {
+                    if (product.image.startsWith("/")) "http://10.0.2.2:3000${product.image}" else product.image
+                } else null
+
                 Card(
                     onClick = { if (product.isAvailable) handleAddToCart(product) },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text(product.name, fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
-                        Text(formatRp(product.price), fontWeight = FontWeight.ExtraBold, fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(80.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.primaryContainer),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (imageUrl != null) {
+                                AsyncImage(
+                                    model = imageUrl,
+                                    contentDescription = product.name,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Default.Fastfood,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        }
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        Text(product.name, fontWeight = FontWeight.Bold, fontSize = 12.sp, maxLines = 1)
+                        Text(formatRp(product.price), fontWeight = FontWeight.ExtraBold, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
+
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         if (inCart != null) {
                             Row(
@@ -250,16 +338,16 @@ fun CashierOrderScreen(
                             ) {
                                 IconButton(
                                     onClick = { handleUpdateQuantity(product.id, -1) },
-                                    modifier = Modifier.size(28.dp)
+                                    modifier = Modifier.size(26.dp)
                                 ) {
-                                    Icon(Icons.Default.Remove, contentDescription = null)
+                                    Icon(Icons.Default.Remove, contentDescription = null, modifier = Modifier.size(16.dp))
                                 }
-                                Text("${inCart.quantity}", fontWeight = FontWeight.Bold)
+                                Text("${inCart.quantity}", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                 IconButton(
                                     onClick = { handleUpdateQuantity(product.id, 1) },
-                                    modifier = Modifier.size(28.dp)
+                                    modifier = Modifier.size(26.dp)
                                 ) {
-                                    Icon(Icons.Default.Add, contentDescription = null)
+                                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                                 }
                             }
                         } else {
@@ -267,7 +355,8 @@ fun CashierOrderScreen(
                                 onClick = { handleAddToCart(product) },
                                 modifier = Modifier.fillMaxWidth(),
                                 enabled = product.isAvailable,
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                             ) {
                                 Text(if (product.isAvailable) "Tambah" else "Habis", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                             }
@@ -283,17 +372,15 @@ fun CashierOrderScreen(
                 shadowElevation = 8.dp,
                 color = MaterialTheme.colorScheme.surface
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(14.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Total (${cartItems.sumOf { it.quantity }} item)", fontWeight = FontWeight.Bold)
-                        Text(formatRp(totalAmount), fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, color = MaterialTheme.colorScheme.primary)
+                        Text("Total (${cartItems.sumOf { it.quantity }} item)", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        Text(formatRp(totalAmount), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
                     }
-
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -303,23 +390,22 @@ fun CashierOrderScreen(
                             checked = isCashConfirmedImmediately,
                             onCheckedChange = { isCashConfirmedImmediately = it }
                         )
-                        Text("Konfirmasi Pembayaran Lunas Langsung", fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                        Text("Konfirmasi Pembayaran Lunas Langsung", fontSize = 11.sp, fontWeight = FontWeight.Medium)
                     }
-
-                    Spacer(modifier = Modifier.height(8.dp))
 
                     Button(
                         onClick = { handleCheckout() },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp),
+                            .height(44.dp),
                         enabled = !isSubmitting,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         if (isSubmitting) {
-                            CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(20.dp))
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(18.dp))
                         } else {
-                            Text("Buat Pesanan Kasir", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                            Text("Buat Pesanan Kasir", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                         }
                     }
                 }

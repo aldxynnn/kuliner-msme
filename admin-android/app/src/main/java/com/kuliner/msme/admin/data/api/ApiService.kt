@@ -1,6 +1,7 @@
 package com.kuliner.msme.admin.data.api
 
 import com.kuliner.msme.admin.data.model.*
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -30,6 +31,12 @@ interface ApiService {
         @Query("categoryId") categoryId: String? = null,
         @Query("search") search: String? = null
     ): Response<List<Product>>
+
+    @Multipart
+    @POST("products/upload")
+    suspend fun uploadProductImage(
+        @Part file: MultipartBody.Part
+    ): Response<ImageUploadResponse>
 
     @POST("products")
     suspend fun createProduct(@Body request: CreateProductRequest): Response<Product>

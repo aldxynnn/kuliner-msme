@@ -56,6 +56,10 @@ data class CreateProductRequest(
     val isAvailable: Boolean = true
 )
 
+data class ImageUploadResponse(
+    val imageUrl: String
+)
+
 data class ToggleAvailabilityRequest(
     val isAvailable: Boolean
 )

@@ -79,20 +79,49 @@ fun ReportsScreen() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Period Toggle
+        // Period Toggle with Terracotta Brand Colors
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            val isDaily = period == "daily"
             FilterChip(
-                selected = period == "daily",
+                selected = isDaily,
                 onClick = { period = "daily" },
-                label = { Text("Laporan Harian", fontWeight = FontWeight.Bold, fontSize = 12.sp) }
+                label = { Text("Laporan Harian", fontWeight = FontWeight.Bold, fontSize = 12.sp) },
+                shape = RoundedCornerShape(8.dp),
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedLabelColor = MaterialTheme.colorScheme.primary,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    labelColor = MaterialTheme.colorScheme.onSurface
+                ),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = isDaily,
+                    selectedBorderColor = MaterialTheme.colorScheme.primary,
+                    borderColor = MaterialTheme.colorScheme.outlineVariant
+                )
             )
+
+            val isMonthly = period == "monthly"
             FilterChip(
-                selected = period == "monthly",
+                selected = isMonthly,
                 onClick = { period = "monthly" },
-                label = { Text("Laporan Bulanan", fontWeight = FontWeight.Bold, fontSize = 12.sp) }
+                label = { Text("Laporan Bulanan", fontWeight = FontWeight.Bold, fontSize = 12.sp) },
+                shape = RoundedCornerShape(8.dp),
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedLabelColor = MaterialTheme.colorScheme.primary,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    labelColor = MaterialTheme.colorScheme.onSurface
+                ),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = isMonthly,
+                    selectedBorderColor = MaterialTheme.colorScheme.primary,
+                    borderColor = MaterialTheme.colorScheme.outlineVariant
+                )
             )
         }
 
@@ -113,7 +142,7 @@ fun ReportsScreen() {
             // Surplus Highlight Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
@@ -127,7 +156,7 @@ fun ReportsScreen() {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = formatRp(r.operatingSurplus),
-                        fontSize = 26.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
@@ -150,26 +179,26 @@ fun ReportsScreen() {
             ) {
                 Card(
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("Total Omzet Lunas", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(formatRp(r.totalRevenue), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
+                        Text(formatRp(r.totalRevenue), fontWeight = FontWeight.ExtraBold, fontSize = 15.sp, color = MaterialTheme.colorScheme.primary)
                         Text("${r.transactionCount} Transaksi", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
                     }
                 }
 
                 Card(
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("Total Pengeluaran", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(formatRp(r.totalExpenses), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.error)
+                        Text(formatRp(r.totalExpenses), fontWeight = FontWeight.ExtraBold, fontSize = 15.sp, color = MaterialTheme.colorScheme.error)
                         Text("${r.expenses.size} Catatan Biaya", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
                     }
                 }

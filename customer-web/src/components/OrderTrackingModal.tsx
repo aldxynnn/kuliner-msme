@@ -69,11 +69,11 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
             <span className="text-[10px] font-extrabold text-brand-600 uppercase tracking-widest">
               Status Live Pesanan
             </span>
-            <h3 className="font-extrabold text-lg text-charcoal">{order.orderNumber}</h3>
+            <h3 className="font-extrabold text-lg text-charcoal break-all">{order.orderNumber}</h3>
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-cream-200 text-charcoal flex items-center justify-center hover:bg-cream-300 transition-colors shadow-xs"
+            className="w-9 h-9 rounded-full bg-cream-200 text-charcoal flex items-center justify-center hover:bg-cream-300 transition-colors shadow-xs shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -82,10 +82,10 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
         {/* Scrollable Body */}
         <div className="p-6 overflow-y-auto space-y-6">
           {/* Status Banner */}
-          <div className={`p-4.5 rounded-2xl border ${statusInfo.color} space-y-1.5 shadow-xs`}>
-            <div className="flex items-center justify-between">
+          <div className={`p-4.5 rounded-2xl border ${statusInfo.color} space-y-2 shadow-xs`}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
               <span className="font-extrabold text-sm">{statusInfo.label}</span>
-              <span className="text-[11px] font-semibold opacity-75">
+              <span className="text-[11px] font-semibold opacity-75 shrink-0">
                 {formatDate(order.createdAt)}
               </span>
             </div>
@@ -125,12 +125,12 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
 
             <div className="divide-y divide-cream-100 border border-cream-200 rounded-2xl overflow-hidden bg-cream-50/40">
               {order.orderDetails.map((detail) => (
-                <div key={detail.id} className="p-3.5 flex items-center justify-between text-xs">
-                  <div>
+                <div key={detail.id} className="p-3.5 flex items-center justify-between gap-3 text-xs">
+                  <div className="min-w-0 flex-1">
                     <span className="font-extrabold text-charcoal">{detail.quantity}x </span>
-                    <span className="font-semibold text-charcoal">{detail.productName}</span>
+                    <span className="font-semibold text-charcoal break-words">{detail.productName}</span>
                     {detail.notes && (
-                      <p className="text-[11px] text-charcoal-muted italic mt-0.5">
+                      <p className="text-[11px] text-charcoal-muted italic mt-0.5 break-words">
                         Note: {detail.notes}
                       </p>
                     )}

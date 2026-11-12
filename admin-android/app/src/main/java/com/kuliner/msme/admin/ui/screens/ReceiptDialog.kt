@@ -189,7 +189,7 @@ fun ReceiptDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(22.dp)
+                    .padding(20.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -209,12 +209,12 @@ fun ReceiptDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // Official Logo Preview
                 Surface(
-                    modifier = Modifier.size(56.dp),
-                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier.size(52.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = MaterialTheme.colorScheme.surface
                 ) {
                     Image(
@@ -225,63 +225,63 @@ fun ReceiptDialog(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Official Store Info
                 Text(
                     text = storeName,
                     fontWeight = FontWeight.ExtraBold,
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = storeAddress,
-                    fontSize = 11.sp,
+                    fontSize = 10.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
                 Text(
                     text = "Telp: $storePhone",
-                    fontSize = 11.sp,
+                    fontSize = 10.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center
                 )
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = MaterialTheme.colorScheme.outlineVariant)
 
                 // Meta Info
-                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("No. Pesanan:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                        Text(receipt.orderNumber, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("No. Pesanan:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                        Text(receipt.orderNumber, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Tanggal:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                        Text(receipt.dateTime.take(19).replace("T", " "), fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                        Text("Tanggal:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                        Text(receipt.dateTime.take(19).replace("T", " "), fontSize = 11.sp, fontWeight = FontWeight.Medium)
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Pelanggan:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                        Text(receipt.customerName ?: "Pelanggan", fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                        Text("Pelanggan:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                        Text(receipt.customerName ?: "Pelanggan", fontSize = 11.sp, fontWeight = FontWeight.Medium)
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Tipe Pesanan:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                        Text("Tipe Pesanan:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         Text(
                             if (receipt.orderType == "DINE_IN") "Dine In (${receipt.tableName ?: "-"})" else "Take Away",
-                            fontSize = 12.sp,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -289,15 +289,15 @@ fun ReceiptDialog(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Metode / Status:", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                        Text("${receipt.paymentMethod} (${receipt.paymentStatus})", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                        Text("Metode / Status:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                        Text("${receipt.paymentMethod} (${receipt.paymentStatus})", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     }
                 }
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = MaterialTheme.colorScheme.outlineVariant)
 
                 // Items list
-                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     receipt.items.forEach { item ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -306,21 +306,21 @@ fun ReceiptDialog(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = "${item.quantity}x ${item.productName}",
-                                    fontSize = 13.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 if (!item.notes.isNullOrBlank()) {
                                     Text(
                                         text = "Note: ${item.notes}",
-                                        fontSize = 11.sp,
+                                        fontSize = 10.sp,
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                     )
                                 }
                             }
                             Text(
                                 text = formatRp(item.subtotal),
-                                fontSize = 13.sp,
+                                fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
@@ -328,7 +328,7 @@ fun ReceiptDialog(
                     }
                 }
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 14.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = MaterialTheme.colorScheme.outlineVariant)
 
                 // Total
                 Row(
@@ -336,17 +336,18 @@ fun ReceiptDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("TOTAL BAYAR", fontWeight = FontWeight.ExtraBold, fontSize = 14.sp)
+                    Text("TOTAL BAYAR", fontWeight = FontWeight.ExtraBold, fontSize = 13.sp)
                     Text(
                         formatRp(receipt.total),
                         fontWeight = FontWeight.ExtraBold,
-                        fontSize = 17.sp,
+                        fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
+                // Perfectly proportioned and centered buttons for Cetak and Simpan PDF
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -355,26 +356,40 @@ fun ReceiptDialog(
                         onClick = { handlePrint() },
                         modifier = Modifier
                             .weight(1f)
-                            .height(46.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                            .height(44.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp)
                     ) {
-                        Icon(Icons.Default.Print, contentDescription = "Cetak", modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Cetak", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Icon(Icons.Default.Print, contentDescription = "Cetak", modifier = Modifier.size(15.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Cetak", fontWeight = FontWeight.Bold, fontSize = 12.sp, maxLines = 1)
+                        }
                     }
 
                     Button(
                         onClick = { handleSavePdf() },
                         modifier = Modifier
                             .weight(1f)
-                            .height(46.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                            .height(44.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp)
                     ) {
-                        Icon(Icons.Default.Download, contentDescription = "Simpan PDF", modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Simpan PDF", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Icon(Icons.Default.Download, contentDescription = "Simpan PDF", modifier = Modifier.size(15.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Simpan PDF", fontWeight = FontWeight.Bold, fontSize = 11.sp, maxLines = 1)
+                        }
                     }
                 }
             }

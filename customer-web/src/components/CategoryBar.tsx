@@ -21,13 +21,13 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
   };
 
   return (
-    <div className="sticky top-[117px] z-20 bg-cream-50/95 backdrop-blur-md py-3.5 border-b border-cream-200">
-      <div className="max-w-4xl mx-auto px-4 overflow-x-auto scrollbar-none flex items-center gap-2.5">
+    <div className="sticky top-[102px] sm:top-[106px] z-20 bg-[#FAF8F5] py-3.5 border-b border-cream-200 shadow-2xs">
+      <div className="max-w-4xl mx-auto px-4 overflow-x-auto no-scrollbar flex items-center gap-2.5">
         <button
           onClick={() => onSelectCategory(null)}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all shadow-xs ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all shadow-2xs ${
             selectedCategoryId === null
-              ? 'bg-charcoal text-white shadow-md shadow-charcoal/10'
+              ? 'bg-charcoal text-white shadow-sm'
               : 'bg-white text-charcoal-muted hover:bg-cream-100 border border-cream-200/80 hover:text-charcoal'
           }`}
         >
@@ -39,9 +39,9 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
           <button
             key={cat.id}
             onClick={() => onSelectCategory(cat.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all shadow-xs ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all shadow-2xs ${
               selectedCategoryId === cat.id
-                ? 'bg-brand-500 text-white shadow-md shadow-brand-500/20'
+                ? 'bg-brand-500 text-white shadow-sm shadow-brand-500/20'
                 : 'bg-white text-charcoal-muted hover:bg-cream-100 border border-cream-200/80 hover:text-charcoal'
             }`}
           >

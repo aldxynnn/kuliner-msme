@@ -1,6 +1,15 @@
 import { Category, Product, Table, Order, OrderType, PaymentMethod } from './types';
 
 const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:3000/api';
+export const BACKEND_URL = API_BASE_URL.replace(/\/api\/?$/, '');
+
+export function getImageUrl(imagePath?: string | null): string {
+  if (!imagePath) return '';
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  return `${BACKEND_URL}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
+}
 
 export async function fetchCategories(): Promise<Category[]> {
   const res = await fetch(`${API_BASE_URL}/categories`);

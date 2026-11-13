@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Product } from '../types';
 import { formatRupiah } from '../utils/format';
+import { getImageUrl } from '../api';
 import { X, Minus, Plus, ShoppingBag, FileText } from 'lucide-react';
 
 interface ProductDetailModalProps {
@@ -23,6 +24,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   const [quantity, setQuantity] = useState(initialQuantity);
   const [notes, setNotes] = useState(initialNotes);
 
+  const imageUrl = getImageUrl(product.image);
+
   const handleAdd = () => {
     onAddToCart(product, quantity, notes);
     onClose();
@@ -33,9 +36,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
       <div className="bg-white w-full max-w-lg rounded-t-[32px] sm:rounded-3xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-200">
         {/* Header Image */}
         <div className="relative h-56 sm:h-64 bg-cream-100">
-          {product.image && (
+          {imageUrl && (
             <img
-              src={product.image.startsWith('/') ? `http://localhost:3000${product.image}` : product.image}
+              src={imageUrl}
               alt={product.name}
               className="w-full h-full object-cover"
             />

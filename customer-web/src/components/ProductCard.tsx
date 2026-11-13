@@ -1,6 +1,7 @@
 import React from 'react';
 import { Product } from '../types';
 import { formatRupiah } from '../utils/format';
+import { getImageUrl } from '../api';
 import { Plus, Check } from 'lucide-react';
 
 interface ProductCardProps {
@@ -14,6 +15,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   cartQuantity,
   onSelectProduct,
 }) => {
+  const imageUrl = getImageUrl(product.image);
+
   return (
     <div
       onClick={() => product.isAvailable && onSelectProduct(product)}
@@ -25,9 +28,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     >
       {/* Product Image */}
       <div className="w-28 h-28 rounded-2xl bg-cream-100 overflow-hidden shrink-0 relative shadow-inner">
-        {product.image ? (
+        {imageUrl ? (
           <img
-            src={product.image.startsWith('/') ? `http://localhost:3000${product.image}` : product.image}
+            src={imageUrl}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {

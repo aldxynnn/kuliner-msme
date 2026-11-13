@@ -29,6 +29,7 @@ services:
       - "${PORT:-3000}:3000"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-kuliner_user}:${POSTGRES_PASSWORD:-kuliner_pass}@postgres:5432/${POSTGRES_DB:-kuliner_db}?schema=public
+      DIRECT_URL: postgresql://${POSTGRES_USER:-kuliner_user}:${POSTGRES_PASSWORD:-kuliner_pass}@postgres:5432/${POSTGRES_DB:-kuliner_db}?schema=public
       JWT_SECRET: ${JWT_SECRET:-kuliner_msme_jwt_secret_dev_key_2025}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
     volumes:

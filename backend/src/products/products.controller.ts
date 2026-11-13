@@ -16,8 +16,10 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import * as fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
 import { ProductsService } from './products.service';
-import { CreateProductDto, UpdateProductDto, ToggleAvailabilityDto } from './dto/create-product.dto';
+import { CreateProductDto, UpdateProductDto, ToggleAvailabilityDto, ReorderProductsDto } from './dto/create-product.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('products')
@@ -61,9 +63,50 @@ export class ProductsController {
     if (!file) {
       throw new BadRequestException('File gambar wajib diunggah');
     }
+
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.CLOUDINARY_API_KEY;
+    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+    // Production Cloudinary Storage Path
+    if (cloudName && apiKey && apiSecret) {
+      try {
+        cloudinary.config({
+          cloud_name: cloudName,
+          api_key: apiKey,
+          api_secret: apiSecret,
+        });
+
+        const uploadRes = await cloudinary.uploader.upload(file.path, {
+          folder: 'aroma_products',
+        });
+
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+
+        return {
+          imageUrl: uploadRes.secure_url,
+        };
+      } catch (err: any) {
+        console.error('Cloudinary upload error:', err);
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+        throw new BadRequestException(`Gagal mengunggah foto ke Cloud Storage (Cloudinary): ${err.message || err}`);
+      }
+    }
+
+    // Local Development Fallback Storage Path
     return {
       imageUrl: `/uploads/${file.filename}`,
     };
+  }
+
+  @Patch('reorder')
+  @UseGuards(JwtAuthGuard)
+  async reorder(@Body() dto: ReorderProductsDto) {
+    return this.productsService.reorder(dto.productIds);
   }
 
   @Post()

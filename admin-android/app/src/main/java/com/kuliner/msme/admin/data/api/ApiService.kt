@@ -47,6 +47,9 @@ interface ApiService {
     @PATCH("products/{id}/availability")
     suspend fun toggleAvailability(@Path("id") id: String, @Body request: ToggleAvailabilityRequest): Response<Product>
 
+    @PATCH("products/reorder")
+    suspend fun reorderProducts(@Body request: ReorderProductsRequest): Response<Any>
+
     @DELETE("products/{id}")
     suspend fun deleteProduct(@Path("id") id: String): Response<Any>
 

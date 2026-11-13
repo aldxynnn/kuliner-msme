@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateProductDto, UpdateProductDto } from './dto/create-product.dto';
+import { CreateProductDto, UpdateProductDto, ReorderProductsDto } from './dto/create-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -25,7 +25,11 @@ export class ProductsService {
           select: { id: true, name: true },
         },
       },
-      orderBy: [{ isAvailable: 'desc' }, { name: 'asc' }],
+      orderBy: [
+        { sortOrder: 'asc' },
+        { isAvailable: 'desc' },
+        { name: 'asc' },
+      ],
     });
   }
 
@@ -43,11 +47,18 @@ export class ProductsService {
   }
 
   async create(dto: CreateProductDto, imageUrl?: string) {
+    const maxProduct = await this.prisma.product.findFirst({
+      where: { categoryId: dto.categoryId },
+      orderBy: { sortOrder: 'desc' },
+    });
+    const nextSortOrder = (maxProduct?.sortOrder ?? 0) + 1;
+
     return this.prisma.product.create({
       data: {
         ...dto,
         image: imageUrl || dto.image || null,
         isAvailable: dto.isAvailable !== undefined ? dto.isAvailable : true,
+        sortOrder: dto.sortOrder !== undefined ? dto.sortOrder : nextSortOrder,
       },
       include: {
         category: true,
@@ -69,6 +80,20 @@ export class ProductsService {
         category: true,
       },
     });
+  }
+
+  async reorder(productIds: string[]) {
+    if (!productIds || productIds.length === 0) {
+      return [];
+    }
+    return this.prisma.$transaction(
+      productIds.map((id, index) =>
+        this.prisma.product.update({
+          where: { id },
+          data: { sortOrder: index + 1 },
+        }),
+      ),
+    );
   }
 
   async toggleAvailability(id: string, isAvailable: boolean) {

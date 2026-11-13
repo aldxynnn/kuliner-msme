@@ -44,7 +44,8 @@ data class Product(
     val description: String?,
     val price: Int,
     val image: String?,
-    val isAvailable: Boolean
+    val isAvailable: Boolean,
+    val sortOrder: Int = 0
 )
 
 data class CreateProductRequest(
@@ -53,7 +54,12 @@ data class CreateProductRequest(
     val description: String? = null,
     val price: Int,
     val image: String? = null,
-    val isAvailable: Boolean = true
+    val isAvailable: Boolean = true,
+    val sortOrder: Int? = null
+)
+
+data class ReorderProductsRequest(
+    val productIds: List<String>
 )
 
 data class ImageUploadResponse(

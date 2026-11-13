@@ -1,4 +1,4 @@
-import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import { IsArray, IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateProductDto {
@@ -27,6 +27,11 @@ export class CreateProductDto {
   @Type(() => Boolean)
   @IsBoolean()
   isAvailable?: boolean;
+
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  sortOrder?: number;
 }
 
 export class UpdateProductDto {
@@ -56,9 +61,20 @@ export class UpdateProductDto {
   @Type(() => Boolean)
   @IsBoolean()
   isAvailable?: boolean;
+
+  @Type(() => Number)
+  @IsInt()
+  @IsOptional()
+  sortOrder?: number;
 }
 
 export class ToggleAvailabilityDto {
   @IsBoolean()
   isAvailable: boolean;
+}
+
+export class ReorderProductsDto {
+  @IsArray()
+  @IsString({ each: true })
+  productIds: string[];
 }

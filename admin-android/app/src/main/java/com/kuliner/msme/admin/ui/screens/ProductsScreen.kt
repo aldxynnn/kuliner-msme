@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -48,6 +49,7 @@ fun ProductsScreen() {
 
     var isDialogVisible by remember { mutableStateOf(false) }
     var editingProduct by remember { mutableStateOf<Product?>(null) }
+    var isSortingMode by remember { mutableStateOf(false) }
 
     fun loadData() {
         isLoading = true
@@ -107,6 +109,36 @@ fun ProductsScreen() {
         }
     }
 
+    fun moveItem(index: Int, direction: Int) {
+        val targetIndex = index + direction
+        if (targetIndex in products.indices) {
+            val mutableList = products.toMutableList()
+            val item = mutableList.removeAt(index)
+            mutableList.add(targetIndex, item)
+            products = mutableList
+        }
+    }
+
+    fun handleSaveOrder() {
+        scope.launch {
+            try {
+                val api = RetrofitClient.getApiService(context)
+                val res = api.reorderProducts(ReorderProductsRequest(products.map { it.id }))
+                if (res.isSuccessful) {
+                    Toast.makeText(context, "Urutan menu berhasil disimpan", Toast.LENGTH_SHORT).show()
+                    isSortingMode = false
+                    loadData()
+                } else {
+                    val code = res.code()
+                    val errorBody = res.errorBody()?.string() ?: res.message()
+                    Toast.makeText(context, "Gagal simpan urutan ($code): $errorBody", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
     fun formatRp(amount: Int): String {
         val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
         format.maximumFractionDigits = 0
@@ -123,14 +155,47 @@ fun ProductsScreen() {
         ) {
             Column {
                 Text("Katalog Produk Menu", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text("Kelola harga, ketersediaan, dan foto menu", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text(if (isSortingMode) "Atur urutan dengan tombol panah" else "Kelola harga, ketersediaan, dan foto menu", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             }
 
-            IconButton(onClick = {
-                editingProduct = null
-                isDialogVisible = true
-            }) {
-                Icon(Icons.Default.Add, contentDescription = "Tambah")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (isSortingMode) {
+                    Button(
+                        onClick = { handleSaveOrder() },
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Text("Simpan Urutan", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            isSortingMode = false
+                            loadData()
+                        },
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                    ) {
+                        Text("Batal", fontSize = 12.sp)
+                    }
+                } else {
+                    OutlinedButton(
+                        onClick = { isSortingMode = true },
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Icon(Icons.Default.SwapVert, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Atur Urutan", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    IconButton(onClick = {
+                        editingProduct = null
+                        isDialogVisible = true
+                    }) {
+                        Icon(Icons.Default.Add, contentDescription = "Tambah")
+                    }
+                }
             }
         }
 
@@ -200,7 +265,7 @@ fun ProductsScreen() {
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(products) { product ->
+                itemsIndexed(products) { index, product ->
                     val imageUrl = if (!product.image.isNullOrBlank()) {
                         if (product.image.startsWith("/")) "http://10.0.2.2:3000${product.image}" else product.image
                     } else null
@@ -255,19 +320,38 @@ fun ProductsScreen() {
                                 )
                             }
 
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Switch(
-                                    checked = product.isAvailable,
-                                    onCheckedChange = { handleToggleAvailability(product.id, it) }
-                                )
-                                IconButton(onClick = {
-                                    editingProduct = product
-                                    isDialogVisible = true
-                                }, modifier = Modifier.size(32.dp)) {
-                                    Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(16.dp))
+                            if (isSortingMode) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    IconButton(
+                                        onClick = { moveItem(index, -1) },
+                                        enabled = index > 0,
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(Icons.Default.ArrowUpward, contentDescription = "Naik", modifier = Modifier.size(16.dp))
+                                    }
+                                    IconButton(
+                                        onClick = { moveItem(index, 1) },
+                                        enabled = index < products.size - 1,
+                                        modifier = Modifier.size(32.dp)
+                                    ) {
+                                        Icon(Icons.Default.ArrowDownward, contentDescription = "Turun", modifier = Modifier.size(16.dp))
+                                    }
                                 }
-                                IconButton(onClick = { handleDeleteProduct(product.id) }, modifier = Modifier.size(32.dp)) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Hapus", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
+                            } else {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Switch(
+                                        checked = product.isAvailable,
+                                        onCheckedChange = { handleToggleAvailability(product.id, it) }
+                                    )
+                                    IconButton(onClick = {
+                                        editingProduct = product
+                                        isDialogVisible = true
+                                    }, modifier = Modifier.size(32.dp)) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(16.dp))
+                                    }
+                                    IconButton(onClick = { handleDeleteProduct(product.id) }, modifier = Modifier.size(32.dp)) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Hapus", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
+                                    }
                                 }
                             }
                         }

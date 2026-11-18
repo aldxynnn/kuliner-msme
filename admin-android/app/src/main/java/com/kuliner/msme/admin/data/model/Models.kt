@@ -220,3 +220,19 @@ fun getProductImageUrl(imagePath: String?): String? {
         "$base/$imagePath"
     }
 }
+
+fun formatTableQrUrl(rawQrCode: String?, tableNumber: String): String {
+    val prodBase = "https://aroma-ayam-goreng-lengkuas.vercel.app/"
+    val param = tableNumber.trim().replace(" ", "+")
+    if (rawQrCode.isNullOrBlank()) {
+        return "$prodBase?table=$param"
+    }
+    if (rawQrCode.contains("localhost") || rawQrCode.startsWith("http://")) {
+        val paramIndex = rawQrCode.indexOf("?table=")
+        if (paramIndex != -1) {
+            val query = rawQrCode.substring(paramIndex)
+            return "$prodBase$query"
+        }
+    }
+    return if (rawQrCode.startsWith("https://")) rawQrCode else "$prodBase?table=$param"
+}

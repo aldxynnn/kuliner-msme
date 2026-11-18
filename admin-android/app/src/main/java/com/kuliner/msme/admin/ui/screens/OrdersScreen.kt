@@ -1,10 +1,12 @@
 package com.kuliner.msme.admin.ui.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -12,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -117,68 +120,50 @@ fun OrdersScreen() {
         "DIBATALKAN" to "Dibatalkan"
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Header Bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text("Antrean Pesanan", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text("Kelola alur status pesanan AROMA POS", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-            }
-            IconButton(onClick = { loadOrders() }) {
-                Icon(Icons.Default.Refresh, contentDescription = "Refresh")
-            }
-        }
-
-        // Status filter pills with Terracotta Brand Colors
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFFAF8F5))
+    ) {
+        // Status filter pills (Directly under top header, no duplicated title banner)
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(statusFilterList) { (statusVal, statusName) ->
                 val isSelected = selectedStatusFilter == statusVal
-                FilterChip(
-                    selected = isSelected,
+                Surface(
                     onClick = { selectedStatusFilter = statusVal },
-                    label = { Text(statusName, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                    shape = RoundedCornerShape(10.dp),
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                        selectedLabelColor = MaterialTheme.colorScheme.primary,
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        labelColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        enabled = true,
-                        selected = isSelected,
-                        selectedBorderColor = MaterialTheme.colorScheme.primary,
-                        borderColor = MaterialTheme.colorScheme.outlineVariant
+                    shape = RoundedCornerShape(20.dp),
+                    color = if (isSelected) Color(0xFFE25822) else Color.White,
+                    shadowElevation = if (isSelected) 2.dp else 0.dp,
+                    border = if (isSelected) null else BorderStroke(1.dp, Color(0xFFE9E1D9))
+                ) {
+                    Text(
+                        text = statusName,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isSelected) Color.White else Color(0xFF2B211D),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
-                )
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(6.dp))
-
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = Color(0xFFE25822))
             }
         } else if (orders.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Tidak ada pesanan", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), fontSize = 13.sp)
+                Text("Tidak ada pesanan", color = Color(0xFF81766F), fontSize = 13.sp, fontWeight = FontWeight.Bold)
             }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(orders) { order ->
                     OrderCardItem(
@@ -191,89 +176,116 @@ fun OrdersScreen() {
         }
     }
 
-    // Order Details BottomSheet Dialog
+    // Order Details BottomSheet / Dialog
     if (selectedOrderForDetails != null) {
         val ord = selectedOrderForDetails!!
         AlertDialog(
             onDismissRequest = { selectedOrderForDetails = null },
             title = {
-                Text("Detail Pesanan #${ord.orderNumber}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text("Detail Pesanan #${ord.orderNumber}", fontWeight = FontWeight.Black, fontSize = 18.sp, color = Color(0xFF2B211D))
             },
             text = {
-                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("Pelanggan: ${ord.customerName ?: "Pelanggan"}", fontSize = 12.sp, fontWeight = FontWeight.Medium)
-                    Text(
-                        "Tipe: ${if (ord.orderType == "DINE_IN") "Dine In (${ord.table?.tableNumber ?: "-"})" else "Take Away"}",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text("Metode Pembayaran: ${ord.paymentMethod} (${ord.paymentStatus})", fontSize = 12.sp, fontWeight = FontWeight.Medium)
-                    Text("Status Pesanan: ${ord.orderStatus}", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        color = Color(0xFFFFF0E8),
+                        border = BorderStroke(1.dp, Color(0xFFE25822).copy(alpha = 0.3f))
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                            Text("Pelanggan: ${ord.customerName ?: "Pelanggan"}", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2B211D))
+                            Text(
+                                "Tipe: ${if (ord.orderType == "DINE_IN") "Dine In (${ord.table?.tableNumber ?: "-"})" else "Take Away"}",
+                                fontSize = 12.sp,
+                                color = Color(0xFF2B211D)
+                            )
+                            Text("Metode Pembayaran: ${ord.paymentMethod} (${ord.paymentStatus})", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFFE25822))
+                        }
+                    }
 
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                    Spacer(modifier = Modifier.height(4.dp))
 
-                    Text("Rincian Item:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    Text("Rincian Item Menu:", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color(0xFF2B211D))
                     ord.orderDetails.forEach { item ->
-                        Text("• ${item.quantity}x ${item.productName} - ${formatRp(item.subtotal)}", fontSize = 12.sp)
-                        if (!item.notes.isNullOrBlank()) {
-                            Text("  Note: ${item.notes}", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("• ${item.quantity}x ${item.productName}", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2B211D))
+                                if (!item.notes.isNullOrBlank()) {
+                                    Text("  Note: ${item.notes}", fontSize = 11.sp, color = Color(0xFF81766F))
+                                }
+                            }
+                            Text(formatRp(item.subtotal), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2B211D))
                         }
                     }
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    Text("Aksi Status:", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                    Spacer(modifier = Modifier.height(4.dp))
-
                     if (ord.paymentStatus == "PAID") {
+                        Text("Update Status Dapur:", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color(0xFF2B211D))
+                        Spacer(modifier = Modifier.height(4.dp))
+
                         if (ord.orderStatus == "MENUNGGU_DIPROSES") {
                             Button(
                                 onClick = { handleUpdateStatus(ord.id, "DIPROSES") },
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822))
                             ) {
-                                Text("Proses di Dapur")
+                                Text("Proses di Dapur", fontWeight = FontWeight.Bold)
                             }
                         }
                         if (ord.orderStatus == "DIPROSES") {
                             Button(
                                 onClick = { handleUpdateStatus(ord.id, "SIAP_DISAJIKAN") },
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822))
                             ) {
-                                Text("Siap Disajikan")
+                                Text("Siap Disajikan", fontWeight = FontWeight.Bold)
                             }
                         }
                         if (ord.orderStatus == "SIAP_DISAJIKAN") {
                             Button(
                                 onClick = { handleUpdateStatus(ord.id, "SELESAI") },
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822))
                             ) {
-                                Text("Selesaikan Pesanan")
+                                Text("Selesaikan Pesanan", fontWeight = FontWeight.Bold)
                             }
                         }
                     } else {
-                        Text(
-                            "Pesanan belum lunas. Konfirmasi pembayaran terlebih dahulu.",
-                            fontSize = 11.sp,
-                            color = MaterialTheme.colorScheme.error
-                        )
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFFFEE2E2)
+                        ) {
+                            Text(
+                                "Pesanan belum lunas. Konfirmasi pembayaran kasir terlebih dahulu.",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF991B1B),
+                                modifier = Modifier.padding(10.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.height(4.dp))
                         OutlinedButton(
                             onClick = { handleCancelOrder(ord.id) },
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFC94136))
                         ) {
-                            Text("Batalkan Pesanan")
+                            Text("Batalkan Pesanan", fontWeight = FontWeight.Bold)
                         }
                     }
                 }
             },
             confirmButton = {
                 TextButton(onClick = { selectedOrderForDetails = null }) {
-                    Text("Tutup", fontWeight = FontWeight.Bold)
+                    Text("Tutup", fontWeight = FontWeight.Bold, color = Color(0xFFE25822))
                 }
             }
         )
@@ -299,21 +311,22 @@ fun OrderCardItem(
         return format.format(amount)
     }
 
-    val (badgeText, badgeBg) = when (order.orderStatus) {
-        "MENUNGGU_PEMBAYARAN" -> "Belum Bayar" to MaterialTheme.colorScheme.errorContainer
-        "MENUNGGU_DIPROSES" -> "Masuk Antrean" to MaterialTheme.colorScheme.primaryContainer
-        "DIPROSES" -> "Sedang Dimasak" to MaterialTheme.colorScheme.secondaryContainer
-        "SIAP_DISAJIKAN" -> "Siap Disajikan" to MaterialTheme.colorScheme.primaryContainer
-        "SELESAI" -> "Selesai" to MaterialTheme.colorScheme.surfaceVariant
-        else -> order.orderStatus to MaterialTheme.colorScheme.surfaceVariant
+    val (badgeText, badgeBg, badgeTextColor) = when (order.orderStatus) {
+        "MENUNGGU_PEMBAYARAN" -> Triple("Belum Bayar", Color(0xFFFEF3C7), Color(0xFFD97706))
+        "MENUNGGU_DIPROSES" -> Triple("Masuk Antrean", Color(0xFFFFF0E8), Color(0xFFE25822))
+        "DIPROSES" -> Triple("Sedang Dimasak", Color(0xFFFFEDD5), Color(0xFFEA580C))
+        "SIAP_DISAJIKAN" -> Triple("Siap Disajikan", Color(0xFFE0F2FE), Color(0xFF0284C7))
+        "SELESAI" -> Triple("Selesai", Color(0xFFE6F4EA), Color(0xFF166534))
+        else -> Triple(order.orderStatus, Color(0xFFF3EFEA), Color(0xFF2B211D))
     }
 
     Surface(
         onClick = onSelect,
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+        shape = RoundedCornerShape(20.dp),
+        color = Color.White,
+        shadowElevation = 2.dp,
+        border = BorderStroke(1.dp, Color(0xFFE9E1D9))
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(
@@ -321,37 +334,48 @@ fun OrderCardItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(order.orderNumber, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(order.orderNumber, fontWeight = FontWeight.Black, fontSize = 15.sp, color = Color(0xFF2B211D))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Surface(
+                        color = Color(0xFFFFF0E8),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = if (order.orderType == "DINE_IN") "Dine In (${order.table?.tableNumber ?: "-"})" else "Take Away",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFE25822),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+
                 Surface(
                     color = badgeBg,
-                    shape = RoundedCornerShape(6.dp)
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
                         text = badgeText,
-                        fontSize = 10.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        color = badgeTextColor,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "${order.customerName ?: "Pelanggan"} • ${if (order.orderType == "DINE_IN") "Dine In (${order.table?.tableNumber ?: "-"})" else "Take Away"}",
-                fontSize = 11.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
 
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = order.orderDetails.joinToString(", ") { "${it.quantity}x ${it.productName}" },
                 fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF2B211D),
                 maxLines = 1
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -360,16 +384,20 @@ fun OrderCardItem(
             ) {
                 Text(
                     text = formatRp(order.total),
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.primary
+                    fontWeight = FontWeight.Black,
+                    fontSize = 15.sp,
+                    color = Color(0xFFE25822)
                 )
 
-                IconButton(
+                Surface(
                     onClick = onPrintReceipt,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(32.dp),
+                    shape = CircleShape,
+                    color = Color(0xFFFFF0E8)
                 ) {
-                    Icon(Icons.Default.Receipt, contentDescription = "Struk", modifier = Modifier.size(18.dp))
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(Icons.Default.Receipt, contentDescription = "Struk", tint = Color(0xFFE25822), modifier = Modifier.size(16.dp))
+                    }
                 }
             }
         }

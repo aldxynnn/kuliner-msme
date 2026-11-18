@@ -3,13 +3,14 @@ package com.kuliner.msme.admin.ui.screens
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -18,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -49,10 +51,12 @@ fun CashierOrderScreen(
     var tables by remember { mutableStateOf<List<Table>>(emptyList()) }
 
     var selectedCategoryId by remember { mutableStateOf<String?>(null) }
-    var orderType by remember { mutableStateOf("DINE_IN") } // "DINE_IN" or "Take Away"
+    var orderType by remember { mutableStateOf("DINE_IN") } // "DINE_IN" or "TAKE_AWAY"
     var selectedTable by remember { mutableStateOf<Table?>(null) }
     var customerName by remember { mutableStateOf("") }
     var paymentMethod by remember { mutableStateOf("CASH") } // "CASH" or "QRIS"
+    var searchQuery by remember { mutableStateOf("") }
+    var isSearchActive by remember { mutableStateOf(false) }
 
     val cartItems = remember { mutableStateListOf<CartItem>() }
     var isCheckoutDialogVisible by remember { mutableStateOf(false) }
@@ -82,10 +86,10 @@ fun CashierOrderScreen(
         loadData()
     }
 
-    val filteredProducts = if (selectedCategoryId == null) {
-        products
-    } else {
-        products.filter { it.categoryId == selectedCategoryId }
+    val filteredProducts = products.filter { product ->
+        val matchesCategory = selectedCategoryId == null || product.categoryId == selectedCategoryId
+        val matchesSearch = searchQuery.isBlank() || product.name.contains(searchQuery, ignoreCase = true)
+        matchesCategory && matchesSearch
     }
 
     val totalCartCount = cartItems.sumOf { it.quantity }
@@ -97,19 +101,6 @@ fun CashierOrderScreen(
             existing.quantity += 1
         } else {
             cartItems.add(CartItem(product, 1, ""))
-        }
-    }
-
-    fun handleUpdateQty(productId: String, delta: Int) {
-        val index = cartItems.indexOfFirst { it.product.id == productId }
-        if (index > -1) {
-            val item = cartItems[index]
-            val newQty = item.quantity + delta
-            if (newQty <= 0) {
-                cartItems.removeAt(index)
-            } else {
-                cartItems[index] = item.copy(quantity = newQty)
-            }
         }
     }
 
@@ -163,237 +154,316 @@ fun CashierOrderScreen(
         return format.format(amount)
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Header
-        Row(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFFAF8F5))
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(bottom = if (totalCartCount > 0) 84.dp else 0.dp)
         ) {
-            Column {
-                Text("Kasir POS", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text("Buat pesanan langsung dari meja kasir", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-            }
-        }
+            Spacer(modifier = Modifier.height(12.dp))
 
-        // Order Type & Table Selection Bar
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        ) {
-            Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                // Tipe Pesanan Toggle with Terracotta Colors
+            // Segmented Order Type Selector (Matching Reference Screen 2)
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                shape = RoundedCornerShape(18.dp),
+                color = Color(0xFFF3EFEA)
+            ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     val isDineIn = orderType == "DINE_IN"
-                    FilterChip(
-                        selected = isDineIn,
+                    Surface(
                         onClick = { orderType = "DINE_IN" },
-                        label = { Text("Dine In (Makan di Tempat)", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.primary,
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            labelColor = MaterialTheme.colorScheme.onSurface
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            enabled = true,
-                            selected = isDineIn,
-                            selectedBorderColor = MaterialTheme.colorScheme.primary,
-                            borderColor = MaterialTheme.colorScheme.outlineVariant
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
+                        modifier = Modifier.weight(1f).height(44.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        color = if (isDineIn) Color(0xFFE25822) else Color.Transparent,
+                        shadowElevation = if (isDineIn) 2.dp else 0.dp
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                Icons.Default.TableBar,
+                                contentDescription = null,
+                                tint = if (isDineIn) Color.White else Color(0xFF2B211D),
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Dine In",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp,
+                                color = if (isDineIn) Color.White else Color(0xFF2B211D)
+                            )
+                        }
+                    }
 
                     val isTakeAway = orderType == "TAKE_AWAY"
-                    FilterChip(
-                        selected = isTakeAway,
+                    Surface(
                         onClick = { orderType = "TAKE_AWAY"; selectedTable = null },
-                        label = { Text("Take Away (Bawa Pulang)", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                        shape = RoundedCornerShape(8.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.primary,
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            labelColor = MaterialTheme.colorScheme.onSurface
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            enabled = true,
-                            selected = isTakeAway,
-                            selectedBorderColor = MaterialTheme.colorScheme.primary,
-                            borderColor = MaterialTheme.colorScheme.outlineVariant
-                        ),
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                // Table selection if Dine In
-                if (orderType == "DINE_IN") {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        modifier = Modifier.weight(1f).height(44.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        color = if (isTakeAway) Color(0xFFE25822) else Color.Transparent,
+                        shadowElevation = if (isTakeAway) 2.dp else 0.dp
                     ) {
-                        items(tables) { table ->
-                            val isSelected = selectedTable?.id == table.id
-                            FilterChip(
-                                selected = isSelected,
-                                onClick = { selectedTable = table },
-                                label = { Text(table.tableNumber, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                                shape = RoundedCornerShape(8.dp),
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    selectedLabelColor = MaterialTheme.colorScheme.primary,
-                                    containerColor = MaterialTheme.colorScheme.surface,
-                                    labelColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                border = FilterChipDefaults.filterChipBorder(
-                                    enabled = true,
-                                    selected = isSelected,
-                                    selectedBorderColor = MaterialTheme.colorScheme.primary,
-                                    borderColor = MaterialTheme.colorScheme.outlineVariant
-                                )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                Icons.Default.ShoppingBag,
+                                contentDescription = null,
+                                tint = if (isTakeAway) Color.White else Color(0xFF2B211D),
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Take Away",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp,
+                                color = if (isTakeAway) Color.White else Color(0xFF2B211D)
                             )
                         }
                     }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        // Category Filter Chips
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            item {
-                val isSelected = selectedCategoryId == null
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { selectedCategoryId = null },
-                    label = { Text("Semua", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                    shape = RoundedCornerShape(10.dp),
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                        selectedLabelColor = MaterialTheme.colorScheme.primary,
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        labelColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        enabled = true,
-                        selected = isSelected,
-                        selectedBorderColor = MaterialTheme.colorScheme.primary,
-                        borderColor = MaterialTheme.colorScheme.outlineVariant
+            // Table Selection Row (If Dine In)
+            if (orderType == "DINE_IN") {
+                Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                    Text(
+                        text = "Pilih Meja",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2B211D)
                     )
-                )
-            }
-            items(categories) { cat ->
-                val isSelected = selectedCategoryId == cat.id
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { selectedCategoryId = cat.id },
-                    label = { Text(cat.name, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                    shape = RoundedCornerShape(10.dp),
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                        selectedLabelColor = MaterialTheme.colorScheme.primary,
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        labelColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        enabled = true,
-                        selected = isSelected,
-                        selectedBorderColor = MaterialTheme.colorScheme.primary,
-                        borderColor = MaterialTheme.colorScheme.outlineVariant
-                    )
-                )
-            }
-        }
 
-        Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
-        // Products Catalog Grid with Product Photo Preview
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(filteredProducts) { product ->
-                val inCart = cartItems.find { it.product.id == product.id }
-                val imageUrl = getProductImageUrl(product.image)
-
-                Card(
-                    onClick = { if (product.isAvailable) handleAddToCart(product) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-                ) {
-                    Column(modifier = Modifier.padding(10.dp)) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(80.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.primaryContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (imageUrl != null) {
-                                AsyncImage(
-                                    model = imageUrl,
-                                    contentDescription = product.name,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxSize()
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(tables) { table ->
+                            val isSelected = selectedTable?.id == table.id
+                            Surface(
+                                onClick = { selectedTable = table },
+                                shape = RoundedCornerShape(12.dp),
+                                color = if (isSelected) Color(0xFFFFF0E8) else Color.White,
+                                border = BorderStroke(
+                                    1.dp,
+                                    if (isSelected) Color(0xFFE25822) else Color(0xFFE9E1D9)
                                 )
-                            } else {
-                                Icon(
-                                    Icons.Default.Fastfood,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(24.dp)
+                            ) {
+                                Text(
+                                    text = table.tableNumber,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isSelected) Color(0xFFE25822) else Color(0xFF2B211D),
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
                                 )
                             }
                         }
+                    }
 
-                        Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
 
+            // Category Horizontal Selector Pills
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    val isSelected = selectedCategoryId == null
+                    Surface(
+                        onClick = { selectedCategoryId = null },
+                        shape = RoundedCornerShape(20.dp),
+                        color = if (isSelected) Color(0xFFE25822) else Color.White,
+                        shadowElevation = if (isSelected) 2.dp else 0.dp,
+                        border = if (isSelected) null else BorderStroke(1.dp, Color(0xFFE9E1D9))
+                    ) {
                         Text(
-                            product.name,
-                            fontWeight = FontWeight.Bold,
+                            text = "Semua",
                             fontSize = 12.sp,
-                            maxLines = 1,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            formatRp(product.price),
-                            fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = if (isSelected) Color.White else Color(0xFF2B211D),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
+                    }
+                }
+                items(categories) { cat ->
+                    val isSelected = selectedCategoryId == cat.id
+                    Surface(
+                        onClick = { selectedCategoryId = cat.id },
+                        shape = RoundedCornerShape(20.dp),
+                        color = if (isSelected) Color(0xFFE25822) else Color.White,
+                        shadowElevation = if (isSelected) 2.dp else 0.dp,
+                        border = if (isSelected) null else BorderStroke(1.dp, Color(0xFFE9E1D9))
+                    ) {
+                        Text(
+                            text = cat.name,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isSelected) Color.White else Color(0xFF2B211D),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
+                }
+            }
 
-                        if (inCart != null) {
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Surface(
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(6.dp)
-                            ) {
-                                Text(
-                                    "Di Keranjang: ${inCart.quantity}",
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                )
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // 2-Column Product Cards Grid
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Color(0xFFE25822))
+                }
+            } else if (filteredProducts.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        "Tidak ada produk menu",
+                        color = Color(0xFF81766F),
+                        fontSize = 13.sp
+                    )
+                }
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(filteredProducts) { product ->
+                        val inCart = cartItems.find { it.product.id == product.id }
+                        val imageUrl = getProductImageUrl(product.image)
+
+                        Surface(
+                            onClick = { if (product.isAvailable) handleAddToCart(product) },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(22.dp),
+                            color = Color.White,
+                            shadowElevation = 2.dp,
+                            border = BorderStroke(1.dp, Color(0xFFE9E1D9))
+                        ) {
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                // Dominant Photo Top Section
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(110.dp)
+                                        .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp))
+                                        .background(Color(0xFFFFF0E8)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (imageUrl != null) {
+                                        AsyncImage(
+                                            model = imageUrl,
+                                            contentDescription = product.name,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    } else {
+                                        Icon(
+                                            Icons.Default.Fastfood,
+                                            contentDescription = null,
+                                            tint = Color(0xFFE25822),
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
+
+                                    if (!product.isAvailable) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(Color.Black.copy(alpha = 0.5f)),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                "HABIS",
+                                                color = Color.White,
+                                                fontWeight = FontWeight.Black,
+                                                fontSize = 11.sp
+                                            )
+                                        }
+                                    }
+
+                                    if (inCart != null) {
+                                        Surface(
+                                            modifier = Modifier
+                                                .align(Alignment.TopEnd)
+                                                .padding(8.dp),
+                                            shape = CircleShape,
+                                            color = Color(0xFFE25822)
+                                        ) {
+                                            Text(
+                                                text = "${inCart.quantity}",
+                                                color = Color.White,
+                                                fontWeight = FontWeight.Black,
+                                                fontSize = 11.sp,
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                            )
+                                        }
+                                    }
+                                }
+
+                                // Info & Plus Action Button Section
+                                Column(modifier = Modifier.padding(12.dp)) {
+                                    Text(
+                                        text = product.name,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp,
+                                        maxLines = 1,
+                                        color = Color(0xFF2B211D)
+                                    )
+
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = formatRp(product.price),
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Black,
+                                            color = Color(0xFF2B211D)
+                                        )
+
+                                        // Orange Round Plus Button
+                                        Surface(
+                                            onClick = { if (product.isAvailable) handleAddToCart(product) },
+                                            modifier = Modifier.size(32.dp),
+                                            shape = CircleShape,
+                                            color = Color(0xFFE25822)
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Icon(
+                                                    Icons.Default.Add,
+                                                    contentDescription = "Tambah",
+                                                    tint = Color.White,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -401,32 +471,80 @@ fun CashierOrderScreen(
             }
         }
 
-        // Bottom Cart Summary Bar
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 8.dp,
-            shadowElevation = 8.dp
-        ) {
-            Row(
+        // Floating Bottom Cart Bar
+        if (totalCartCount > 0) {
+            Surface(
                 modifier = Modifier
+                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(20.dp),
+                shape = RoundedCornerShape(24.dp),
+                color = Color.White,
+                shadowElevation = 8.dp,
+                border = BorderStroke(1.dp, Color(0xFFE9E1D9))
             ) {
-                Column {
-                    Text("$totalCartCount item dipilih", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                    Text(formatRp(totalCartPrice), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
-                }
-
-                Button(
-                    onClick = { isCheckoutDialogVisible = true },
-                    enabled = totalCartCount > 0,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Proses Checkout", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            modifier = Modifier.size(38.dp),
+                            shape = CircleShape,
+                            color = Color(0xFFFFF0E8)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.ShoppingBag,
+                                    contentDescription = null,
+                                    tint = Color(0xFFE25822),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Surface(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .size(16.dp),
+                                    shape = CircleShape,
+                                    color = Color(0xFFE25822)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Text(
+                                            text = "$totalCartCount",
+                                            color = Color.White,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Text(
+                            text = formatRp(totalCartPrice),
+                            fontWeight = FontWeight.Black,
+                            fontSize = 16.sp,
+                            color = Color(0xFF2B211D)
+                        )
+                    }
+
+                    // Orange Action Pill Button "Lanjut >"
+                    Button(
+                        onClick = { isCheckoutDialogVisible = true },
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822)),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("Lanjut", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(Icons.Default.ChevronRight, contentDescription = null, modifier = Modifier.size(16.dp))
+                        }
+                    }
                 }
             }
         }
@@ -437,12 +555,21 @@ fun CashierOrderScreen(
             onDismissRequest = { isCheckoutDialogVisible = false },
             title = { Text("Konfirmasi Pesanan Kasir", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = if (orderType == "DINE_IN") "Tipe: Dine In (${selectedTable?.tableNumber ?: "Pilih Meja"})" else "Tipe: Take Away",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color(0xFFFFF0E8),
+                        border = BorderStroke(1.dp, Color(0xFFE25822).copy(alpha = 0.3f))
+                    ) {
+                        Text(
+                            text = if (orderType == "DINE_IN") "Tipe: Dine In (${selectedTable?.tableNumber ?: "Pilih Meja"})" else "Tipe: Take Away",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFE25822),
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
 
                     OutlinedTextField(
                         value = customerName,
@@ -450,7 +577,7 @@ fun CashierOrderScreen(
                         label = { Text("Nama Pelanggan (Opsional)") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(12.dp)
                     )
 
                     Text("Metode Pembayaran:", fontSize = 12.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 4.dp))
@@ -470,15 +597,16 @@ fun CashierOrderScreen(
                     }
 
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("Total: ${formatRp(totalCartPrice)}", fontWeight = FontWeight.ExtraBold, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+                    Text("Total: ${formatRp(totalCartPrice)}", fontWeight = FontWeight.ExtraBold, fontSize = 15.sp, color = Color(0xFFE25822))
                 }
             },
             confirmButton = {
                 Button(
                     onClick = { handleCreateOrder() },
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822))
                 ) {
-                    Text("Buat Pesanan Sekarang")
+                    Text("Buat Pesanan Sekarang", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {

@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
     // 10.0.2.2 is Android Emulator alias for host localhost
-    private const val DEFAULT_BASE_URL = "http://10.0.2.2:3000/api/"
+    private const val DEFAULT_BASE_URL = "https://aroma-backend-15717.containers.snapdeploy.app/api/"
 
     fun getApiService(context: Context): ApiService {
         val appContext = context.applicationContext

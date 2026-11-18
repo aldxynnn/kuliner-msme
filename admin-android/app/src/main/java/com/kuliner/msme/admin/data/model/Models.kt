@@ -207,3 +207,16 @@ data class ReceiptInfo(
     val items: List<ReceiptItem>,
     val total: Int
 )
+
+fun getProductImageUrl(imagePath: String?): String? {
+    if (imagePath.isNullOrBlank()) return null
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+        return imagePath
+    }
+    val base = "https://aroma-backend-15717.containers.snapdeploy.app"
+    return if (imagePath.startsWith("/")) {
+        "$base$imagePath"
+    } else {
+        "$base/$imagePath"
+    }
+}

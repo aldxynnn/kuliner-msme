@@ -1,7 +1,10 @@
 package com.kuliner.msme.admin.ui.screens
 
+import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -27,10 +30,10 @@ import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
-data class SelectedCartItem(
+data class CartItem(
     val product: Product,
     var quantity: Int,
-    var notes: String = ""
+    var notes: String
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,31 +49,31 @@ fun CashierOrderScreen(
     var tables by remember { mutableStateOf<List<Table>>(emptyList()) }
 
     var selectedCategoryId by remember { mutableStateOf<String?>(null) }
-    var selectedOrderType by remember { mutableStateOf("DINE_IN") }
-    var selectedTableNumber by remember { mutableStateOf<String?>(null) }
+    var orderType by remember { mutableStateOf("DINE_IN") } // "DINE_IN" or "Take Away"
+    var selectedTable by remember { mutableStateOf<Table?>(null) }
     var customerName by remember { mutableStateOf("") }
-    var paymentMethod by remember { mutableStateOf("CASH") }
-    var isCashConfirmedImmediately by remember { mutableStateOf(true) }
+    var paymentMethod by remember { mutableStateOf("CASH") } // "CASH" or "QRIS"
 
-    val cartItems = remember { mutableStateListOf<SelectedCartItem>() }
-    var isSubmitting by remember { mutableStateOf(false) }
+    val cartItems = remember { mutableStateListOf<CartItem>() }
+    var isCheckoutDialogVisible by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(true) }
 
     fun loadData() {
+        isLoading = true
         scope.launch {
             try {
                 val api = RetrofitClient.getApiService(context)
                 val catRes = api.getCategories()
                 val prodRes = api.getProducts()
-                val tblRes = api.getTables()
+                val tableRes = api.getTables()
 
                 if (catRes.isSuccessful && catRes.body() != null) categories = catRes.body()!!
                 if (prodRes.isSuccessful && prodRes.body() != null) products = prodRes.body()!!
-                if (tblRes.isSuccessful && tblRes.body() != null) {
-                    tables = tblRes.body()!!
-                    if (tables.isNotEmpty()) selectedTableNumber = tables.first().tableNumber
-                }
+                if (tableRes.isSuccessful && tableRes.body() != null) tables = tableRes.body()!!
             } catch (e: Exception) {
                 // Ignore
+            } finally {
+                isLoading = false
             }
         }
     }
@@ -79,82 +82,120 @@ fun CashierOrderScreen(
         loadData()
     }
 
+    val filteredProducts = if (selectedCategoryId == null) {
+        products
+    } else {
+        products.filter { it.categoryId == selectedCategoryId }
+    }
+
+    val totalCartCount = cartItems.sumOf { it.quantity }
+    val totalCartPrice = cartItems.sumOf { it.product.price * it.quantity }
+
+    fun handleAddToCart(product: Product) {
+        val existing = cartItems.find { it.product.id == product.id }
+        if (existing != null) {
+            existing.quantity += 1
+        } else {
+            cartItems.add(CartItem(product, 1, ""))
+        }
+    }
+
+    fun handleUpdateQty(productId: String, delta: Int) {
+        val index = cartItems.indexOfFirst { it.product.id == productId }
+        if (index > -1) {
+            val item = cartItems[index]
+            val newQty = item.quantity + delta
+            if (newQty <= 0) {
+                cartItems.removeAt(index)
+            } else {
+                cartItems[index] = item.copy(quantity = newQty)
+            }
+        }
+    }
+
+    fun handleCreateOrder() {
+        if (cartItems.isEmpty()) {
+            Toast.makeText(context, "Keranjang masih kosong", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (orderType == "DINE_IN" && selectedTable == null) {
+            Toast.makeText(context, "Pilih meja terlebih dahulu untuk Dine In", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        scope.launch {
+            try {
+                val api = RetrofitClient.getApiService(context)
+                val payload = CreateOrderPayload(
+                    customerName = customerName.ifBlank { null },
+                    orderType = orderType,
+                    tableNumber = if (orderType == "DINE_IN") selectedTable?.tableNumber else null,
+                    tableId = if (orderType == "DINE_IN") selectedTable?.id else null,
+                    paymentMethod = paymentMethod,
+                    items = cartItems.map {
+                        OrderItemPayload(
+                            productId = it.product.id,
+                            quantity = it.quantity,
+                            notes = it.notes.ifBlank { null }
+                        )
+                    }
+                )
+
+                val res = api.createCashierOrder(payload)
+                if (res.isSuccessful && res.body() != null) {
+                    Toast.makeText(context, "Pesanan kasir berhasil dibuat!", Toast.LENGTH_SHORT).show()
+                    cartItems.clear()
+                    isCheckoutDialogVisible = false
+                    onOrderCreated()
+                } else {
+                    val err = res.errorBody()?.string() ?: res.message()
+                    Toast.makeText(context, "Gagal buat pesanan: $err", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
     fun formatRp(amount: Int): String {
         val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
         format.maximumFractionDigits = 0
         return format.format(amount)
     }
 
-    fun handleAddToCart(product: Product) {
-        val existing = cartItems.find { it.product.id == product.id }
-        if (existing != null) {
-            existing.quantity += 1
-            val idx = cartItems.indexOf(existing)
-            cartItems[idx] = existing.copy(quantity = existing.quantity)
-        } else {
-            cartItems.add(SelectedCartItem(product, 1))
-        }
-    }
-
-    fun handleUpdateQuantity(productId: String, delta: Int) {
-        val existing = cartItems.find { it.product.id == productId } ?: return
-        val newQty = existing.quantity + delta
-        if (newQty <= 0) {
-            cartItems.remove(existing)
-        } else {
-            val idx = cartItems.indexOf(existing)
-            cartItems[idx] = existing.copy(quantity = newQty)
-        }
-    }
-
-    fun handleCheckout() {
-        if (cartItems.isEmpty()) return
-        if (selectedOrderType == "DINE_IN" && selectedTableNumber.isNullOrBlank()) return
-
-        isSubmitting = true
-        scope.launch {
-            try {
-                val api = RetrofitClient.getApiService(context)
-                val payload = CreateOrderPayload(
-                    customerName = customerName.ifBlank { "Pelanggan Kasir" },
-                    orderType = selectedOrderType,
-                    tableNumber = if (selectedOrderType == "DINE_IN") selectedTableNumber else null,
-                    paymentMethod = paymentMethod,
-                    items = cartItems.map { OrderItemPayload(it.product.id, it.quantity, it.notes.ifBlank { null }) },
-                    paymentStatus = if (isCashConfirmedImmediately) "PAID" else "PENDING"
-                )
-
-                val response = api.createCashierOrder(payload)
-                if (response.isSuccessful) {
-                    cartItems.clear()
-                    onOrderCreated()
-                }
-            } catch (e: Exception) {
-                // Ignore
-            } finally {
-                isSubmitting = false
-            }
-        }
-    }
-
-    val totalAmount = cartItems.sumOf { it.product.price * it.quantity }
-    val filteredProducts = if (selectedCategoryId == null) products else products.filter { it.categoryId == selectedCategoryId }
-
     Column(modifier = Modifier.fillMaxSize()) {
-        // Options bar: Order type & table selection
-        Card(
+        // Header
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val isDineIn = selectedOrderType == "DINE_IN"
+            Column {
+                Text("Kasir POS", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text("Buat pesanan langsung dari meja kasir", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+            }
+        }
+
+        // Order Type & Table Selection Bar
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ) {
+            Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Tipe Pesanan Toggle with Terracotta Colors
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val isDineIn = orderType == "DINE_IN"
                     FilterChip(
                         selected = isDineIn,
-                        onClick = { selectedOrderType = "DINE_IN" },
+                        onClick = { orderType = "DINE_IN" },
                         label = { Text("Dine In (Makan di Tempat)", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                         shape = RoundedCornerShape(8.dp),
                         colors = FilterChipDefaults.filterChipColors(
@@ -168,14 +209,15 @@ fun CashierOrderScreen(
                             selected = isDineIn,
                             selectedBorderColor = MaterialTheme.colorScheme.primary,
                             borderColor = MaterialTheme.colorScheme.outlineVariant
-                        )
+                        ),
+                        modifier = Modifier.weight(1f)
                     )
 
-                    val isTakeAway = selectedOrderType == "TAKE_AWAY"
+                    val isTakeAway = orderType == "TAKE_AWAY"
                     FilterChip(
                         selected = isTakeAway,
-                        onClick = { selectedOrderType = "TAKE_AWAY" },
-                        label = { Text("Take Away", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                        onClick = { orderType = "TAKE_AWAY"; selectedTable = null },
+                        label = { Text("Take Away (Bawa Pulang)", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                         shape = RoundedCornerShape(8.dp),
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -188,22 +230,21 @@ fun CashierOrderScreen(
                             selected = isTakeAway,
                             selectedBorderColor = MaterialTheme.colorScheme.primary,
                             borderColor = MaterialTheme.colorScheme.outlineVariant
-                        )
+                        ),
+                        modifier = Modifier.weight(1f)
                     )
                 }
 
-                if (selectedOrderType == "DINE_IN" && tables.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text("Pilih Meja Pelanggan:", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                // Table selection if Dine In
+                if (orderType == "DINE_IN") {
                     LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.padding(top = 4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         items(tables) { table ->
-                            val isTableSelected = selectedTableNumber == table.tableNumber
+                            val isSelected = selectedTable?.id == table.id
                             FilterChip(
-                                selected = isTableSelected,
-                                onClick = { selectedTableNumber = table.tableNumber },
+                                selected = isSelected,
+                                onClick = { selectedTable = table },
                                 label = { Text(table.tableNumber, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                                 shape = RoundedCornerShape(8.dp),
                                 colors = FilterChipDefaults.filterChipColors(
@@ -214,7 +255,7 @@ fun CashierOrderScreen(
                                 ),
                                 border = FilterChipDefaults.filterChipBorder(
                                     enabled = true,
-                                    selected = isTableSelected,
+                                    selected = isSelected,
                                     selectedBorderColor = MaterialTheme.colorScheme.primary,
                                     borderColor = MaterialTheme.colorScheme.outlineVariant
                                 )
@@ -225,9 +266,12 @@ fun CashierOrderScreen(
             }
         }
 
-        // Categories Row
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Category Filter Chips
         LazyRow(
-            contentPadding = PaddingValues(horizontal = 12.dp),
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             item {
@@ -236,7 +280,7 @@ fun CashierOrderScreen(
                     selected = isSelected,
                     onClick = { selectedCategoryId = null },
                     label = { Text("Semua", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         selectedLabelColor = MaterialTheme.colorScheme.primary,
@@ -257,7 +301,7 @@ fun CashierOrderScreen(
                     selected = isSelected,
                     onClick = { selectedCategoryId = cat.id },
                     label = { Text(cat.name, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         selectedLabelColor = MaterialTheme.colorScheme.primary,
@@ -287,9 +331,7 @@ fun CashierOrderScreen(
         ) {
             items(filteredProducts) { product ->
                 val inCart = cartItems.find { it.product.id == product.id }
-                val imageUrl = if (!product.image.isNullOrBlank()) {
-                    if (product.image.startsWith("/")) "http://10.0.2.2:3000${product.image}" else product.image
-                } else null
+                val imageUrl = getProductImageUrl(product.image)
 
                 Card(
                     onClick = { if (product.isAvailable) handleAddToCart(product) },
@@ -318,47 +360,40 @@ fun CashierOrderScreen(
                                     Icons.Default.Fastfood,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(28.dp)
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
                         }
 
                         Spacer(modifier = Modifier.height(6.dp))
 
-                        Text(product.name, fontWeight = FontWeight.Bold, fontSize = 12.sp, maxLines = 1)
-                        Text(formatRp(product.price), fontWeight = FontWeight.ExtraBold, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
-
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            product.name,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            formatRp(product.price),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
 
                         if (inCart != null) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Surface(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(6.dp)
                             ) {
-                                IconButton(
-                                    onClick = { handleUpdateQuantity(product.id, -1) },
-                                    modifier = Modifier.size(26.dp)
-                                ) {
-                                    Icon(Icons.Default.Remove, contentDescription = null, modifier = Modifier.size(16.dp))
-                                }
-                                Text("${inCart.quantity}", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                                IconButton(
-                                    onClick = { handleUpdateQuantity(product.id, 1) },
-                                    modifier = Modifier.size(26.dp)
-                                ) {
-                                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                                }
-                            }
-                        } else {
-                            Button(
-                                onClick = { handleAddToCart(product) },
-                                modifier = Modifier.fillMaxWidth(),
-                                enabled = product.isAvailable,
-                                shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                            ) {
-                                Text(if (product.isAvailable) "Tambah" else "Habis", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text(
+                                    "Di Keranjang: ${inCart.quantity}",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                )
                             }
                         }
                     }
@@ -366,50 +401,91 @@ fun CashierOrderScreen(
             }
         }
 
-        // Cart Summary Bottom Bar
-        if (cartItems.isNotEmpty()) {
-            Surface(
-                shadowElevation = 8.dp,
-                color = MaterialTheme.colorScheme.surface
+        // Bottom Cart Summary Bar
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 8.dp,
+            shadowElevation = 8.dp
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Total (${cartItems.sumOf { it.quantity }} item)", fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                        Text(formatRp(totalAmount), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
-                    }
+                Column {
+                    Text("$totalCartCount item dipilih", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                    Text(formatRp(totalCartPrice), fontWeight = FontWeight.ExtraBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
+                }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = isCashConfirmedImmediately,
-                            onCheckedChange = { isCashConfirmedImmediately = it }
-                        )
-                        Text("Konfirmasi Pembayaran Lunas Langsung", fontSize = 11.sp, fontWeight = FontWeight.Medium)
-                    }
-
-                    Button(
-                        onClick = { handleCheckout() },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(44.dp),
-                        enabled = !isSubmitting,
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) {
-                        if (isSubmitting) {
-                            CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(18.dp))
-                        } else {
-                            Text("Buat Pesanan Kasir", fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                        }
-                    }
+                Button(
+                    onClick = { isCheckoutDialogVisible = true },
+                    enabled = totalCartCount > 0,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("Proses Checkout", fontWeight = FontWeight.Bold, fontSize = 13.sp)
                 }
             }
         }
+    }
+
+    if (isCheckoutDialogVisible) {
+        AlertDialog(
+            onDismissRequest = { isCheckoutDialogVisible = false },
+            title = { Text("Konfirmasi Pesanan Kasir", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = if (orderType == "DINE_IN") "Tipe: Dine In (${selectedTable?.tableNumber ?: "Pilih Meja"})" else "Tipe: Take Away",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    OutlinedTextField(
+                        value = customerName,
+                        onValueChange = { customerName = it },
+                        label = { Text("Nama Pelanggan (Opsional)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(10.dp)
+                    )
+
+                    Text("Metode Pembayaran:", fontSize = 12.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 4.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FilterChip(
+                            selected = paymentMethod == "CASH",
+                            onClick = { paymentMethod = "CASH" },
+                            label = { Text("Tunai (Cash)", fontSize = 11.sp) },
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        FilterChip(
+                            selected = paymentMethod == "QRIS",
+                            onClick = { paymentMethod = "QRIS" },
+                            label = { Text("QRIS", fontSize = 11.sp) },
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("Total: ${formatRp(totalCartPrice)}", fontWeight = FontWeight.ExtraBold, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { handleCreateOrder() },
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text("Buat Pesanan Sekarang")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { isCheckoutDialogVisible = false }) {
+                    Text("Batal")
+                }
+            }
+        )
     }
 }

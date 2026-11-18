@@ -266,9 +266,7 @@ fun ProductsScreen() {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 itemsIndexed(products) { index, product ->
-                    val imageUrl = if (!product.image.isNullOrBlank()) {
-                        if (product.image.startsWith("/")) "http://10.0.2.2:3000${product.image}" else product.image
-                    } else null
+                    val imageUrl = getProductImageUrl(product.image)
 
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
@@ -362,12 +360,12 @@ fun ProductsScreen() {
     }
 
     if (isDialogVisible) {
-        var name by remember { mutableStateOf(editingProduct?.name ?: "") }
-        var description by remember { mutableStateOf(editingProduct?.description ?: "") }
-        var priceStr by remember { mutableStateOf(editingProduct?.price?.toString() ?: "") }
-        var categoryId by remember { mutableStateOf(editingProduct?.categoryId ?: categories.firstOrNull()?.id ?: "") }
-        var isAvailable by remember { mutableStateOf(editingProduct?.isAvailable ?: true) }
-        var imageUrl by remember { mutableStateOf(editingProduct?.image ?: "") }
+        var name by remember(editingProduct) { mutableStateOf(editingProduct?.name ?: "") }
+        var description by remember(editingProduct) { mutableStateOf(editingProduct?.description ?: "") }
+        var priceStr by remember(editingProduct) { mutableStateOf(editingProduct?.price?.toString() ?: "") }
+        var categoryId by remember(editingProduct) { mutableStateOf(editingProduct?.categoryId ?: categories.firstOrNull()?.id ?: "") }
+        var isAvailable by remember(editingProduct) { mutableStateOf(editingProduct?.isAvailable ?: true) }
+        var imageUrl by remember(editingProduct) { mutableStateOf(editingProduct?.image ?: "") }
 
         var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
         var isUploadingPhoto by remember { mutableStateOf(false) }
@@ -419,7 +417,7 @@ fun ProductsScreen() {
             onDismissRequest = { isDialogVisible = false },
             title = { Text(if (editingProduct != null) "Edit Produk Menu" else "Tambah Menu Baru", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     // Image Picker Area
                     Surface(
                         modifier = Modifier
@@ -430,9 +428,7 @@ fun ProductsScreen() {
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            val displayUrl = if (imageUrl.isNotBlank()) {
-                                if (imageUrl.startsWith("/")) "http://10.0.2.2:3000$imageUrl" else imageUrl
-                            } else null
+                            val displayUrl = getProductImageUrl(imageUrl)
 
                             if (displayUrl != null) {
                                 AsyncImage(
@@ -458,6 +454,41 @@ fun ProductsScreen() {
                                     )
                                 }
                             }
+                        }
+                    }
+
+                    // Category Selection Filter Chips
+                    Text(
+                        text = "Kategori Menu",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        items(categories) { cat ->
+                            val isSelected = categoryId == cat.id
+                            FilterChip(
+                                selected = isSelected,
+                                onClick = { categoryId = cat.id },
+                                label = { Text(cat.name, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    selectedLabelColor = MaterialTheme.colorScheme.primary,
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    labelColor = MaterialTheme.colorScheme.onSurface
+                                ),
+                                border = FilterChipDefaults.filterChipBorder(
+                                    enabled = true,
+                                    selected = isSelected,
+                                    selectedBorderColor = MaterialTheme.colorScheme.primary,
+                                    borderColor = MaterialTheme.colorScheme.outlineVariant
+                                )
+                            )
                         }
                     }
 

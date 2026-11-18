@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -145,215 +147,304 @@ fun ProductsScreen() {
         return format.format(amount)
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFFAF8F5))
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(bottom = 76.dp)
         ) {
-            Column {
-                Text("Katalog Produk Menu", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                Text(if (isSortingMode) "Atur urutan dengan tombol panah" else "Kelola harga, ketersediaan, dan foto menu", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (isSortingMode) {
-                    Button(
-                        onClick = { handleSaveOrder() },
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+            // Reorder Action Bar if active
+            if (isSortingMode) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 6.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    color = Color(0xFFFFF0E8),
+                    border = BorderStroke(1.dp, Color(0xFFE25822).copy(alpha = 0.3f))
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Simpan Urutan", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    }
-                    OutlinedButton(
-                        onClick = {
-                            isSortingMode = false
-                            loadData()
-                        },
-                        shape = RoundedCornerShape(10.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
-                    ) {
-                        Text("Batal", fontSize = 12.sp)
-                    }
-                } else {
-                    OutlinedButton(
-                        onClick = { isSortingMode = true },
-                        shape = RoundedCornerShape(10.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
-                    ) {
-                        Icon(Icons.Default.SwapVert, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Atur Urutan", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    }
-
-                    IconButton(onClick = {
-                        editingProduct = null
-                        isDialogVisible = true
-                    }) {
-                        Icon(Icons.Default.Add, contentDescription = "Tambah")
+                        Text(
+                            "Gunakan panah untuk mengurutkan menu",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFE25822)
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Button(
+                                onClick = { handleSaveOrder() },
+                                shape = RoundedCornerShape(10.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822)),
+                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                            ) {
+                                Text("Simpan Urutan", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                            OutlinedButton(
+                                onClick = {
+                                    isSortingMode = false
+                                    loadData()
+                                },
+                                shape = RoundedCornerShape(10.dp),
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                            ) {
+                                Text("Batal", fontSize = 11.sp)
+                            }
+                        }
                     }
                 }
             }
-        }
 
-        // Category Filter Chips with Brand Terracotta Selection Colors
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            item {
-                val isSelected = selectedCategoryId == null
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { selectedCategoryId = null },
-                    label = { Text("Semua", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                    shape = RoundedCornerShape(10.dp),
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                        selectedLabelColor = MaterialTheme.colorScheme.primary,
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        labelColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        enabled = true,
-                        selected = isSelected,
-                        selectedBorderColor = MaterialTheme.colorScheme.primary,
-                        borderColor = MaterialTheme.colorScheme.outlineVariant
-                    )
-                )
-            }
-            items(categories) { cat ->
-                val isSelected = selectedCategoryId == cat.id
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { selectedCategoryId = cat.id },
-                    label = { Text(cat.name, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                    shape = RoundedCornerShape(10.dp),
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                        selectedLabelColor = MaterialTheme.colorScheme.primary,
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        labelColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    border = FilterChipDefaults.filterChipBorder(
-                        enabled = true,
-                        selected = isSelected,
-                        selectedBorderColor = MaterialTheme.colorScheme.primary,
-                        borderColor = MaterialTheme.colorScheme.outlineVariant
-                    )
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else if (products.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Tidak ada produk menu", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f), fontSize = 13.sp)
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            // Category Filter Pills & Atur Urutan Action Button Bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                itemsIndexed(products) { index, product ->
-                    val imageUrl = getProductImageUrl(product.image)
-
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.surface,
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                LazyRow(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    item {
+                        val isSelected = selectedCategoryId == null
+                        Surface(
+                            onClick = { selectedCategoryId = null },
+                            shape = RoundedCornerShape(20.dp),
+                            color = if (isSelected) Color(0xFFE25822) else Color.White,
+                            shadowElevation = if (isSelected) 2.dp else 0.dp,
+                            border = if (isSelected) null else BorderStroke(1.dp, Color(0xFFE9E1D9))
                         ) {
-                            // Thumbnail
-                            Box(
+                            Text(
+                                text = "Semua",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isSelected) Color.White else Color(0xFF2B211D),
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
+                            )
+                        }
+                    }
+                    items(categories) { cat ->
+                        val isSelected = selectedCategoryId == cat.id
+                        Surface(
+                            onClick = { selectedCategoryId = cat.id },
+                            shape = RoundedCornerShape(20.dp),
+                            color = if (isSelected) Color(0xFFE25822) else Color.White,
+                            shadowElevation = if (isSelected) 2.dp else 0.dp,
+                            border = if (isSelected) null else BorderStroke(1.dp, Color(0xFFE9E1D9))
+                        ) {
+                            Text(
+                                text = cat.name,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isSelected) Color.White else Color(0xFF2B211D),
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // Atur Urutan Toggle Action Button
+                Surface(
+                    onClick = { isSortingMode = !isSortingMode },
+                    shape = RoundedCornerShape(18.dp),
+                    color = if (isSortingMode) Color(0xFFE25822) else Color.White,
+                    shadowElevation = 2.dp,
+                    border = if (isSortingMode) null else BorderStroke(1.dp, Color(0xFFE9E1D9))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.SwapVert,
+                            contentDescription = "Atur Urutan",
+                            tint = if (isSortingMode) Color.White else Color(0xFFE25822),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (isSortingMode) "Selesai" else "Atur Urutan",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isSortingMode) Color.White else Color(0xFFE25822)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Color(0xFFE25822))
+                }
+            } else if (products.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Tidak ada produk menu", color = Color(0xFF81766F), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    itemsIndexed(products) { index, product ->
+                        val imageUrl = getProductImageUrl(product.image)
+
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(22.dp),
+                            color = Color.White,
+                            shadowElevation = 2.dp,
+                            border = BorderStroke(1.dp, Color(0xFFE9E1D9))
+                        ) {
+                            Row(
                                 modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(MaterialTheme.colorScheme.primaryContainer),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth()
+                                    .padding(14.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                if (imageUrl != null) {
-                                    AsyncImage(
-                                        model = imageUrl,
-                                        contentDescription = product.name,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier.fillMaxSize()
+                                // Dominant Food Photography Thumbnail
+                                Box(
+                                    modifier = Modifier
+                                        .size(76.dp)
+                                        .clip(RoundedCornerShape(18.dp))
+                                        .background(Color(0xFFFFF0E8)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (imageUrl != null) {
+                                        AsyncImage(
+                                            model = imageUrl,
+                                            contentDescription = product.name,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    } else {
+                                        Icon(
+                                            Icons.Default.Fastfood,
+                                            contentDescription = null,
+                                            tint = Color(0xFFE25822),
+                                            modifier = Modifier.size(28.dp)
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.width(12.dp))
+
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Surface(
+                                        color = Color(0xFFFFF0E8),
+                                        shape = RoundedCornerShape(6.dp)
+                                    ) {
+                                        Text(
+                                            text = product.category?.name ?: "Menu",
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFFE25822),
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(4.dp))
+
+                                    Text(
+                                        text = product.name,
+                                        fontWeight = FontWeight.Black,
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF2B211D)
                                     )
+
+                                    Spacer(modifier = Modifier.height(2.dp))
+
+                                    Text(
+                                        text = formatRp(product.price),
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Black,
+                                        color = Color(0xFFE25822)
+                                    )
+                                }
+
+                                if (isSortingMode) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        IconButton(
+                                            onClick = { moveItem(index, -1) },
+                                            enabled = index > 0,
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(Icons.Default.ArrowUpward, contentDescription = "Naik", tint = Color(0xFFE25822), modifier = Modifier.size(18.dp))
+                                        }
+                                        IconButton(
+                                            onClick = { moveItem(index, 1) },
+                                            enabled = index < products.size - 1,
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(Icons.Default.ArrowDownward, contentDescription = "Turun", tint = Color(0xFFE25822), modifier = Modifier.size(18.dp))
+                                        }
+                                    }
                                 } else {
-                                    Icon(
-                                        Icons.Default.Fastfood,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.width(10.dp))
-
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(product.name, fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                                Text(
-                                    text = "${product.category?.name ?: "Menu"} • ${formatRp(product.price)}",
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-
-                            if (isSortingMode) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    IconButton(
-                                        onClick = { moveItem(index, -1) },
-                                        enabled = index > 0,
-                                        modifier = Modifier.size(32.dp)
-                                    ) {
-                                        Icon(Icons.Default.ArrowUpward, contentDescription = "Naik", modifier = Modifier.size(16.dp))
-                                    }
-                                    IconButton(
-                                        onClick = { moveItem(index, 1) },
-                                        enabled = index < products.size - 1,
-                                        modifier = Modifier.size(32.dp)
-                                    ) {
-                                        Icon(Icons.Default.ArrowDownward, contentDescription = "Turun", modifier = Modifier.size(16.dp))
-                                    }
-                                }
-                            } else {
-                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    Switch(
-                                        checked = product.isAvailable,
-                                        onCheckedChange = { handleToggleAvailability(product.id, it) }
-                                    )
-                                    IconButton(onClick = {
-                                        editingProduct = product
-                                        isDialogVisible = true
-                                    }, modifier = Modifier.size(32.dp)) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(16.dp))
-                                    }
-                                    IconButton(onClick = { handleDeleteProduct(product.id) }, modifier = Modifier.size(32.dp)) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Hapus", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
+                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Switch(
+                                            checked = product.isAvailable,
+                                            onCheckedChange = { handleToggleAvailability(product.id, it) }
+                                        )
+                                        IconButton(
+                                            onClick = {
+                                                editingProduct = product
+                                                isDialogVisible = true
+                                            },
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color(0xFF2B211D), modifier = Modifier.size(16.dp))
+                                        }
+                                        IconButton(
+                                            onClick = { handleDeleteProduct(product.id) },
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(Icons.Default.Delete, contentDescription = "Hapus", tint = Color(0xFFC94136), modifier = Modifier.size(16.dp))
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+
+        // Prominent Full-Width Floating Action Button at Bottom
+        if (!isSortingMode) {
+            Button(
+                onClick = {
+                    editingProduct = null
+                    isDialogVisible = true
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 14.dp)
+                    .height(50.dp),
+                shape = RoundedCornerShape(25.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822)),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Tambah Menu Baru", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
             }
         }
@@ -415,17 +506,17 @@ fun ProductsScreen() {
 
         AlertDialog(
             onDismissRequest = { isDialogVisible = false },
-            title = { Text(if (editingProduct != null) "Edit Produk Menu" else "Tambah Menu Baru", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
+            title = { Text(if (editingProduct != null) "Edit Produk Menu" else "Tambah Menu Baru", fontWeight = FontWeight.Black, fontSize = 17.sp, color = Color(0xFF2B211D)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     // Image Picker Area
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(110.dp)
-                            .clip(RoundedCornerShape(12.dp)),
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                            .height(120.dp)
+                            .clip(RoundedCornerShape(16.dp)),
+                        color = Color(0xFFFFF0E8),
+                        border = BorderStroke(1.dp, Color(0xFFE25822).copy(alpha = 0.3f))
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             val displayUrl = getProductImageUrl(imageUrl)
@@ -440,17 +531,17 @@ fun ProductsScreen() {
                             }
 
                             if (isUploadingPhoto) {
-                                CircularProgressIndicator()
+                                CircularProgressIndicator(color = Color(0xFFE25822))
                             } else {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     IconButton(onClick = { photoPickerLauncher.launch("image/*") }) {
-                                        Icon(Icons.Default.AddAPhoto, contentDescription = "Pilih Foto", tint = MaterialTheme.colorScheme.primary)
+                                        Icon(Icons.Default.AddAPhoto, contentDescription = "Pilih Foto", tint = Color(0xFFE25822))
                                     }
                                     Text(
                                         if (imageUrl.isBlank()) "Pilih Foto Menu (Galeri)" else "Ganti Foto Menu",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
+                                        color = Color(0xFFE25822)
                                     )
                                 }
                             }
@@ -462,7 +553,7 @@ fun ProductsScreen() {
                         text = "Kategori Menu",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = Color(0xFF2B211D)
                     )
 
                     LazyRow(
@@ -477,16 +568,16 @@ fun ProductsScreen() {
                                 label = { Text(cat.name, fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                                 shape = RoundedCornerShape(8.dp),
                                 colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    selectedLabelColor = MaterialTheme.colorScheme.primary,
-                                    containerColor = MaterialTheme.colorScheme.surface,
-                                    labelColor = MaterialTheme.colorScheme.onSurface
+                                    selectedContainerColor = Color(0xFFFFF0E8),
+                                    selectedLabelColor = Color(0xFFE25822),
+                                    containerColor = Color.White,
+                                    labelColor = Color(0xFF2B211D)
                                 ),
                                 border = FilterChipDefaults.filterChipBorder(
                                     enabled = true,
                                     selected = isSelected,
-                                    selectedBorderColor = MaterialTheme.colorScheme.primary,
-                                    borderColor = MaterialTheme.colorScheme.outlineVariant
+                                    selectedBorderColor = Color(0xFFE25822),
+                                    borderColor = Color(0xFFE9E1D9)
                                 )
                             )
                         }
@@ -498,7 +589,7 @@ fun ProductsScreen() {
                         label = { Text("Nama Menu") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(12.dp)
                     )
                     OutlinedTextField(
                         value = priceStr,
@@ -506,14 +597,14 @@ fun ProductsScreen() {
                         label = { Text("Harga (Rp)") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(12.dp)
                     )
                     OutlinedTextField(
                         value = description,
                         onValueChange = { description = it },
                         label = { Text("Deskripsi Menu") },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(12.dp)
                     )
                 }
             },
@@ -548,9 +639,10 @@ fun ProductsScreen() {
                             }
                         }
                     },
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822))
                 ) {
-                    Text("Simpan")
+                    Text("Simpan", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {

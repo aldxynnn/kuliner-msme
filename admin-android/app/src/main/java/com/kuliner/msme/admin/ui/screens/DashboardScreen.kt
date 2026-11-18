@@ -1,22 +1,34 @@
 package com.kuliner.msme.admin.ui.screens
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kuliner.msme.admin.R
 import com.kuliner.msme.admin.data.api.RetrofitClient
+import com.kuliner.msme.admin.data.api.TokenManager
 import com.kuliner.msme.admin.data.model.DashboardSummary
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -24,12 +36,14 @@ import java.util.Locale
 
 @Composable
 fun DashboardScreen(
-    onNavigateTo: (String) -> Unit
+    onNavigateTo: (String) -> Unit,
+    onLogout: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var summary by remember { mutableStateOf<DashboardSummary?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     fun loadData() {
         isLoading = true
@@ -58,146 +72,355 @@ fun DashboardScreen(
         return format.format(amount)
     }
 
+    val primaryGradient = Brush.linearGradient(
+        colors = listOf(Color(0xFFE25822), Color(0xFFF27B3D))
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFFAF8F5))
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        // Compact Revenue Summary Header Banner
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.primaryContainer
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = "OMZET HARI INI",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-                        letterSpacing = 0.5.sp
-                    )
-                    Text(
-                        text = formatRp(summary?.todayRevenue ?: 0),
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Black,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-
-                Button(
-                    onClick = { onNavigateTo("cashier_order") },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Pesanan POS", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                }
-            }
-        }
-
-        // Compact Metric Cards
+        // Top App Bar / Header with Logout Icon
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Surface(
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(14.dp),
-                color = MaterialTheme.colorScheme.surface,
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-            ) {
-                Row(
-                    modifier = Modifier.padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Surface(
+                    modifier = Modifier.size(38.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    color = Color.White,
+                    shadowElevation = 2.dp
                 ) {
-                    Column {
-                        Text("Belum Bayar", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                        Text("${summary?.pendingPaymentsCount ?: 0}", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
-                    }
-                    IconButton(onClick = { onNavigateTo("payments") }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
-                    }
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_aroma),
+                        contentDescription = "Logo AROMA",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp))
+                    )
                 }
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "AROMA POS",
+                    fontWeight = FontWeight.Black,
+                    fontSize = 18.sp,
+                    color = Color(0xFFE25822),
+                    letterSpacing = (-0.5).sp
+                )
             }
 
             Surface(
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(14.dp),
-                color = MaterialTheme.colorScheme.surface,
-                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                onClick = { showLogoutDialog = true },
+                modifier = Modifier.size(40.dp),
+                shape = CircleShape,
+                color = Color(0xFFFEE2E2),
+                shadowElevation = 2.dp
             ) {
-                Row(
-                    modifier = Modifier.padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column {
-                        Text("Pesanan Dapur", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                        Text("${summary?.activeOrdersCount ?: 0}", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                    }
-                    IconButton(onClick = { onNavigateTo("orders") }, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.Logout,
+                        contentDescription = "Keluar",
+                        tint = Color(0xFF991B1B),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+        }
+
+        // Greeting Section
+        Column {
+            Text(
+                text = "Selamat Datang,",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF81766F)
+            )
+            Text(
+                text = "Kasir AROMA!",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Black,
+                color = Color(0xFF2B211D)
+            )
+        }
+
+        // Hero Gradient Banner Card (Omzet Summary)
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            shadowElevation = 6.dp
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(primaryGradient)
+                    .padding(22.dp)
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Total Omzet Hari Ini",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Column {
+                            Text(
+                                text = formatRp(summary?.todayRevenue ?: 0),
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color.White
+                            )
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.TrendingUp,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "${summary?.todayTransactionCount ?: 0} Transaksi Lunas",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White.copy(alpha = 0.95f)
+                                )
+                            }
+                        }
+
+                        Icon(
+                            Icons.Default.BarChart,
+                            contentDescription = null,
+                            tint = Color.White.copy(alpha = 0.35f),
+                            modifier = Modifier.size(56.dp)
+                        )
                     }
                 }
             }
         }
 
-        // Action & Navigation Row
-        Text("Operasional Kasir", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-
-        Surface(
+        // Operational Metric Cards
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            color = MaterialTheme.colorScheme.surface,
-            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Box(modifier = Modifier.fillMaxWidth().clickable { onNavigateTo("cashier_order") }) {
-                    ListItem(
-                        headlineContent = { Text("Input Pesanan POS Baru", fontWeight = FontWeight.Bold, fontSize = 13.sp) },
-                        supportingContent = { Text("Pilih menu makanan, minuman, dan meja", fontSize = 11.sp) },
-                        leadingContent = { Icon(Icons.Default.PointOfSale, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-                        trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null) },
-                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface)
-                    )
+            // Card 1: Pesanan Dapur
+            Surface(
+                onClick = { onNavigateTo("orders") },
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(20.dp),
+                color = Color.White,
+                shadowElevation = 2.dp,
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE9E1D9))
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Surface(
+                        modifier = Modifier.size(42.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color(0xFFFFF0E8)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ReceiptLong,
+                                contentDescription = null,
+                                tint = Color(0xFFE25822),
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
+
+                    Column {
+                        Text("Pesanan Dapur", fontSize = 11.sp, color = Color(0xFF81766F), fontWeight = FontWeight.Medium)
+                        Text(
+                            "${summary?.activeOrdersCount ?: 0}",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color(0xFF2B211D)
+                        )
+                    }
                 }
+            }
 
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            // Card 2: Belum Bayar
+            Surface(
+                onClick = { onNavigateTo("payments") },
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(20.dp),
+                color = Color.White,
+                shadowElevation = 2.dp,
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE9E1D9))
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Surface(
+                        modifier = Modifier.size(42.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color(0xFFFFF0E8)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.AccessTime,
+                                contentDescription = null,
+                                tint = Color(0xFFE25822),
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
 
-                Box(modifier = Modifier.fillMaxWidth().clickable { onNavigateTo("payments") }) {
-                    ListItem(
-                        headlineContent = { Text("Konfirmasi Pembayaran Kasir", fontWeight = FontWeight.Bold, fontSize = 13.sp) },
-                        supportingContent = { Text("Verifikasi pembayaran tunai & QRIS", fontSize = 11.sp) },
-                        leadingContent = { Icon(Icons.Default.Payments, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-                        trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null) },
-                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface)
-                    )
+                    Column {
+                        Text("Belum Bayar", fontSize = 11.sp, color = Color(0xFF81766F), fontWeight = FontWeight.Medium)
+                        Text(
+                            "${summary?.pendingPaymentsCount ?: 0}",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color(0xFF2B211D)
+                        )
+                    }
                 }
+            }
+        }
 
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        // Secondary Operational Management Hub (NON-REDUNDANT)
+        Text(
+            text = "Pengelolaan Resto & Operasional",
+            fontWeight = FontWeight.Bold,
+            fontSize = 15.sp,
+            color = Color(0xFF2B211D),
+            modifier = Modifier.padding(top = 4.dp)
+        )
 
-                Box(modifier = Modifier.fillMaxWidth().clickable { onNavigateTo("products") }) {
-                    ListItem(
-                        headlineContent = { Text("Katalog Produk Menu", fontWeight = FontWeight.Bold, fontSize = 13.sp) },
-                        supportingContent = { Text("Atur harga, kategori, dan ketersediaan", fontSize = 11.sp) },
-                        leadingContent = { Icon(Icons.Default.Fastfood, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-                        trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null) },
-                        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface)
+        // 2x2 Grid for Secondary Features NOT in bottom navbar
+        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                DashboardActionCard(
+                    title = "Kelola Kategori",
+                    icon = Icons.Default.Category,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateTo("categories") }
+                )
+
+                DashboardActionCard(
+                    title = "Meja & QR Code",
+                    icon = Icons.Default.QrCode,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateTo("tables") }
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                DashboardActionCard(
+                    title = "Biaya Operasional",
+                    icon = Icons.Default.MoneyOff,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateTo("expenses") }
+                )
+
+                DashboardActionCard(
+                    title = "Laporan Surplus",
+                    icon = Icons.Default.Assessment,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateTo("reports") }
+                )
+            }
+        }
+    }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Konfirmasi Keluar", fontWeight = FontWeight.Black, fontSize = 17.sp, color = Color(0xFF2B211D)) },
+            text = { Text("Apakah Anda yakin ingin keluar?", fontSize = 13.sp, color = Color(0xFF81766F)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showLogoutDialog = false
+                        val tokenManager = TokenManager(context)
+                        tokenManager.clear()
+                        onLogout()
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC94136))
+                ) {
+                    Text("Keluar", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text("Batal", fontWeight = FontWeight.Bold, color = Color(0xFFE25822))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun DashboardActionCard(
+    title: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier.height(96.dp),
+        shape = RoundedCornerShape(22.dp),
+        color = Color.White,
+        shadowElevation = 2.dp,
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE9E1D9))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Surface(
+                modifier = Modifier.size(34.dp),
+                shape = RoundedCornerShape(10.dp),
+                color = Color(0xFFFFF0E8)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        icon,
+                        contentDescription = title,
+                        tint = Color(0xFFE25822),
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
+
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                color = Color(0xFF2B211D)
+            )
         }
     }
 }

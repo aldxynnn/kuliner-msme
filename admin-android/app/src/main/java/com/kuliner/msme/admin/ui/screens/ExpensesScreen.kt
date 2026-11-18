@@ -1,9 +1,12 @@
 package com.kuliner.msme.admin.ui.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -12,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -78,63 +82,88 @@ fun ExpensesScreen() {
 
     val totalExpense = expenses.sumOf { it.amount }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFFAF8F5))
+    ) {
+        // Header Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 20.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("Pencatatan Biaya Operasional", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Text("Kelola pengeluaran AROMA POS", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Biaya Operasional", fontWeight = FontWeight.Black, fontSize = 20.sp, color = Color(0xFF2B211D))
+                Text("Catat & kelola pengeluaran harian resto", fontSize = 11.sp, color = Color(0xFF81766F))
             }
 
-            FloatingActionButton(
+            Surface(
                 onClick = { isDialogVisible = true },
-                modifier = Modifier.size(44.dp)
+                modifier = Modifier.size(40.dp),
+                shape = CircleShape,
+                color = Color(0xFFE25822),
+                shadowElevation = 2.dp
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Tambah")
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(Icons.Default.Add, contentDescription = "Tambah", tint = Color.White, modifier = Modifier.size(20.dp))
+                }
             }
         }
 
         // Summary Card
-        Card(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                .padding(horizontal = 20.dp),
+            shape = RoundedCornerShape(22.dp),
+            color = Color(0xFFFEE2E2),
+            shadowElevation = 2.dp,
+            border = BorderStroke(1.dp, Color(0xFFFCA5A5))
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("TOTAL PENGELUARAN DITAMBAHKAN", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onErrorContainer, letterSpacing = 0.5.sp)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(formatRp(totalExpense), fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onErrorContainer)
+            Column(modifier = Modifier.padding(18.dp)) {
+                Text(
+                    "TOTAL PENGELUARAN DITAMBAHKAN",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF991B1B),
+                    letterSpacing = 0.5.sp
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    formatRp(totalExpense),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFF991B1B)
+                )
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = Color(0xFFE25822))
             }
         } else if (expenses.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Belum ada pengeluaran dicatat", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Medium)
+                Text("Belum ada pengeluaran dicatat", color = Color(0xFF81766F), fontWeight = FontWeight.Bold, fontSize = 13.sp)
             }
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 items(expenses) { exp ->
-                    Card(
+                    Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        shape = RoundedCornerShape(20.dp),
+                        color = Color.White,
+                        shadowElevation = 2.dp,
+                        border = BorderStroke(1.dp, Color(0xFFE9E1D9))
                     ) {
                         Row(
                             modifier = Modifier
@@ -144,14 +173,18 @@ fun ExpensesScreen() {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(exp.description, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Text("Kategori: ${exp.category} • ${exp.date.take(10)}", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(formatRp(exp.amount), fontWeight = FontWeight.ExtraBold, fontSize = 14.sp, color = MaterialTheme.colorScheme.error)
+                                Text(exp.description, fontWeight = FontWeight.Black, fontSize = 15.sp, color = Color(0xFF2B211D))
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text("Kategori: ${exp.category} • ${exp.date.take(10)}", fontSize = 11.sp, color = Color(0xFF81766F))
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(formatRp(exp.amount), fontWeight = FontWeight.Black, fontSize = 15.sp, color = Color(0xFFC94136))
                             }
 
-                            IconButton(onClick = { handleDelete(exp.id) }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Hapus", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                            IconButton(
+                                onClick = { handleDelete(exp.id) },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(Icons.Default.Delete, contentDescription = "Hapus", tint = Color(0xFFC94136), modifier = Modifier.size(16.dp))
                             }
                         }
                     }
@@ -167,9 +200,9 @@ fun ExpensesScreen() {
 
         AlertDialog(
             onDismissRequest = { isDialogVisible = false },
-            title = { Text("Catat Pengeluaran Baru", fontWeight = FontWeight.Bold) },
+            title = { Text("Catat Pengeluaran Baru", fontWeight = FontWeight.Black, fontSize = 16.sp, color = Color(0xFF2B211D)) },
             text = {
-                Column {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     OutlinedTextField(
                         value = description,
                         onValueChange = { description = it },
@@ -178,7 +211,6 @@ fun ExpensesScreen() {
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = amountStr,
                         onValueChange = { amountStr = it },
@@ -187,7 +219,6 @@ fun ExpensesScreen() {
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = category,
                         onValueChange = { category = it },
@@ -216,9 +247,10 @@ fun ExpensesScreen() {
                             }
                         }
                     },
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822))
                 ) {
-                    Text("Simpan")
+                    Text("Simpan", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {

@@ -1,7 +1,10 @@
 package com.kuliner.msme.admin.ui.screens
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -10,6 +13,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,76 +61,85 @@ fun ReportsScreen() {
         return format.format(amount)
     }
 
+    val primaryGradient = Brush.linearGradient(
+        colors = listOf(Color(0xFFE25822), Color(0xFFF27B3D))
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFFAF8F5))
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Header Bar
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("Laporan Keuangan", fontWeight = FontWeight.ExtraBold, fontSize = 20.sp)
-                Text("Surplus operasional usaha AROMA POS", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Text("Laporan Keuangan", fontWeight = FontWeight.Black, fontSize = 20.sp, color = Color(0xFF2B211D))
+                Text("Surplus operasional resto AROMA POS", fontSize = 11.sp, color = Color(0xFF81766F))
             }
 
-            IconButton(onClick = { loadData() }) {
-                Icon(Icons.Default.Refresh, contentDescription = null)
+            Surface(
+                onClick = { loadData() },
+                modifier = Modifier.size(40.dp),
+                shape = CircleShape,
+                color = Color.White,
+                shadowElevation = 2.dp
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = Color(0xFF2B211D), modifier = Modifier.size(20.dp))
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Period Toggle with Terracotta Brand Colors
+        // Period Toggle Pills
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val isDaily = period == "daily"
-            FilterChip(
-                selected = isDaily,
+            Surface(
                 onClick = { period = "daily" },
-                label = { Text("Laporan Harian", fontWeight = FontWeight.Bold, fontSize = 12.sp) },
-                shape = RoundedCornerShape(8.dp),
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    selectedLabelColor = MaterialTheme.colorScheme.primary,
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    labelColor = MaterialTheme.colorScheme.onSurface
-                ),
-                border = FilterChipDefaults.filterChipBorder(
-                    enabled = true,
-                    selected = isDaily,
-                    selectedBorderColor = MaterialTheme.colorScheme.primary,
-                    borderColor = MaterialTheme.colorScheme.outlineVariant
-                )
-            )
+                modifier = Modifier.weight(1f).height(42.dp),
+                shape = RoundedCornerShape(14.dp),
+                color = if (isDaily) Color(0xFFE25822) else Color.White,
+                shadowElevation = if (isDaily) 2.dp else 0.dp,
+                border = if (isDaily) null else BorderStroke(1.dp, Color(0xFFE9E1D9))
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        "Laporan Harian",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        color = if (isDaily) Color.White else Color(0xFF2B211D)
+                    )
+                }
+            }
 
             val isMonthly = period == "monthly"
-            FilterChip(
-                selected = isMonthly,
+            Surface(
                 onClick = { period = "monthly" },
-                label = { Text("Laporan Bulanan", fontWeight = FontWeight.Bold, fontSize = 12.sp) },
-                shape = RoundedCornerShape(8.dp),
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    selectedLabelColor = MaterialTheme.colorScheme.primary,
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    labelColor = MaterialTheme.colorScheme.onSurface
-                ),
-                border = FilterChipDefaults.filterChipBorder(
-                    enabled = true,
-                    selected = isMonthly,
-                    selectedBorderColor = MaterialTheme.colorScheme.primary,
-                    borderColor = MaterialTheme.colorScheme.outlineVariant
-                )
-            )
+                modifier = Modifier.weight(1f).height(42.dp),
+                shape = RoundedCornerShape(14.dp),
+                color = if (isMonthly) Color(0xFFE25822) else Color.White,
+                shadowElevation = if (isMonthly) 2.dp else 0.dp,
+                border = if (isMonthly) null else BorderStroke(1.dp, Color(0xFFE9E1D9))
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        "Laporan Bulanan",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        color = if (isMonthly) Color.White else Color(0xFF2B211D)
+                    )
+                }
+            }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         if (isLoading) {
             Box(
@@ -134,72 +148,87 @@ fun ReportsScreen() {
                     .height(200.dp),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = Color(0xFFE25822))
             }
         } else if (report != null) {
             val r = report!!
 
-            // Surplus Highlight Card
-            Card(
+            // Hero Operating Surplus Banner Card
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                shape = RoundedCornerShape(24.dp),
+                shadowElevation = 6.dp
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(
-                        text = "SURPLUS OPERASIONAL (${if (r.period == "daily") "HARI INI" else "BULAN INI"})",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
-                        letterSpacing = 0.5.sp
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = formatRp(r.operatingSurplus),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = r.note,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                    )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(primaryGradient)
+                        .padding(22.dp)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = "SURPLUS OPERASIONAL (${if (r.period == "daily") "HARI INI" else "BULAN INI"})",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White.copy(alpha = 0.9f),
+                            letterSpacing = 0.5.sp
+                        )
+
+                        Text(
+                            text = formatRp(r.operatingSurplus),
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Black,
+                            color = Color.White
+                        )
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        Text(
+                            text = r.note,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White.copy(alpha = 0.95f)
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Breakdown
+            // Breakdown Cards
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                Card(
+                // Total Omzet Card
+                Surface(
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    shape = RoundedCornerShape(20.dp),
+                    color = Color.White,
+                    shadowElevation = 2.dp,
+                    border = BorderStroke(1.dp, Color(0xFFE9E1D9))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Total Omzet Lunas", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(formatRp(r.totalRevenue), fontWeight = FontWeight.ExtraBold, fontSize = 15.sp, color = MaterialTheme.colorScheme.primary)
-                        Text("${r.transactionCount} Transaksi", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                        Text("Total Omzet Lunas", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFF81766F))
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(formatRp(r.totalRevenue), fontWeight = FontWeight.Black, fontSize = 16.sp, color = Color(0xFFE25822))
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text("${r.transactionCount} Transaksi", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = Color(0xFF81766F))
                     }
                 }
 
-                Card(
+                // Total Pengeluaran Card
+                Surface(
                     modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    shape = RoundedCornerShape(20.dp),
+                    color = Color.White,
+                    shadowElevation = 2.dp,
+                    border = BorderStroke(1.dp, Color(0xFFE9E1D9))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Total Pengeluaran", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(formatRp(r.totalExpenses), fontWeight = FontWeight.ExtraBold, fontSize = 15.sp, color = MaterialTheme.colorScheme.error)
-                        Text("${r.expenses.size} Catatan Biaya", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                        Text("Total Pengeluaran", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFF81766F))
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(formatRp(r.totalExpenses), fontWeight = FontWeight.Black, fontSize = 16.sp, color = Color(0xFFC94136))
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text("${r.expenses.size} Catatan Biaya", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = Color(0xFF81766F))
                     }
                 }
             }

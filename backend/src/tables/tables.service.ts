@@ -2,6 +2,8 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTableDto, UpdateTableDto } from './dto/create-table.dto';
 
+const DEFAULT_FRONTEND_URL = process.env.FRONTEND_URL || 'https://aroma-ayam-goreng-lengkuas.vercel.app';
+
 @Injectable()
 export class TablesService {
   constructor(private readonly prisma: PrismaService) {}
@@ -32,7 +34,7 @@ export class TablesService {
     return table;
   }
 
-  async create(dto: CreateTableDto, hostUrl: string = 'http://localhost:5173') {
+  async create(dto: CreateTableDto, hostUrl: string = DEFAULT_FRONTEND_URL) {
     const existing = await this.prisma.table.findUnique({
       where: { tableNumber: dto.tableNumber },
     });
@@ -41,7 +43,8 @@ export class TablesService {
       throw new BadRequestException('Nomor meja sudah ada');
     }
 
-    const qrCode = `${hostUrl}/?table=${encodeURIComponent(dto.tableNumber)}`;
+    const base = hostUrl.endsWith('/') ? hostUrl.slice(0, -1) : hostUrl;
+    const qrCode = `${base}/?table=${encodeURIComponent(dto.tableNumber)}`;
 
     return this.prisma.table.create({
       data: {
@@ -52,7 +55,7 @@ export class TablesService {
     });
   }
 
-  async update(id: string, dto: UpdateTableDto, hostUrl: string = 'http://localhost:5173') {
+  async update(id: string, dto: UpdateTableDto, hostUrl: string = DEFAULT_FRONTEND_URL) {
     const current = await this.findOne(id);
 
     let qrCode = current.qrCode;
@@ -63,7 +66,8 @@ export class TablesService {
       if (existing) {
         throw new BadRequestException('Nomor meja sudah digunakan');
       }
-      qrCode = `${hostUrl}/?table=${encodeURIComponent(dto.tableNumber)}`;
+      const base = hostUrl.endsWith('/') ? hostUrl.slice(0, -1) : hostUrl;
+      qrCode = `${base}/?table=${encodeURIComponent(dto.tableNumber)}`;
     }
 
     return this.prisma.table.update({

@@ -1,35 +1,26 @@
 package com.kuliner.msme.admin.ui
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kuliner.msme.admin.R
-import com.kuliner.msme.admin.data.api.TokenManager
 import com.kuliner.msme.admin.notification.NotificationCenter
 import com.kuliner.msme.admin.notification.OrderAlerts
 import com.kuliner.msme.admin.ui.components.CountBadge
-import com.kuliner.msme.admin.ui.components.NotificationBellButton
 import com.kuliner.msme.admin.ui.screens.*
 import kotlinx.coroutines.delay
 
@@ -60,7 +51,6 @@ fun MainScreen(
         }
     }
     val context = LocalContext.current
-    val tokenManager = remember { TokenManager(context) }
 
     val notifications by NotificationCenter.notifications.collectAsState()
     val unreadNotifications = notifications.count { !it.isRead }
@@ -100,73 +90,39 @@ fun MainScreen(
                     color = Color.White,
                     shadowElevation = 2.dp
                 ) {
+                    // Header halaman selain dashboard hanya berisi tombol kembali + judul.
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            IconButton(onClick = { currentRoute = Screen.Dashboard.route }) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Kembali",
-                                    tint = Color(0xFF2B211D),
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = when (currentRoute) {
-                                    Screen.Orders.route -> "Pesanan"
-                                    Screen.CashierOrder.route -> "POS"
-                                    Screen.Payments.route -> "Konfirmasi Pembayaran"
-                                    Screen.Products.route -> "Kelola Menu"
-                                    Screen.Categories.route -> "Kelola Kategori"
-                                    Screen.Tables.route -> "Meja & QR Code"
-                                    Screen.Expenses.route -> "Pengeluaran Resto"
-                                    Screen.Reports.route -> "Laporan Surplus"
-                                    Screen.Notifications.route -> "Notifikasi"
-                                    else -> "AROMA POS"
-                                },
-                                fontWeight = FontWeight.Black,
-                                fontSize = 20.sp,
-                                color = Color(0xFF2B211D)
+                        IconButton(onClick = { currentRoute = Screen.Dashboard.route }) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Kembali",
+                                tint = Color(0xFF2B211D),
+                                modifier = Modifier.size(20.dp)
                             )
                         }
-
-                        // Notification bell + Logout actions
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            if (currentRoute != Screen.Notifications.route) {
-                                NotificationBellButton(
-                                    unreadCount = unreadNotifications,
-                                    onClick = { currentRoute = Screen.Notifications.route }
-                                )
-                            }
-
-                            Surface(
-                                onClick = {
-                                    tokenManager.clear()
-                                    onLogout()
-                                },
-                                modifier = Modifier.size(36.dp),
-                                shape = CircleShape,
-                                color = Color(0xFFFEE2E2)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Icon(
-                                        Icons.AutoMirrored.Filled.Logout,
-                                        contentDescription = "Keluar",
-                                        tint = Color(0xFF991B1B),
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                }
-                            }
-                        }
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = when (currentRoute) {
+                                Screen.Orders.route -> "Pesanan"
+                                Screen.CashierOrder.route -> "POS"
+                                Screen.Payments.route -> "Konfirmasi Pembayaran"
+                                Screen.Products.route -> "Kelola Menu"
+                                Screen.Categories.route -> "Kelola Kategori"
+                                Screen.Tables.route -> "Meja & QR Code"
+                                Screen.Expenses.route -> "Pengeluaran Resto"
+                                Screen.Reports.route -> "Laporan Surplus"
+                                Screen.Notifications.route -> "Notifikasi"
+                                else -> "AROMA POS"
+                            },
+                            fontWeight = FontWeight.Black,
+                            fontSize = 20.sp,
+                            color = Color(0xFF2B211D)
+                        )
                     }
                 }
             }

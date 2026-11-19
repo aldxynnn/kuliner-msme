@@ -26,7 +26,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.R
 import com.kuliner.msme.admin.data.api.TokenManager
+import com.kuliner.msme.admin.notification.NotificationCenter
+import com.kuliner.msme.admin.notification.OrderAlerts
+import com.kuliner.msme.admin.ui.components.CountBadge
+import com.kuliner.msme.admin.ui.components.NotificationBellButton
 import com.kuliner.msme.admin.ui.screens.*
+import kotlinx.coroutines.delay
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Dashboard : Screen("dashboard", "Beranda", Icons.Default.Dashboard)
@@ -38,6 +43,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Tables : Screen("tables", "Meja", Icons.Default.QrCode)
     object Expenses : Screen("expenses", "Biaya", Icons.Default.MoneyOff)
     object Reports : Screen("reports", "Laporan", Icons.Default.Assessment)
+    object Notifications : Screen("notifications", "Notifikasi", Icons.Default.Notifications)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,6 +61,27 @@ fun MainScreen(
     }
     val context = LocalContext.current
     val tokenManager = remember { TokenManager(context) }
+
+    val notifications by NotificationCenter.notifications.collectAsState()
+    val unreadNotifications = notifications.count { !it.isRead }
+
+    LaunchedEffect(Unit) {
+        NotificationCenter.init(context)
+        while (true) {
+            NotificationCenter.refresh(context)
+            delay(15_000)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        OrderAlerts.newOrders.collect {
+            NotificationCenter.refresh(context)
+        }
+    }
+
+    LaunchedEffect(currentRoute) {
+        NotificationCenter.refresh(context)
+    }
 
     val mainNavItems = listOf(
         Screen.Dashboard,
@@ -100,6 +127,7 @@ fun MainScreen(
                                     Screen.Tables.route -> "Meja & QR Code"
                                     Screen.Expenses.route -> "Pengeluaran Resto"
                                     Screen.Reports.route -> "Laporan Surplus"
+                                    Screen.Notifications.route -> "Notifikasi"
                                     else -> "AROMA POS"
                                 },
                                 fontWeight = FontWeight.Black,
@@ -108,23 +136,35 @@ fun MainScreen(
                             )
                         }
 
-                        // Minimalist Logout Action Button
-                        Surface(
-                            onClick = {
-                                tokenManager.clear()
-                                onLogout()
-                            },
-                            modifier = Modifier.size(36.dp),
-                            shape = CircleShape,
-                            color = Color(0xFFFEE2E2)
+                        // Notification bell + Logout actions
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.Logout,
-                                    contentDescription = "Keluar",
-                                    tint = Color(0xFF991B1B),
-                                    modifier = Modifier.size(18.dp)
+                            if (currentRoute != Screen.Notifications.route) {
+                                NotificationBellButton(
+                                    unreadCount = unreadNotifications,
+                                    onClick = { currentRoute = Screen.Notifications.route }
                                 )
+                            }
+
+                            Surface(
+                                onClick = {
+                                    tokenManager.clear()
+                                    onLogout()
+                                },
+                                modifier = Modifier.size(36.dp),
+                                shape = CircleShape,
+                                color = Color(0xFFFEE2E2)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.Logout,
+                                        contentDescription = "Keluar",
+                                        tint = Color(0xFF991B1B),
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -152,6 +192,11 @@ fun MainScreen(
                 ) {
                     mainNavItems.forEach { screen ->
                         val isSelected = currentRoute == screen.route
+                        val badgeCount = when (screen.route) {
+                            Screen.Orders.route -> NotificationCenter.unreadForRoute(notifications, Screen.Orders.route)
+                            Screen.Payments.route -> NotificationCenter.unreadForRoute(notifications, Screen.Payments.route)
+                            else -> 0
+                        }
                         Surface(
                             onClick = { currentRoute = screen.route },
                             shape = RoundedCornerShape(20.dp),
@@ -163,11 +208,11 @@ fun MainScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                Icon(
-                                    imageVector = screen.icon,
-                                    contentDescription = screen.title,
+                                NavIconWithBadge(
+                                    icon = screen.icon,
+                                    label = screen.title,
                                     tint = if (isSelected) Color(0xFFE25822) else Color(0xFF81766F),
-                                    modifier = Modifier.size(18.dp)
+                                    count = badgeCount
                                 )
                                 if (isSelected) {
                                     Spacer(modifier = Modifier.width(6.dp))
@@ -192,7 +237,12 @@ fun MainScreen(
             color = Color(0xFFFAF8F5)
         ) {
             when (currentRoute) {
-                Screen.Dashboard.route -> DashboardScreen(onNavigateTo = { route -> currentRoute = route }, onLogout = onLogout)
+                Screen.Dashboard.route -> DashboardScreen(
+                    onNavigateTo = { route -> currentRoute = route },
+                    onLogout = onLogout,
+                    onOpenNotifications = { currentRoute = Screen.Notifications.route },
+                    unreadNotifications = unreadNotifications
+                )
                 Screen.Orders.route -> OrdersScreen()
                 Screen.CashierOrder.route -> CashierOrderScreen(onOrderCreated = { currentRoute = Screen.Orders.route })
                 Screen.Payments.route -> PaymentsScreen()
@@ -201,8 +251,41 @@ fun MainScreen(
                 Screen.Tables.route -> TablesScreen()
                 Screen.Expenses.route -> ExpensesScreen()
                 Screen.Reports.route -> ReportsScreen()
-                else -> DashboardScreen(onNavigateTo = { route -> currentRoute = route }, onLogout = onLogout)
+                Screen.Notifications.route -> NotificationsScreen(
+                    onNavigateTo = { route -> currentRoute = route }
+                )
+                else -> DashboardScreen(
+                    onNavigateTo = { route -> currentRoute = route },
+                    onLogout = onLogout,
+                    onOpenNotifications = { currentRoute = Screen.Notifications.route },
+                    unreadNotifications = unreadNotifications
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun NavIconWithBadge(
+    icon: ImageVector,
+    label: String,
+    tint: Color,
+    count: Int
+) {
+    Box(
+        modifier = Modifier.size(26.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = tint,
+            modifier = Modifier.size(18.dp)
+        )
+        CountBadge(
+            count = count,
+            modifier = Modifier.align(Alignment.TopEnd),
+            borderColor = Color.White
+        )
     }
 }

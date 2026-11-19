@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.kuliner.msme.admin.data.api.TokenManager
+import com.kuliner.msme.admin.notification.NotificationCenter
 import com.kuliner.msme.admin.notification.OrderMonitorEffect
 import com.kuliner.msme.admin.notification.OrderMonitorService
 import com.kuliner.msme.admin.ui.MainScreen
@@ -39,6 +40,7 @@ class MainActivity : ComponentActivity() {
                             openOrdersSignal = openOrdersSignal.intValue,
                             onLogout = {
                                 OrderMonitorService.stop(this@MainActivity)
+                                NotificationCenter.clear(this@MainActivity)
                                 isLoggedIn = false
                             }
                         )

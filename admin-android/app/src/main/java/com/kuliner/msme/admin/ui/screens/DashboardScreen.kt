@@ -30,6 +30,7 @@ import com.kuliner.msme.admin.R
 import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.api.TokenManager
 import com.kuliner.msme.admin.data.model.DashboardSummary
+import com.kuliner.msme.admin.ui.components.NotificationBellButton
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -37,7 +38,9 @@ import java.util.Locale
 @Composable
 fun DashboardScreen(
     onNavigateTo: (String) -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onOpenNotifications: () -> Unit = {},
+    unreadNotifications: Int = 0
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -114,20 +117,30 @@ fun DashboardScreen(
                 )
             }
 
-            Surface(
-                onClick = { showLogoutDialog = true },
-                modifier = Modifier.size(40.dp),
-                shape = CircleShape,
-                color = Color(0xFFFEE2E2),
-                shadowElevation = 2.dp
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.Logout,
-                        contentDescription = "Keluar",
-                        tint = Color(0xFF991B1B),
-                        modifier = Modifier.size(18.dp)
-                    )
+                NotificationBellButton(
+                    unreadCount = unreadNotifications,
+                    onClick = onOpenNotifications
+                )
+
+                Surface(
+                    onClick = { showLogoutDialog = true },
+                    modifier = Modifier.size(40.dp),
+                    shape = CircleShape,
+                    color = Color(0xFFFEE2E2),
+                    shadowElevation = 2.dp
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Logout,
+                            contentDescription = "Keluar",
+                            tint = Color(0xFF991B1B),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
         }

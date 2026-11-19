@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
                         MainScreen(
                             openOrdersSignal = openOrdersSignal.intValue,
                             onLogout = {
+                                TokenManager(this@MainActivity).clear()
                                 OrderMonitorService.stop(this@MainActivity)
                                 NotificationCenter.clear(this@MainActivity)
                                 isLoggedIn = false

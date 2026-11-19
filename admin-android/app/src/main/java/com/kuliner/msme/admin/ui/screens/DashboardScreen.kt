@@ -8,7 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.R
 import com.kuliner.msme.admin.data.api.RetrofitClient
-import com.kuliner.msme.admin.data.api.TokenManager
 import com.kuliner.msme.admin.data.model.DashboardSummary
+import com.kuliner.msme.admin.data.model.User
 import com.kuliner.msme.admin.ui.components.NotificationBellButton
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -38,7 +38,7 @@ import java.util.Locale
 @Composable
 fun DashboardScreen(
     onNavigateTo: (String) -> Unit,
-    onLogout: () -> Unit,
+    user: User? = null,
     onOpenNotifications: () -> Unit = {},
     unreadNotifications: Int = 0
 ) {
@@ -46,7 +46,6 @@ fun DashboardScreen(
     val scope = rememberCoroutineScope()
     var summary by remember { mutableStateOf<DashboardSummary?>(null) }
     var isLoading by remember { mutableStateOf(true) }
-    var showLogoutDialog by remember { mutableStateOf(false) }
 
     fun loadData() {
         isLoading = true
@@ -87,7 +86,7 @@ fun DashboardScreen(
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        // Top App Bar / Header with Logout Icon
+        // Header bersih: brand di kiri, notifikasi di kanan.
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -117,32 +116,10 @@ fun DashboardScreen(
                 )
             }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                NotificationBellButton(
-                    unreadCount = unreadNotifications,
-                    onClick = onOpenNotifications
-                )
-
-                Surface(
-                    onClick = { showLogoutDialog = true },
-                    modifier = Modifier.size(40.dp),
-                    shape = CircleShape,
-                    color = Color(0xFFFEE2E2),
-                    shadowElevation = 2.dp
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.Logout,
-                            contentDescription = "Keluar",
-                            tint = Color(0xFF991B1B),
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                }
-            }
+            NotificationBellButton(
+                unreadCount = unreadNotifications,
+                onClick = onOpenNotifications
+            )
         }
 
         // Greeting Section
@@ -154,10 +131,12 @@ fun DashboardScreen(
                 color = Color(0xFF81766F)
             )
             Text(
-                text = "Kasir AROMA!",
+                text = "Halo, ${user?.name?.takeIf { it.isNotBlank() } ?: "Kasir AROMA"}!",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Black,
-                color = Color(0xFF2B211D)
+                color = Color(0xFF2B211D),
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
         }
 
@@ -361,33 +340,91 @@ fun DashboardScreen(
                 )
             }
         }
-    }
 
-    if (showLogoutDialog) {
-        AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Konfirmasi Keluar", fontWeight = FontWeight.Black, fontSize = 17.sp, color = Color(0xFF2B211D)) },
-            text = { Text("Apakah Anda yakin ingin keluar?", fontSize = 13.sp, color = Color(0xFF81766F)) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showLogoutDialog = false
-                        val tokenManager = TokenManager(context)
-                        tokenManager.clear()
-                        onLogout()
-                    },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC94136))
-                ) {
-                    Text("Keluar", fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showLogoutDialog = false }) {
-                    Text("Batal", fontWeight = FontWeight.Bold, color = Color(0xFFE25822))
+        // Account Access Hub — pintu masuk ke profil & logout
+        Text(
+            text = "Akun & Keamanan",
+            fontWeight = FontWeight.Bold,
+            fontSize = 15.sp,
+            color = Color(0xFF2B211D),
+            modifier = Modifier.padding(top = 4.dp)
+        )
+
+        DashboardAccountCard(
+            user = user,
+            onClick = { onNavigateTo("profile") }
+        )
+
+        Spacer(modifier = Modifier.height(2.dp))
+    }
+}
+
+@Composable
+private fun DashboardAccountCard(
+    user: User?,
+    onClick: () -> Unit
+) {
+    val displayName = user?.name?.takeIf { it.isNotBlank() } ?: "Akun Saya"
+    val displayEmail = user?.email?.takeIf { it.isNotBlank() }
+        ?: "Kelola profil dan keamanan akun"
+    val initial = displayName.trim().firstOrNull()?.uppercase() ?: "A"
+
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        color = Color.White,
+        shadowElevation = 2.dp,
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE9E1D9))
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Surface(
+                modifier = Modifier.size(42.dp),
+                shape = CircleShape,
+                color = Color(0xFFFFF0E8)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = initial,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Black,
+                        color = Color(0xFFE25822)
+                    )
                 }
             }
-        )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = displayName,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color(0xFF2B211D),
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = displayEmail,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF81766F),
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
+            }
+
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "Buka profil akun",
+                tint = Color(0xFFB9AEA6),
+                modifier = Modifier.size(22.dp)
+            )
+        }
     }
 }
 

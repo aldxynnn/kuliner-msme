@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.notification.NotificationCenter
 import com.kuliner.msme.admin.notification.OrderAlerts
+import com.kuliner.msme.admin.data.api.RetrofitClient
+import com.kuliner.msme.admin.data.model.User
 import com.kuliner.msme.admin.ui.components.CountBadge
 import com.kuliner.msme.admin.ui.screens.*
 import kotlinx.coroutines.delay
@@ -35,6 +37,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Expenses : Screen("expenses", "Biaya", Icons.Default.MoneyOff)
     object Reports : Screen("reports", "Laporan", Icons.Default.Assessment)
     object Notifications : Screen("notifications", "Notifikasi", Icons.Default.Notifications)
+    object Profile : Screen("profile", "Profil & Akun", Icons.Default.Person)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,6 +57,19 @@ fun MainScreen(
 
     val notifications by NotificationCenter.notifications.collectAsState()
     val unreadNotifications = notifications.count { !it.isRead }
+
+    var currentUser by remember { mutableStateOf<User?>(null) }
+
+    LaunchedEffect(Unit) {
+        try {
+            val response = RetrofitClient.getApiService(context).getMe()
+            if (response.isSuccessful) {
+                currentUser = response.body()
+            }
+        } catch (_: Exception) {
+            // Profil tetap memakai fallback bila jaringan bermasalah.
+        }
+    }
 
     LaunchedEffect(Unit) {
         NotificationCenter.init(context)
@@ -117,6 +133,7 @@ fun MainScreen(
                                 Screen.Expenses.route -> "Pengeluaran Resto"
                                 Screen.Reports.route -> "Laporan Surplus"
                                 Screen.Notifications.route -> "Notifikasi"
+                                Screen.Profile.route -> "Profil & Akun"
                                 else -> "AROMA POS"
                             },
                             fontWeight = FontWeight.Black,
@@ -195,7 +212,7 @@ fun MainScreen(
             when (currentRoute) {
                 Screen.Dashboard.route -> DashboardScreen(
                     onNavigateTo = { route -> currentRoute = route },
-                    onLogout = onLogout,
+                    user = currentUser,
                     onOpenNotifications = { currentRoute = Screen.Notifications.route },
                     unreadNotifications = unreadNotifications
                 )
@@ -210,9 +227,13 @@ fun MainScreen(
                 Screen.Notifications.route -> NotificationsScreen(
                     onNavigateTo = { route -> currentRoute = route }
                 )
+                Screen.Profile.route -> ProfileScreen(
+                    user = currentUser,
+                    onLogout = onLogout
+                )
                 else -> DashboardScreen(
                     onNavigateTo = { route -> currentRoute = route },
-                    onLogout = onLogout,
+                    user = currentUser,
                     onOpenNotifications = { currentRoute = Screen.Notifications.route },
                     unreadNotifications = unreadNotifications
                 )

@@ -62,24 +62,26 @@ fun NotificationBellButton(
     unreadCount: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = Color(0xFFFFF0E8),
-    iconTint: Color = Color(0xFFE25822),
+    containerColor: Color = Color.White,
+    iconTint: Color = Color(0xFF2B211D),
+    borderColor: Color = Color(0xFFE9E1D9),
     icon: ImageVector = Icons.Default.Notifications
 ) {
     Box(modifier = modifier) {
         Surface(
             onClick = onClick,
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(42.dp),
             shape = CircleShape,
             color = containerColor,
-            shadowElevation = 2.dp
+            shadowElevation = 2.dp,
+            border = BorderStroke(1.dp, borderColor)
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = icon,
                     contentDescription = "Notifikasi",
                     tint = iconTint,
-                    modifier = Modifier.size(19.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }

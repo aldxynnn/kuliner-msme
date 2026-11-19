@@ -43,9 +43,16 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    openOrdersSignal: Int = 0
 ) {
     var currentRoute by remember { mutableStateOf<String>(Screen.Dashboard.route) }
+
+    LaunchedEffect(openOrdersSignal) {
+        if (openOrdersSignal > 0) {
+            currentRoute = Screen.Orders.route
+        }
+    }
     val context = LocalContext.current
     val tokenManager = remember { TokenManager(context) }
 

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.model.Order
+import com.kuliner.msme.admin.notification.OrderAlerts
 import com.kuliner.msme.admin.data.model.ReceiptInfo
 import com.kuliner.msme.admin.data.model.UpdateOrderStatusRequest
 import kotlinx.coroutines.launch
@@ -58,6 +59,12 @@ fun OrdersScreen() {
 
     LaunchedEffect(selectedStatusFilter) {
         loadOrders()
+    }
+
+    LaunchedEffect(Unit) {
+        OrderAlerts.newOrders.collect {
+            loadOrders()
+        }
     }
 
     fun handleUpdateStatus(orderId: String, newStatus: String) {

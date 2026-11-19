@@ -165,7 +165,7 @@ fun LoginScreen(
                     modifier = Modifier.padding(24.dp)
                 ) {
                     Text(
-                        text = "Masuk Kasir / Admin",
+                        text = "Masuk Kasir POS",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Black,
                         letterSpacing = (-0.5).sp,

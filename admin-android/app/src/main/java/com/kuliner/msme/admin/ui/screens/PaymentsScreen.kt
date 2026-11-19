@@ -23,6 +23,7 @@ import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.model.ConfirmPaymentRequest
 import com.kuliner.msme.admin.data.model.Order
 import com.kuliner.msme.admin.data.model.Payment
+import com.kuliner.msme.admin.ui.util.friendlyUserName
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -283,7 +284,7 @@ fun PaymentsScreen() {
                                 Spacer(modifier = Modifier.height(6.dp))
 
                                 Text(
-                                    text = "Metode: ${payment.paymentMethod} • Diverifikasi: ${payment.confirmedByUser?.name ?: "Kasir"}",
+                                    text = "Metode: ${payment.paymentMethod} • Diverifikasi: ${friendlyUserName(payment.confirmedByUser?.name, fallback = "Kasir")}",
                                     fontSize = 12.sp,
                                     color = Color(0xFF81766F)
                                 )

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.api.TokenManager
 import com.kuliner.msme.admin.data.model.User
+import com.kuliner.msme.admin.ui.util.friendlyUserName
 
 private val WarmBg = Color(0xFFFAF8F5)
 private val CardWhite = Color(0xFFFFFFFF)
@@ -67,15 +68,11 @@ fun ProfileScreen(
         }
     }
 
-    val displayName = profile?.name?.takeIf { it.isNotBlank() } ?: "Kasir AROMA"
+    val displayName = friendlyUserName(profile?.name)
     val displayEmail = profile?.email?.takeIf { it.isNotBlank() }
         ?: tokenManager.getUserEmail()
         ?: "Belum tersedia"
-    val roleLabel = when (profile?.role?.uppercase()) {
-        "ADMIN" -> "Admin / Owner"
-        "CASHIER" -> "Kasir"
-        else -> "Staf Operasional"
-    }
+    val roleLabel = "Kasir"
     val sessionStatus = if (tokenManager.getToken().isNullOrBlank()) "Tidak aktif" else "Sesi aktif"
     val initial = displayName.trim().firstOrNull()?.uppercase() ?: "A"
 

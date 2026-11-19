@@ -14,7 +14,7 @@ async function main() {
   if (!existingAdmin) {
     await prisma.user.create({
       data: {
-        name: 'Owner / Admin AROMA',
+        name: 'Kasir AROMA',
         email: 'admin@kuliner.com',
         password: hashedPasswordAdmin,
         role: Role.ADMIN,

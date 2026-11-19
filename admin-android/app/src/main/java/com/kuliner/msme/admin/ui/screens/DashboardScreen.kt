@@ -31,6 +31,7 @@ import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.model.DashboardSummary
 import com.kuliner.msme.admin.data.model.User
 import com.kuliner.msme.admin.ui.components.NotificationBellButton
+import com.kuliner.msme.admin.ui.util.friendlyUserName
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -131,7 +132,7 @@ fun DashboardScreen(
                 color = Color(0xFF81766F)
             )
             Text(
-                text = "Halo, ${user?.name?.takeIf { it.isNotBlank() } ?: "Kasir AROMA"}!",
+                text = "Halo, ${friendlyUserName(user?.name)}!",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Black,
                 color = Color(0xFF2B211D),
@@ -364,7 +365,7 @@ private fun DashboardAccountCard(
     user: User?,
     onClick: () -> Unit
 ) {
-    val displayName = user?.name?.takeIf { it.isNotBlank() } ?: "Akun Saya"
+    val displayName = friendlyUserName(user?.name, fallback = "Akun Saya")
     val displayEmail = user?.email?.takeIf { it.isNotBlank() }
         ?: "Kelola profil dan keamanan akun"
     val initial = displayName.trim().firstOrNull()?.uppercase() ?: "A"

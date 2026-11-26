@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --aroma-paper: #FBF9F5;
-  --aroma-stone: #F3EFE8;
+  --aroma-paper: #F8F9FA;
+  --aroma-stone: #F3F4F6;
   --aroma-surface: #FFFFFF;
-  --aroma-ink: #171311;
-  --aroma-spice: #C84319;
-  --aroma-pandan: #14533C;
-  --aroma-border: #E6DFD5;
+  --aroma-ink: #1F2937;
+  --aroma-spice: #EA580C;
+  --aroma-pandan: #15803D;
+  --aroma-border: #E5E7EB;
 }
 
 @layer base {
@@ -34,7 +34,7 @@
   }
 
   .receipt-edge {
-    border-top: 1px dashed #D5CBBF;
+    border-top: 1px dashed #E5E7EB;
   }
 }
 

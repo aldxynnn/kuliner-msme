@@ -85,7 +85,7 @@ fun DashboardScreen(
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Executive Top Bar: Atelier Logo + Shift Operator + Bell + Profile Monogram
+        // Clean Top Bar: Logo + Shift Operator + Bell + Profile Avatar
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -96,10 +96,10 @@ fun DashboardScreen(
                 modifier = Modifier.weight(1f)
             ) {
                 Surface(
-                    modifier = Modifier.size(40.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    color = AromaSurface,
-                    border = BorderStroke(1.dp, AromaBorder)
+                    modifier = Modifier.size(42.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    color = AromaTerracottaSoft,
+                    border = BorderStroke(1.dp, AromaTerracottaBorder)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.logo_aroma),
@@ -107,7 +107,7 @@ fun DashboardScreen(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
-                            .clip(RoundedCornerShape(10.dp))
+                            .clip(RoundedCornerShape(12.dp))
                     )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
@@ -115,8 +115,8 @@ fun DashboardScreen(
                     Text(
                         text = "AROMA POS",
                         style = AromaBrandSerifStyle,
-                        fontSize = 18.sp,
-                        color = AromaCharcoal
+                        fontSize = 19.sp,
+                        color = AromaTerracotta
                     )
                     Text(
                         text = "Shift · $displayName",
@@ -142,30 +142,31 @@ fun DashboardScreen(
                     onClick = { onNavigateTo("profile") },
                     modifier = Modifier.size(44.dp),
                     shape = CircleShape,
-                    color = AromaCharcoal
+                    color = AromaTerracottaSoft,
+                    border = BorderStroke(1.dp, AromaTerracottaBorder)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(
                             text = initial,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = AromaSurface
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = AromaTerracotta
                         )
                     }
                 }
             }
         }
 
-        // Signature Deep Roast Ink Revenue Ledger Sheet
+        // Clean Brand Orange Revenue Summary Card
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            color = AromaCharcoal
+            shape = RoundedCornerShape(18.dp),
+            color = AromaTerracotta
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(18.dp),
+                    .padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Row(
@@ -175,42 +176,39 @@ fun DashboardScreen(
                 ) {
                     Text(
                         text = "OMZET LUNAS HARI INI",
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 10.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.2.sp,
-                        color = AromaSurface.copy(alpha = 0.68f)
+                        letterSpacing = 0.8.sp,
+                        color = AromaSurface.copy(alpha = 0.88f)
                     )
 
                     if (isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(16.dp),
-                            color = AromaTerracottaLight,
+                            color = AromaSurface,
                             strokeWidth = 2.dp
                         )
                     } else {
                         Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = AromaInkSoft,
-                            border = BorderStroke(1.dp, AromaInkDivider)
+                            shape = RoundedCornerShape(50),
+                            color = AromaSurface.copy(alpha = 0.18f)
                         ) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(5.dp)
                             ) {
                                 Box(
                                     modifier = Modifier
                                         .size(6.dp)
-                                        .background(AromaSuccessLive, CircleShape)
+                                        .background(AromaSurface, CircleShape)
                                 )
                                 Text(
                                     text = "LIVE",
-                                    fontFamily = FontFamily.Monospace,
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = AromaSurface,
-                                    letterSpacing = 0.8.sp
+                                    letterSpacing = 0.6.sp
                                 )
                             }
                         }
@@ -219,14 +217,13 @@ fun DashboardScreen(
 
                 Text(
                     text = formatRupiah(summary?.todayRevenue ?: 0),
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 31.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.ExtraBold,
                     letterSpacing = (-0.8).sp,
                     color = AromaSurface
                 )
 
-                HorizontalDivider(color = AromaInkDivider, thickness = 1.dp)
+                HorizontalDivider(color = AromaSurface.copy(alpha = 0.22f), thickness = 1.dp)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -236,12 +233,11 @@ fun DashboardScreen(
                         Text(
                             text = "Transaksi Lunas",
                             fontSize = 11.sp,
-                            color = AromaSurface.copy(alpha = 0.6f)
+                            color = AromaSurface.copy(alpha = 0.82f)
                         )
                         Text(
                             text = "${summary?.todayTransactionCount ?: 0} transaksi",
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 13.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = AromaSurface
                         )
@@ -250,12 +246,11 @@ fun DashboardScreen(
                         Text(
                             text = "Pesanan Selesai",
                             fontSize = 11.sp,
-                            color = AromaSurface.copy(alpha = 0.6f)
+                            color = AromaSurface.copy(alpha = 0.82f)
                         )
                         Text(
                             text = "${summary?.completedOrdersTodayCount ?: 0} selesai",
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 13.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = AromaSurface
                         )
@@ -423,10 +418,10 @@ fun DashboardScreen(
                     .weight(0.85f)
                     .height(48.dp),
                 shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, AromaBorder),
+                border = BorderStroke(1.dp, AromaTerracottaBorder),
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = AromaSurface,
-                    contentColor = AromaCharcoal
+                    contentColor = AromaTerracotta
                 )
             ) {
                 Icon(
@@ -573,32 +568,23 @@ private fun DashboardMenuRow(
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = indexCode,
-            fontFamily = FontFamily.Monospace,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            color = AromaTextMuted,
-            modifier = Modifier.width(24.dp)
-        )
-
         Surface(
-            modifier = Modifier.size(36.dp),
-            shape = RoundedCornerShape(9.dp),
-            color = AromaCreamSoft,
-            border = BorderStroke(1.dp, AromaBorder)
+            modifier = Modifier.size(40.dp),
+            shape = RoundedCornerShape(11.dp),
+            color = AromaTerracottaSoft,
+            border = BorderStroke(1.dp, AromaTerracottaBorder)
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     icon,
                     contentDescription = null,
-                    tint = AromaCharcoal,
-                    modifier = Modifier.size(18.dp)
+                    tint = AromaTerracotta,
+                    modifier = Modifier.size(19.dp)
                 )
             }
         }
 
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(14.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -609,9 +595,10 @@ private fun DashboardMenuRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = subtitle,
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 color = AromaTextMuted,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

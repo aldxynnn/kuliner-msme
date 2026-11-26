@@ -25,11 +25,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       onClick={() => product.isAvailable && onSelectProduct(product)}
       className={`bg-white rounded-2xl border border-paper-200 overflow-hidden flex flex-row sm:flex-col justify-between transition-all duration-200 group ${
         product.isAvailable
-          ? 'cursor-pointer hover:border-ink/30 hover:shadow-card-hover'
+          ? 'cursor-pointer hover:border-spice-300 hover:shadow-card-hover'
           : 'opacity-65 cursor-not-allowed bg-paper-50'
       }`}
     >
-      {/* Desktop Top Editorial Image (sm+) */}
+      {/* Desktop Top Product Image (sm+) */}
       <div className="hidden sm:flex relative w-full aspect-[4/3] bg-paper-100 overflow-hidden shrink-0 items-center justify-center">
         {showImage ? (
           <img
@@ -48,21 +48,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {product.category?.name && (
-          <span className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-ink/75 backdrop-blur-sm text-white font-mono text-[10px] font-semibold uppercase tracking-wider">
+          <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-sm text-ink border border-paper-200 text-[10px] font-bold uppercase tracking-wider shadow-sm">
             {product.category.name}
           </span>
         )}
 
         {product.isAvailable && cartQuantity > 0 && (
-          <span className="inline-flex items-center gap-1 absolute top-3 right-3 px-2.5 py-1 rounded-md bg-pandan-600 text-white text-[11px] font-mono font-bold shadow-sm tabular-nums">
+          <span className="inline-flex items-center gap-1 absolute top-3 right-3 px-2.5 py-1 rounded-full bg-spice-500 text-white text-[11px] font-bold shadow-sm tabular-nums">
             <Check className="w-3 h-3" />
             <span>{cartQuantity} di tiket</span>
           </span>
         )}
 
         {!product.isAvailable && (
-          <div className="absolute inset-0 bg-paper-50/75 backdrop-blur-[1px] flex items-center justify-center p-2">
-            <span className="font-mono text-[11px] font-bold text-ink uppercase tracking-widest px-3 py-1 rounded-md bg-white border border-paper-300 shadow-sm">
+          <div className="absolute inset-0 bg-white/75 backdrop-blur-[1px] flex items-center justify-center p-2">
+            <span className="text-[11px] font-bold text-ink-muted uppercase tracking-widest px-3 py-1 rounded-full bg-white border border-paper-300 shadow-sm">
               Habis
             </span>
           </div>
@@ -73,7 +73,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <div className="flex-1 flex flex-col justify-between min-w-0 p-3.5 sm:p-5">
         <div>
           {product.category?.name && (
-            <p className="sm:hidden font-mono text-[10px] font-semibold text-spice-600 uppercase tracking-[0.1em]">
+            <p className="sm:hidden text-[10px] font-bold text-spice-600 uppercase tracking-wider">
               {product.category.name}
             </p>
           )}
@@ -88,7 +88,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         <div className="flex items-center justify-between gap-2 mt-3 sm:mt-4 sm:pt-3.5 sm:border-t sm:border-paper-100">
-          <span className="font-mono font-bold text-[15px] sm:text-base text-ink tabular-nums tracking-tight">
+          <span className="font-bold text-[15px] sm:text-base text-spice-600 tabular-nums tracking-tight">
             {formatRupiah(product.price)}
           </span>
 
@@ -101,16 +101,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 onSelectProduct(product);
               }}
               aria-label={`Tambah ${product.name}`}
-              className={`hidden sm:inline-flex min-h-[38px] px-3.5 py-1.5 rounded-full items-center gap-1.5 font-bold text-xs transition-all active:scale-95 shrink-0 ${
+              className={`hidden sm:inline-flex min-h-[36px] px-3.5 py-1.5 rounded-full items-center gap-1.5 font-bold text-xs transition-all active:scale-95 shrink-0 ${
                 cartQuantity > 0
-                  ? 'bg-pandan-600 text-white hover:bg-pandan-700'
-                  : 'bg-ink text-white hover:bg-spice-500'
+                  ? 'bg-spice-500 text-white hover:bg-spice-600'
+                  : 'bg-spice-50 text-spice-600 border border-spice-200 hover:bg-spice-500 hover:text-white hover:border-spice-500'
               }`}
             >
               {cartQuantity > 0 ? (
                 <>
                   <Check className="w-3.5 h-3.5" />
-                  <span className="font-mono tabular-nums">{cartQuantity}×</span>
+                  <span className="tabular-nums">{cartQuantity}×</span>
                 </>
               ) : (
                 <>
@@ -120,7 +120,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               )}
             </button>
           ) : (
-            <span className="font-mono text-[11px] font-semibold text-ink-muted uppercase tracking-wider">
+            <span className="text-[11px] font-semibold text-ink-muted uppercase tracking-wider">
               Habis
             </span>
           )}
@@ -149,16 +149,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               onSelectProduct(product);
             }}
             aria-label={`Tambah ${product.name}`}
-            className={`absolute bottom-1.5 inset-x-1.5 min-h-[32px] px-2 py-1 rounded-lg inline-flex items-center justify-center gap-1 font-bold text-[11px] shadow-md transition-all active:scale-95 ${
+            className={`absolute bottom-1.5 inset-x-1.5 min-h-[30px] px-2 py-1 rounded-lg inline-flex items-center justify-center gap-1 font-bold text-[11px] shadow-sm transition-all active:scale-95 ${
               cartQuantity > 0
-                ? 'bg-pandan-600 text-white'
-                : 'bg-ink/95 text-white hover:bg-spice-500'
+                ? 'bg-spice-500 text-white'
+                : 'bg-white text-spice-600 border border-spice-200 hover:bg-spice-500 hover:text-white'
             }`}
           >
             {cartQuantity > 0 ? (
               <>
                 <Check className="w-3 h-3 shrink-0" />
-                <span className="font-mono tabular-nums">{cartQuantity}×</span>
+                <span className="tabular-nums">{cartQuantity}×</span>
               </>
             ) : (
               <>
@@ -168,8 +168,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </button>
         ) : (
-          <div className="absolute inset-0 bg-paper-50/75 flex items-center justify-center">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white border border-paper-300 text-ink">
+          <div className="absolute inset-0 bg-white/75 flex items-center justify-center">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white border border-paper-300 text-ink-muted">
               Habis
             </span>
           </div>

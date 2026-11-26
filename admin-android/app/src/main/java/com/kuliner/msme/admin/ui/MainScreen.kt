@@ -252,10 +252,10 @@ fun MainScreen(
                                             .fillMaxWidth(0.88f)
                                             .height(48.dp),
                                         shape = RoundedCornerShape(14.dp),
-                                        color = if (isSelected) AromaTerracotta else AromaCharcoal,
+                                        color = if (isSelected) AromaTerracotta else AromaTerracottaSoft,
                                         border = if (isSelected) null else BorderStroke(
                                             1.dp,
-                                            AromaCharcoal
+                                            AromaTerracottaBorder
                                         ),
                                         shadowElevation = 0.dp
                                     ) {
@@ -267,7 +267,7 @@ fun MainScreen(
                                             Icon(
                                                 imageVector = screen.icon,
                                                 contentDescription = screen.title,
-                                                tint = AromaSurface,
+                                                tint = if (isSelected) AromaSurface else AromaTerracotta,
                                                 modifier = Modifier.size(19.dp)
                                             )
                                             Spacer(modifier = Modifier.height(1.dp))
@@ -275,8 +275,8 @@ fun MainScreen(
                                                 text = "POS",
                                                 fontSize = 10.sp,
                                                 fontWeight = FontWeight.ExtraBold,
-                                                color = AromaSurface,
-                                                letterSpacing = 0.6.sp
+                                                color = if (isSelected) AromaSurface else AromaTerracotta,
+                                                letterSpacing = 0.5.sp
                                             )
                                         }
                                     }
@@ -292,12 +292,12 @@ fun MainScreen(
                                 ) {
                                     Box(
                                         modifier = Modifier
-                                            .width(22.dp)
-                                            .height(2.5.dp)
+                                            .width(24.dp)
+                                            .height(3.dp)
                                             .clip(
                                                 RoundedCornerShape(
-                                                    bottomStart = 3.dp,
-                                                    bottomEnd = 3.dp
+                                                    bottomStart = 4.dp,
+                                                    bottomEnd = 4.dp
                                                 )
                                             )
                                             .background(
@@ -312,7 +312,7 @@ fun MainScreen(
                                         NavIconWithBadge(
                                             icon = screen.icon,
                                             label = screen.title,
-                                            tint = if (isSelected) AromaCharcoal else AromaTextMuted,
+                                            tint = if (isSelected) AromaTerracotta else AromaTextMuted,
                                             count = badgeCount
                                         )
                                         Spacer(modifier = Modifier.height(2.dp))
@@ -320,7 +320,7 @@ fun MainScreen(
                                             text = screen.title,
                                             fontSize = 11.sp,
                                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                            color = if (isSelected) AromaCharcoal else AromaTextMuted,
+                                            color = if (isSelected) AromaTerracotta else AromaTextMuted,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
                                         )

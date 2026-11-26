@@ -13,9 +13,9 @@ val AromaMonoStyle = TextStyle(
 )
 
 val AromaBrandSerifStyle = TextStyle(
-    fontFamily = FontFamily.Serif,
-    fontWeight = FontWeight.Bold,
-    letterSpacing = (-0.4).sp
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.ExtraBold,
+    letterSpacing = (-0.5).sp
 )
 
 val Typography = Typography(

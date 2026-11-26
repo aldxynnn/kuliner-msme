@@ -80,7 +80,7 @@ fun ProfileScreen(
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Operator Identity Badge Sheet with Dark Roast Band
+        // Clean White & Soft Orange Operator Identity Card
         AromaCard(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = 16.dp
@@ -88,7 +88,7 @@ fun ProfileScreen(
             Column(modifier = Modifier.fillMaxWidth()) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    color = AromaCharcoal
+                    color = AromaTerracottaSoft
                 ) {
                     Row(
                         modifier = Modifier
@@ -99,11 +99,10 @@ fun ProfileScreen(
                     ) {
                         Text(
                             text = "OPERATOR SHIFT",
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 10.sp,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp,
-                            color = AromaSurface.copy(alpha = 0.72f)
+                            letterSpacing = 0.8.sp,
+                            color = AromaTerracotta
                         )
                         AromaTag(
                             label = sessionStatus,
@@ -114,6 +113,8 @@ fun ProfileScreen(
                     }
                 }
 
+                HorizontalDivider(color = AromaTerracottaBorder, thickness = 1.dp)
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -123,7 +124,7 @@ fun ProfileScreen(
                     Surface(
                         modifier = Modifier.size(64.dp),
                         shape = CircleShape,
-                        color = AromaCharcoal
+                        color = AromaTerracotta
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
@@ -175,8 +176,8 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(3.dp),
-                color = AromaCharcoal,
-                trackColor = AromaCreamTrack
+                color = AromaTerracotta,
+                trackColor = AromaTerracottaSoft
             )
         }
 

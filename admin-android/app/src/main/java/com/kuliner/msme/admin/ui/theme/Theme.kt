@@ -14,10 +14,10 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = AromaSurface,
     primaryContainer = AromaTerracottaSoft,
     onPrimaryContainer = AromaTerracottaDark,
-    secondary = AromaCharcoal,
+    secondary = AromaTerracotta,
     onSecondary = AromaSurface,
-    secondaryContainer = AromaCreamTrack,
-    onSecondaryContainer = AromaCharcoal,
+    secondaryContainer = AromaTerracottaSoft,
+    onSecondaryContainer = AromaTerracottaDark,
     tertiary = AromaSuccess,
     onTertiary = AromaSurface,
     background = AromaCream,
@@ -43,7 +43,7 @@ fun KulinerAdminTheme(content: @Composable () -> Unit) {
             val window = (view.context as? Activity)?.window
             if (window != null) {
                 @Suppress("DEPRECATION")
-                window.statusBarColor = AromaCream.toArgb()
+                window.statusBarColor = AromaSurface.toArgb()
                 WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
             }
         }

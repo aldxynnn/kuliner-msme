@@ -94,7 +94,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
           {product.category?.name && (
             <div className="absolute bottom-3.5 left-4">
-              <span className="inline-flex items-center px-3 py-1 rounded-md bg-ink/85 backdrop-blur-sm text-white font-mono text-[11px] font-semibold uppercase tracking-wider">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/95 backdrop-blur-sm text-ink border border-paper-200 text-[11px] font-bold uppercase tracking-wider shadow-sm">
                 {product.category.name}
               </span>
             </div>
@@ -168,7 +168,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 type="button"
                 onClick={() => setQuantity((q) => q + 1)}
                 aria-label="Tambah jumlah"
-                className="w-10 h-10 rounded-full bg-ink text-white flex items-center justify-center hover:bg-spice-500 active:scale-95 transition-colors"
+                className="w-10 h-10 rounded-full bg-spice-500 text-white flex items-center justify-center hover:bg-spice-600 active:scale-95 transition-colors"
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -177,11 +177,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
         </div>
 
         {/* Sticky Checkout Add Footer */}
-        <div className="p-4 sm:p-5 border-t border-paper-200 bg-paper-50 shrink-0">
+        <div className="p-4 sm:p-5 border-t border-paper-200 bg-white shrink-0">
           <button
             type="button"
             onClick={handleAdd}
-            className="w-full min-h-[52px] py-3.5 px-5 rounded-xl bg-ink hover:bg-spice-500 text-white font-bold text-sm flex items-center justify-between gap-3 active:scale-[0.99] transition-colors"
+            className="w-full min-h-[52px] py-3.5 px-5 rounded-xl bg-spice-500 hover:bg-spice-600 text-white font-bold text-sm flex items-center justify-between gap-3 active:scale-[0.99] transition-colors"
           >
             <span className="inline-flex items-center gap-2">
               <ShoppingBag className="w-4 h-4" />

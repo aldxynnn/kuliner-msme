@@ -210,12 +210,12 @@ fun AromaFilterPill(
     Surface(
         onClick = onClick,
         modifier = modifier.defaultMinSize(minHeight = 36.dp),
-        shape = RoundedCornerShape(8.dp),
-        color = if (selected) AromaCharcoal else AromaSurface,
+        shape = RoundedCornerShape(50),
+        color = if (selected) AromaTerracotta else AromaSurface,
         border = if (selected) null else BorderStroke(1.dp, AromaBorder)
     ) {
         Box(
-            modifier = Modifier.padding(horizontal = 13.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -238,15 +238,15 @@ fun AromaSegmentedControl(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(10.dp),
-        color = AromaCreamTrack,
+        shape = RoundedCornerShape(12.dp),
+        color = AromaCreamSoft,
         border = BorderStroke(1.dp, AromaBorder)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(3.dp),
-            horizontalArrangement = Arrangement.spacedBy(3.dp)
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             options.forEachIndexed { index, (label, icon) ->
                 val isSelected = selectedIndex == index
@@ -255,8 +255,8 @@ fun AromaSegmentedControl(
                     modifier = Modifier
                         .weight(1f)
                         .height(38.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    color = if (isSelected) AromaCharcoal else Color.Transparent,
+                    shape = RoundedCornerShape(9.dp),
+                    color = if (isSelected) AromaTerracotta else Color.Transparent,
                     shadowElevation = 0.dp
                 ) {
                     Row(
@@ -368,8 +368,8 @@ fun AromaLoadingState(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             CircularProgressIndicator(
-                color = AromaCharcoal,
-                trackColor = AromaCreamTrack,
+                color = AromaTerracotta,
+                trackColor = AromaTerracottaSoft,
                 strokeWidth = 3.dp,
                 modifier = Modifier.size(32.dp)
             )
@@ -477,14 +477,14 @@ fun AromaFeedbackBanner(
 @Composable
 fun aromaTextFieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors(
     focusedContainerColor = AromaSurface,
-    unfocusedContainerColor = AromaCreamSoft,
-    focusedBorderColor = AromaCharcoal,
+    unfocusedContainerColor = AromaSurface,
+    focusedBorderColor = AromaTerracotta,
     unfocusedBorderColor = AromaBorder,
-    focusedLabelColor = AromaCharcoal,
+    focusedLabelColor = AromaTerracotta,
     unfocusedLabelColor = AromaTextSecondary,
     focusedTextColor = AromaCharcoal,
     unfocusedTextColor = AromaCharcoal,
     cursorColor = AromaTerracotta,
-    focusedLeadingIconColor = AromaCharcoal,
+    focusedLeadingIconColor = AromaTerracotta,
     unfocusedLeadingIconColor = AromaTextMuted
 )

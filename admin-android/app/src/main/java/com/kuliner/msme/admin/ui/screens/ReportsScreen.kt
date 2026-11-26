@@ -122,16 +122,16 @@ fun ReportsScreen() {
             val isNegative = r.operatingSurplus < 0
             val surplusColor = if (isNegative) AromaTerracottaLight else AromaSuccessLive
 
-            // Deep Roast Executive Surplus Sheet
+            // Clean Brand Orange Surplus Hero Card
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = AromaCharcoal
+                shape = RoundedCornerShape(18.dp),
+                color = AromaTerracotta
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(18.dp),
+                        .padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Row(
@@ -141,41 +141,37 @@ fun ReportsScreen() {
                     ) {
                         Text(
                             text = "SURPLUS OPERASIONAL",
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 10.sp,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            color = AromaSurface.copy(alpha = 0.7f),
-                            letterSpacing = 1.sp
+                            color = AromaSurface.copy(alpha = 0.88f),
+                            letterSpacing = 0.8.sp
                         )
                         Surface(
-                            shape = RoundedCornerShape(6.dp),
-                            color = AromaInkSoft,
-                            border = BorderStroke(1.dp, AromaInkDivider)
+                            shape = RoundedCornerShape(50),
+                            color = AromaSurface.copy(alpha = 0.2f)
                         ) {
                             Text(
                                 text = if (r.period == "daily") "Hari Ini" else "Bulan Ini",
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 10.sp,
+                                fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = AromaSurface,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                             )
                         }
                     }
 
                     Text(
                         text = formatRupiah(r.operatingSurplus),
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 31.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.ExtraBold,
                         letterSpacing = (-0.8).sp,
-                        color = surplusColor
+                        color = AromaSurface
                     )
 
                     Text(
                         text = r.note,
                         fontSize = 12.sp,
-                        color = AromaSurface.copy(alpha = 0.7f),
+                        color = AromaSurface.copy(alpha = 0.88f),
                         lineHeight = 18.sp
                     )
                 }

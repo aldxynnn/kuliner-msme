@@ -312,7 +312,7 @@ export const App: React.FC = () => {
                     loadCategories();
                     loadProducts();
                   }}
-                  className="min-h-[42px] inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-ink hover:bg-spice-500 text-white text-xs font-bold transition-colors"
+                  className="min-h-[42px] inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-spice-500 hover:bg-spice-600 text-white text-xs font-bold transition-colors"
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span>Coba Muat Ulang</span>
@@ -388,38 +388,38 @@ export const App: React.FC = () => {
       {addedToast && (
         <div
           role="status"
-          className={`fixed left-1/2 -translate-x-1/2 z-40 px-4 py-2.5 rounded-full bg-ink text-white text-xs font-bold shadow-dock flex items-center gap-2 max-w-[90vw] animate-aroma-sheet ${
+          className={`fixed left-1/2 -translate-x-1/2 z-40 px-4 py-2.5 rounded-full bg-white border border-spice-200 text-ink text-xs font-bold shadow-lg flex items-center gap-2 max-w-[90vw] animate-aroma-sheet ${
             totalCartCount > 0 ? 'bottom-24 lg:bottom-6' : 'bottom-6'
           }`}
         >
-          <CheckCircle2 className="w-4 h-4 text-pandan-200 shrink-0" />
+          <CheckCircle2 className="w-4 h-4 text-spice-500 shrink-0" />
           <span className="truncate">{addedToast}</span>
         </div>
       )}
 
-      {/* Mobile & Tablet Floating Deep Roast Bottom Dock */}
+      {/* Mobile & Tablet Floating Clean Orange Bottom Dock */}
       {totalCartCount > 0 && (
         <div className="lg:hidden fixed bottom-4 inset-x-4 max-w-xl mx-auto z-30">
           <button
             type="button"
             onClick={() => setIsCartOpen(true)}
-            className="w-full min-h-[64px] bg-ink hover:bg-ink-soft text-white rounded-2xl px-4 py-3 shadow-dock flex items-center justify-between gap-3 active:scale-[0.99] transition-all"
+            className="w-full min-h-[64px] bg-spice-500 hover:bg-spice-600 text-white rounded-2xl px-4 py-3 shadow-dock flex items-center justify-between gap-3 active:scale-[0.99] transition-all"
           >
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-spice-500 text-white flex items-center justify-center font-mono font-bold text-sm tabular-nums shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-white text-spice-600 flex items-center justify-center font-bold text-sm tabular-nums shrink-0">
                 {totalCartCount}
               </div>
               <div className="text-left min-w-0">
-                <p className="font-mono text-[10px] font-semibold text-paper-300 uppercase tracking-wider whitespace-nowrap">
+                <p className="text-[10px] font-semibold text-spice-100 uppercase tracking-wider whitespace-nowrap">
                   Tiket Pesanan
                 </p>
-                <p className="font-mono font-bold text-base text-white tabular-nums whitespace-nowrap">
+                <p className="font-bold text-base text-white tabular-nums whitespace-nowrap">
                   {formatRupiah(totalCartPrice)}
                 </p>
               </div>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 font-bold text-xs bg-white text-ink px-4 py-2.5 rounded-xl shrink-0">
+            <div className="inline-flex items-center gap-1.5 font-bold text-xs bg-white text-spice-600 px-4 py-2.5 rounded-xl shrink-0">
               <ShoppingBag className="w-4 h-4" />
               <span>Lihat Pesanan</span>
               <ArrowRight className="w-3.5 h-3.5" />

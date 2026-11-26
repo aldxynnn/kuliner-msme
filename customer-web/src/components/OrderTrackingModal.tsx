@@ -126,21 +126,21 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
         onClick={(e) => e.stopPropagation()}
         className="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl border border-paper-200 overflow-hidden shadow-2xl flex flex-col max-h-[92vh] animate-aroma-sheet sm:animate-aroma-modal"
       >
-        {/* Deep Roast Architectural Ticket Header */}
-        <div className="px-5 py-4 bg-ink text-white flex items-center justify-between gap-3 shrink-0">
+        {/* Clean White & Orange Ticket Header */}
+        <div className="px-5 py-4 bg-white border-b border-paper-200 flex items-center justify-between gap-3 shrink-0">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-bold text-spice-200 uppercase tracking-[0.14em]">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-spice-600 uppercase tracking-wider">
                 {!isCancelled && order.orderStatus !== 'SELESAI' && (
                   <span className="w-2 h-2 rounded-full bg-spice-500 animate-pulse" />
                 )}
                 Live Tracking
               </span>
-              <span className="font-mono text-[10px] text-paper-300">&bull; Auto-update 5s</span>
+              <span className="text-[11px] text-ink-muted">&bull; Auto-update 5s</span>
             </div>
             <h3
               id="tracking-modal-title"
-              className="font-mono font-bold text-base sm:text-lg text-white break-all leading-tight mt-1 tabular-nums"
+              className="font-mono font-bold text-base sm:text-lg text-ink break-all leading-tight mt-1 tabular-nums"
             >
               {order.orderNumber}
             </h3>
@@ -149,7 +149,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
             type="button"
             onClick={onClose}
             aria-label="Tutup pelacakan pesanan"
-            className="w-10 h-10 rounded-full bg-white/10 border border-white/15 text-white flex items-center justify-center hover:bg-white/20 transition-colors shrink-0"
+            className="w-10 h-10 rounded-full bg-paper-100 text-ink flex items-center justify-center hover:bg-paper-200 transition-colors shrink-0"
           >
             <X className="w-5 h-5" />
           </button>

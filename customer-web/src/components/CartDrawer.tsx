@@ -188,7 +188,7 @@ const OrderTicketBody: React.FC<
                       type="button"
                       onClick={() => onUpdateQuantity(item.product.id, item.quantity + 1)}
                       aria-label="Tambah jumlah"
-                      className="w-7 h-7 flex items-center justify-center bg-ink text-white hover:bg-spice-500 rounded-full transition-colors"
+                      className="w-7 h-7 flex items-center justify-center bg-spice-500 text-white hover:bg-spice-600 rounded-full transition-colors"
                     >
                       <Plus className="w-3 h-3" />
                     </button>
@@ -266,17 +266,17 @@ const OrderTicketBody: React.FC<
                 aria-pressed={paymentMethod === 'QRIS'}
                 className={`p-3 rounded-xl border text-left transition-all ${
                   paymentMethod === 'QRIS'
-                    ? 'border-ink bg-ink text-white'
-                    : 'border-paper-200 bg-paper-50 text-ink hover:border-ink/40'
+                    ? 'border-spice-500 bg-spice-50 text-spice-700'
+                    : 'border-paper-200 bg-white text-ink hover:border-spice-200'
                 }`}
               >
                 <div className="flex items-center gap-1.5">
-                  <QrCode className="w-4 h-4 shrink-0" />
+                  <QrCode className={`w-4 h-4 shrink-0 ${paymentMethod === 'QRIS' ? 'text-spice-500' : 'text-ink-muted'}`} />
                   <span className="text-xs font-bold">QRIS</span>
                 </div>
                 <p
                   className={`text-[10px] mt-1 leading-snug ${
-                    paymentMethod === 'QRIS' ? 'text-paper-200' : 'text-ink-muted'
+                    paymentMethod === 'QRIS' ? 'text-spice-600' : 'text-ink-muted'
                   }`}
                 >
                   Scan QR &amp; verifikasi
@@ -289,17 +289,17 @@ const OrderTicketBody: React.FC<
                 aria-pressed={paymentMethod === 'CASH'}
                 className={`p-3 rounded-xl border text-left transition-all ${
                   paymentMethod === 'CASH'
-                    ? 'border-ink bg-ink text-white'
-                    : 'border-paper-200 bg-paper-50 text-ink hover:border-ink/40'
+                    ? 'border-spice-500 bg-spice-50 text-spice-700'
+                    : 'border-paper-200 bg-white text-ink hover:border-spice-200'
                 }`}
               >
                 <div className="flex items-center gap-1.5">
-                  <Banknote className="w-4 h-4 shrink-0" />
+                  <Banknote className={`w-4 h-4 shrink-0 ${paymentMethod === 'CASH' ? 'text-spice-500' : 'text-ink-muted'}`} />
                   <span className="text-xs font-bold">Tunai</span>
                 </div>
                 <p
                   className={`text-[10px] mt-1 leading-snug ${
-                    paymentMethod === 'CASH' ? 'text-paper-200' : 'text-ink-muted'
+                    paymentMethod === 'CASH' ? 'text-spice-600' : 'text-ink-muted'
                   }`}
                 >
                   Bayar di kasir
@@ -357,22 +357,25 @@ export const CartOrderTicketPanel: React.FC<OrderTicketProps> = (props) => {
       aria-label="Tiket Pesanan"
       className="bg-white rounded-2xl border border-paper-200 shadow-ticket overflow-hidden flex flex-col max-h-[calc(100vh-148px)]"
     >
-      {/* Ticket Slip Header */}
-      <div className="px-4 py-3.5 bg-ink text-white flex items-center justify-between gap-2 shrink-0">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-spice-200 font-semibold">
-              Tiket Pesanan
-            </span>
+      {/* Clean White & Orange Ticket Header */}
+      <div className="px-4 py-3.5 bg-white border-b border-paper-200 flex items-center justify-between gap-2 shrink-0">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-9 h-9 rounded-xl bg-spice-50 border border-spice-200 text-spice-600 flex items-center justify-center shrink-0">
+            <ShoppingBag className="w-4 h-4" />
           </div>
-          <p className="text-xs text-paper-200 truncate mt-0.5">
-            {props.orderType === 'DINE_IN'
-              ? `Dine In${props.tableNumber ? ` · ${props.tableNumber}` : ''}`
-              : 'Take Away · Bawa Pulang'}
-          </p>
+          <div className="min-w-0">
+            <p className="font-bold text-sm text-ink leading-tight">
+              Tiket Pesanan
+            </p>
+            <p className="text-xs text-ink-muted truncate mt-0.5">
+              {props.orderType === 'DINE_IN'
+                ? `Dine In${props.tableNumber ? ` · ${props.tableNumber}` : ''}`
+                : 'Take Away · Bawa Pulang'}
+            </p>
+          </div>
         </div>
 
-        <span className="font-mono text-[11px] font-bold px-2.5 py-1 rounded-md bg-white/10 text-white tabular-nums whitespace-nowrap shrink-0">
+        <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-spice-50 text-spice-600 border border-spice-200 tabular-nums whitespace-nowrap shrink-0">
           {totalItems} item
         </span>
       </div>
@@ -417,7 +420,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         {/* Drawer Header */}
         <div className="px-5 py-4 border-b border-paper-200 bg-white flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-ink text-white flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-spice-50 border border-spice-200 text-spice-600 flex items-center justify-center shrink-0">
               <ShoppingBag className="w-5 h-5" />
             </div>
             <div className="min-w-0">

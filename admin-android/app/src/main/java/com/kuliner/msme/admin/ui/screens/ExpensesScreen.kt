@@ -90,13 +90,14 @@ fun ExpensesScreen() {
         ) {
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Executive Dark Outflow Summary Sheet
+            // Clean White & Orange Outflow Summary Card
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                shape = RoundedCornerShape(14.dp),
-                color = AromaCharcoal
+                shape = RoundedCornerShape(16.dp),
+                color = AromaSurface,
+                border = BorderStroke(1.dp, AromaTerracottaBorder)
             ) {
                 Row(
                     modifier = Modifier
@@ -108,38 +109,36 @@ fun ExpensesScreen() {
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
                             text = "TOTAL PENGELUARAN TERCATAT",
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 10.sp,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            color = AromaSurface.copy(alpha = 0.68f),
-                            letterSpacing = 0.9.sp
+                            color = AromaTextMuted,
+                            letterSpacing = 0.6.sp
                         )
                         Text(
                             text = formatRupiah(totalExpense),
-                            fontFamily = FontFamily.Monospace,
                             fontSize = 26.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = AromaTerracottaLight
+                            fontWeight = FontWeight.ExtraBold,
+                            color = AromaTerracotta
                         )
                         Text(
                             text = "${expenses.size} catatan pengeluaran operasional",
                             fontSize = 12.sp,
-                            color = AromaSurface.copy(alpha = 0.72f)
+                            color = AromaTextSecondary
                         )
                     }
 
                     Surface(
-                        modifier = Modifier.size(44.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = AromaInkSoft,
-                        border = BorderStroke(1.dp, AromaInkDivider)
+                        modifier = Modifier.size(46.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = AromaTerracottaSoft,
+                        border = BorderStroke(1.dp, AromaTerracottaBorder)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 Icons.Default.MoneyOff,
                                 contentDescription = null,
-                                tint = AromaTerracottaLight,
-                                modifier = Modifier.size(20.dp)
+                                tint = AromaTerracotta,
+                                modifier = Modifier.size(22.dp)
                             )
                         }
                     }

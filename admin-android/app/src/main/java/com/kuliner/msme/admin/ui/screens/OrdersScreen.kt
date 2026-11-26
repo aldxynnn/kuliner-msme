@@ -195,7 +195,8 @@ fun OrdersScreen() {
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        color = AromaCharcoal
+                        color = AromaTerracottaSoft,
+                        border = BorderStroke(1.dp, AromaTerracottaBorder)
                     ) {
                         Column(
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
@@ -203,18 +204,17 @@ fun OrdersScreen() {
                         ) {
                             Text(
                                 text = "DETAIL TIKET DAPUR",
-                                fontFamily = FontFamily.Monospace,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp,
-                                color = AromaTerracottaLight
+                                letterSpacing = 0.8.sp,
+                                color = AromaTerracotta
                             )
                             Text(
                                 text = "#${ord.orderNumber}",
                                 fontFamily = FontFamily.Monospace,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = AromaSurface
+                                color = AromaCharcoal
                             )
                             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                                 AromaStatusBadge(
@@ -592,11 +592,11 @@ fun OrderCardItem(
                     OutlinedButton(
                         onClick = onPrintReceipt,
                         modifier = Modifier.height(36.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        border = BorderStroke(1.dp, AromaBorder),
+                        shape = RoundedCornerShape(10.dp),
+                        border = BorderStroke(1.dp, AromaTerracottaBorder),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = AromaCreamSoft,
-                            contentColor = AromaCharcoal
+                            containerColor = AromaTerracottaSoft,
+                            contentColor = AromaTerracotta
                         ),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
                     ) {

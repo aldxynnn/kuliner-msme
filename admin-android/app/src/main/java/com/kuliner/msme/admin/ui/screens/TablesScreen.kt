@@ -175,11 +175,11 @@ fun TablesScreen() {
                                         modifier = Modifier
                                             .weight(1f)
                                             .height(36.dp),
-                                        shape = RoundedCornerShape(8.dp),
-                                        border = BorderStroke(1.dp, AromaCharcoal),
+                                        shape = RoundedCornerShape(10.dp),
+                                        border = BorderStroke(1.dp, AromaTerracottaBorder),
                                         colors = ButtonDefaults.outlinedButtonColors(
-                                            containerColor = AromaCharcoal,
-                                            contentColor = AromaSurface
+                                            containerColor = AromaTerracottaSoft,
+                                            contentColor = AromaTerracotta
                                         ),
                                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
                                     ) {
@@ -300,15 +300,16 @@ fun TablesScreen() {
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Surface(
-                        modifier = Modifier.size(36.dp),
+                        modifier = Modifier.size(38.dp),
                         shape = RoundedCornerShape(10.dp),
-                        color = AromaCharcoal
+                        color = AromaTerracottaSoft,
+                        border = BorderStroke(1.dp, AromaTerracottaBorder)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 Icons.Default.QrCode,
                                 contentDescription = null,
-                                tint = AromaSurface,
+                                tint = AromaTerracotta,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -360,7 +361,7 @@ fun TablesScreen() {
                 Button(
                     onClick = { selectedQrTable = null },
                     shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = AromaCharcoal)
+                    colors = ButtonDefaults.buttonColors(containerColor = AromaTerracotta)
                 ) {
                     Text("Tutup", fontWeight = FontWeight.Bold)
                 }

@@ -25,7 +25,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
   return (
     <nav
       aria-label="Kategori Menu"
-      className="bg-paper-50/95 backdrop-blur-md border-b border-paper-200"
+      className="bg-white/95 backdrop-blur-md border-b border-paper-200"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-2 sm:gap-5 overflow-x-auto no-scrollbar">
         <button
@@ -34,8 +34,8 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
           aria-pressed={selectedCategoryId === null}
           className={`min-h-[46px] inline-flex items-center gap-2 px-1 py-2.5 text-xs sm:text-[13px] whitespace-nowrap border-b-2 transition-colors shrink-0 ${
             selectedCategoryId === null
-              ? 'border-ink text-ink font-bold'
-              : 'border-transparent text-ink-muted font-medium hover:text-ink'
+              ? 'border-spice-500 text-spice-600 font-bold'
+              : 'border-transparent text-ink-muted font-medium hover:text-spice-600'
           }`}
         >
           <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
@@ -53,20 +53,22 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
               aria-pressed={isSelected}
               className={`min-h-[46px] inline-flex items-center gap-1.5 px-1 py-2.5 text-xs sm:text-[13px] whitespace-nowrap border-b-2 transition-colors shrink-0 ${
                 isSelected
-                  ? 'border-ink text-ink font-bold'
-                  : 'border-transparent text-ink-muted font-medium hover:text-ink'
+                  ? 'border-spice-500 text-spice-600 font-bold'
+                  : 'border-transparent text-ink-muted font-medium hover:text-spice-600'
               }`}
             >
               {getCategoryIcon(cat.name)}
               <span>{cat.name}</span>
               {typeof productCount === 'number' && productCount > 0 && (
-                <sup
-                  className={`font-mono text-[10px] font-bold tabular-nums ml-0.5 ${
-                    isSelected ? 'text-spice-500' : 'text-ink-light'
+                <span
+                  className={`text-[10px] font-bold tabular-nums px-1.5 py-0.5 rounded-full ${
+                    isSelected
+                      ? 'bg-spice-50 text-spice-600'
+                      : 'bg-paper-100 text-ink-muted'
                   }`}
                 >
                   {productCount}
-                </sup>
+                </span>
               )}
             </button>
           );

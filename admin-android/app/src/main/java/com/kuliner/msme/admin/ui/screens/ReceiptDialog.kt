@@ -175,7 +175,7 @@ fun ReceiptDialog(
 
             paint.textSize = 14f
             paint.isFakeBoldText = true
-            paint.color = android.graphics.Color.rgb(200, 67, 25)
+            paint.color = android.graphics.Color.rgb(234, 88, 12)
             canvas.drawText("TOTAL: ${formatRupiah(receipt.total)}", 20f, y, paint)
 
             pdfDocument.finishPage(page)
@@ -403,20 +403,21 @@ fun ReceiptDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Print (#171311) & Save PDF (#C84319) Action Buttons
+                // Clean White Outlined Print & Solid Orange Save PDF Buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Button(
+                    OutlinedButton(
                         onClick = { handlePrint() },
                         modifier = Modifier
                             .weight(1f)
                             .height(46.dp),
                         shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = AromaCharcoal,
-                            contentColor = AromaSurface
+                        border = BorderStroke(1.dp, AromaTerracottaBorder),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = AromaTerracottaSoft,
+                            contentColor = AromaTerracotta
                         ),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {

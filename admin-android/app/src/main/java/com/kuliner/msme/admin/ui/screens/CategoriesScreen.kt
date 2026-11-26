@@ -124,7 +124,8 @@ fun CategoriesScreen() {
                                 Surface(
                                     modifier = Modifier.size(40.dp),
                                     shape = RoundedCornerShape(10.dp),
-                                    color = AromaCharcoal
+                                    color = AromaTerracottaSoft,
+                                    border = BorderStroke(1.dp, AromaTerracottaBorder)
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
                                         Text(
@@ -132,7 +133,7 @@ fun CategoriesScreen() {
                                             fontFamily = FontFamily.Monospace,
                                             fontSize = 13.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = AromaSurface
+                                            color = AromaTerracotta
                                         )
                                     }
                                 }

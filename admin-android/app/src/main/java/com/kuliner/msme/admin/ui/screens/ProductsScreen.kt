@@ -187,8 +187,8 @@ fun ProductsScreen() {
                 Surface(
                     onClick = { isSortingMode = !isSortingMode },
                     modifier = Modifier.defaultMinSize(minHeight = 36.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    color = if (isSortingMode) AromaCharcoal else AromaSurface,
+                    shape = RoundedCornerShape(50),
+                    color = if (isSortingMode) AromaTerracotta else AromaSurface,
                     border = if (isSortingMode) null else BorderStroke(1.dp, AromaBorder)
                 ) {
                     Row(
@@ -198,7 +198,7 @@ fun ProductsScreen() {
                         Icon(
                             Icons.Default.SwapVert,
                             contentDescription = "Atur Urutan",
-                            tint = if (isSortingMode) AromaSurface else AromaCharcoal,
+                            tint = if (isSortingMode) AromaSurface else AromaTerracotta,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -376,7 +376,7 @@ fun ProductsScreen() {
                                             enabled = index > 0,
                                             modifier = Modifier.size(34.dp),
                                             shape = RoundedCornerShape(8.dp),
-                                            color = if (index > 0) AromaCharcoal else AromaCreamSoft
+                                            color = if (index > 0) AromaTerracotta else AromaCreamSoft
                                         ) {
                                             Box(contentAlignment = Alignment.Center) {
                                                 Icon(
@@ -392,7 +392,7 @@ fun ProductsScreen() {
                                             enabled = index < products.size - 1,
                                             modifier = Modifier.size(34.dp),
                                             shape = RoundedCornerShape(8.dp),
-                                            color = if (index < products.size - 1) AromaCharcoal else AromaCreamSoft
+                                            color = if (index < products.size - 1) AromaTerracotta else AromaCreamSoft
                                         ) {
                                             Box(contentAlignment = Alignment.Center) {
                                                 Icon(
@@ -597,7 +597,7 @@ fun ProductsScreen() {
                                     color = AromaSurface.copy(alpha = 0.9f)
                                 ) {
                                     CircularProgressIndicator(
-                                        color = AromaCharcoal,
+                                        color = AromaTerracotta,
                                         strokeWidth = 2.5.dp,
                                         modifier = Modifier
                                             .padding(12.dp)
@@ -606,13 +606,9 @@ fun ProductsScreen() {
                                 }
                             } else {
                                 Surface(
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = if (displayUrl != null) {
-                                        AromaCharcoal.copy(alpha = 0.78f)
-                                    } else {
-                                        AromaSurface
-                                    },
-                                    border = if (displayUrl != null) null else BorderStroke(1.dp, AromaBorder)
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = AromaSurface.copy(alpha = 0.94f),
+                                    border = BorderStroke(1.dp, AromaTerracottaBorder)
                                 ) {
                                     Row(
                                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -622,14 +618,14 @@ fun ProductsScreen() {
                                         Icon(
                                             Icons.Default.AddAPhoto,
                                             contentDescription = "Pilih Foto",
-                                            tint = if (displayUrl != null) AromaSurface else AromaCharcoal,
+                                            tint = AromaTerracotta,
                                             modifier = Modifier.size(16.dp)
                                         )
                                         Text(
                                             text = if (imageUrl.isBlank()) "Pilih Foto Menu" else "Ganti Foto",
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = if (displayUrl != null) AromaSurface else AromaCharcoal
+                                            color = AromaTerracotta
                                         )
                                     }
                                 }

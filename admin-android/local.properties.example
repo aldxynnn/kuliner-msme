@@ -5,8 +5,8 @@
 
 sdk.dir=C\:\\Users\\YOUR_USERNAME\\AppData\\Local\\Android\\Sdk
 
-# Opsional: Override Base URL API untuk build debug.
-# Default debug adalah http://10.0.2.2:3000/api/ (Android Emulator ke backend lokal).
-# Untuk HP fisik pada Wi-Fi yang sama: http://192.168.1.50:3000/api/
-# Untuk backend produksi: https://aroma-backend-15717.containers.snapdeploy.app/api/
+# Opsional: Override Base URL API khusus untuk pengujian lokal (build debug).
+# Secara default, build debug & release sudah mengarah ke backend produksi:
+# https://aroma-backend-15717.containers.snapdeploy.app/api/
+# Untuk backend lokal di Android Emulator, aktifkan baris di bawah:
 # aroma.apiBaseUrl=http://10.0.2.2:3000/api/

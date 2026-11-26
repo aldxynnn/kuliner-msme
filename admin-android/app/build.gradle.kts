@@ -12,10 +12,12 @@ val localProps = Properties().apply {
     }
 }
 
+val prodApiBaseUrl = "https://aroma-backend-15717.containers.snapdeploy.app/api/"
+
 val debugApiBaseUrl: String = (
     project.findProperty("aroma.apiBaseUrl") as? String
         ?: localProps.getProperty("aroma.apiBaseUrl")
-        ?: "http://10.0.2.2:3000/api/"
+        ?: prodApiBaseUrl
     ).let { url -> if (url.endsWith("/")) url else "$url/" }
 
 android {

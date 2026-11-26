@@ -9,8 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    // Debug builds default to http://10.0.2.2:3000/api/ (override via local.properties aroma.apiBaseUrl)
-    // Release builds point to production API
+    // Defaults to production SnapDeploy API (override locally via local.properties aroma.apiBaseUrl)
     private val BASE_URL = BuildConfig.API_BASE_URL
 
     fun getApiService(context: Context): ApiService {

@@ -1,6 +1,8 @@
 import { Category, Product, Table, Order, OrderType, PaymentMethod } from './types';
 
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const API_BASE_URL =
+  (import.meta as any).env?.VITE_API_BASE_URL ||
+  'https://aroma-backend-15717.containers.snapdeploy.app/api';
 export const BACKEND_URL = API_BASE_URL.replace(/\/api\/?$/, '');
 
 export function getImageUrl(imagePath?: string | null): string {

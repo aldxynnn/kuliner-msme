@@ -159,7 +159,7 @@ async function main() {
   }
 
   // 4. Create Tables (Meja 01 - 10) only if not found, using dynamic FRONTEND_URL & URL searchParams
-  const frontendBaseUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const frontendBaseUrl = process.env.FRONTEND_URL || 'https://aroma-ayam-goreng-lengkuas.vercel.app';
 
   for (let i = 1; i <= 10; i++) {
     const num = i < 10 ? `0${i}` : `${i}`;

@@ -5,13 +5,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
@@ -24,12 +27,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.R
@@ -37,7 +40,6 @@ import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.api.TokenManager
 import com.kuliner.msme.admin.data.model.LoginRequest
 import com.kuliner.msme.admin.ui.components.AromaFeedbackBanner
-import com.kuliner.msme.admin.ui.components.aromaTextFieldColors
 import com.kuliner.msme.admin.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -92,97 +94,139 @@ fun LoginScreen(
         }
     }
 
+    val loginFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedContainerColor = AromaSurface,
+        unfocusedContainerColor = AromaCream,
+        focusedBorderColor = AromaTerracotta,
+        unfocusedBorderColor = AromaBorder,
+        focusedTextColor = AromaCharcoal,
+        unfocusedTextColor = AromaCharcoal,
+        cursorColor = AromaTerracotta,
+        focusedLeadingIconColor = AromaTerracotta,
+        unfocusedLeadingIconColor = AromaTextMuted
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(AromaCream)
-            .verticalScroll(rememberScrollState())
+            .background(AromaSurface)
             .statusBarsPadding()
             .navigationBarsPadding()
             .imePadding()
-            .padding(horizontal = 24.dp, vertical = 28.dp),
-        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Spacer(Modifier.height(12.dp))
+        // Subtle Top Brand Accent Strip
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .background(AromaTerracotta)
+        )
 
-            // Clean Orange & White Brand Header
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 28.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(Modifier.height(20.dp))
+
+                // Centered Brand Identity Block
                 Surface(
-                    modifier = Modifier.size(56.dp),
-                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.size(76.dp),
+                    shape = RoundedCornerShape(22.dp),
+                    color = AromaTerracottaSoft,
+                    border = BorderStroke(1.5.dp, AromaTerracottaBorder)
+                ) {
+                    Box(
+                        modifier = Modifier.padding(4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.logo_aroma),
+                            contentDescription = "Logo AROMA",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(18.dp))
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                Text(
+                    text = "AROMA",
+                    style = AromaBrandSerifStyle,
+                    fontSize = 30.sp,
+                    color = AromaTerracotta,
+                    letterSpacing = 0.5.sp
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = "Ayam Goreng Lengkuas",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = AromaTextSecondary
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                Surface(
+                    shape = CircleShape,
                     color = AromaTerracottaSoft,
                     border = BorderStroke(1.dp, AromaTerracottaBorder)
                 ) {
-                    Image(
-                        painter = painterResource(R.drawable.logo_aroma),
-                        contentDescription = "Logo AROMA",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(16.dp))
-                    )
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Storefront,
+                            contentDescription = null,
+                            tint = AromaTerracotta,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Text(
+                            text = "Kasir & Manajemen POS",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AromaTerracotta
+                        )
+                    }
                 }
 
-                Column {
-                    Text(
-                        text = "POINT OF SALE · SERANG",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 1.sp,
-                        color = AromaTerracotta
-                    )
-                    Spacer(Modifier.height(2.dp))
-                    Text(
-                        text = "AROMA",
-                        style = AromaBrandSerifStyle,
-                        fontSize = 28.sp,
-                        color = AromaCharcoal
-                    )
-                    Text(
-                        text = "Ayam Goreng Lengkuas",
-                        fontSize = 13.sp,
-                        color = AromaTextMuted
-                    )
-                }
-            }
+                Spacer(Modifier.height(32.dp))
+                HorizontalDivider(color = AromaDivider, thickness = 1.dp)
+                Spacer(Modifier.height(26.dp))
 
-            Spacer(Modifier.height(28.dp))
-
-            // Clean White Sign-In Card
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                color = AromaSurface,
-                border = BorderStroke(1.dp, AromaBorder)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(22.dp)
-                ) {
+                // Direct Clean Sign-In Form (Zero card-inside-card clutter)
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "Masuk ke Shift Kasir",
-                        style = MaterialTheme.typography.headlineSmall,
+                        text = "Masuk Shift Operasional",
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = AromaCharcoal
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = "Gunakan akun kasir atau pengelola resto untuk memproses pesanan dan pembayaran.",
-                        style = MaterialTheme.typography.bodySmall,
+                        text = "Masukkan akun kasir atau pemilik resto untuk mulai melayani.",
+                        fontSize = 13.sp,
                         color = AromaTextMuted,
-                        lineHeight = 18.sp
+                        lineHeight = 19.sp
                     )
 
                     Spacer(Modifier.height(22.dp))
 
                     Text(
-                        text = "Email Akun",
-                        style = MaterialTheme.typography.labelMedium,
+                        text = "Email",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
                         color = AromaCharcoal
                     )
                     Spacer(Modifier.height(6.dp))
@@ -194,7 +238,11 @@ fun LoginScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = {
-                            Text("Email admin atau kasir", style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                "contoh@kuliner.com",
+                                fontSize = 14.sp,
+                                color = AromaTextMuted
+                            )
                         },
                         leadingIcon = {
                             Icon(
@@ -204,19 +252,20 @@ fun LoginScreen(
                             )
                         },
                         singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(14.dp),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next
                         ),
-                        colors = aromaTextFieldColors()
+                        colors = loginFieldColors
                     )
 
                     Spacer(Modifier.height(16.dp))
 
                     Text(
                         text = "Password",
-                        style = MaterialTheme.typography.labelMedium,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
                         color = AromaCharcoal
                     )
                     Spacer(Modifier.height(6.dp))
@@ -228,7 +277,11 @@ fun LoginScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = {
-                            Text("Masukkan password", style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                "Masukkan password",
+                                fontSize = 14.sp,
+                                color = AromaTextMuted
+                            )
                         },
                         leadingIcon = {
                             Icon(
@@ -261,7 +314,7 @@ fun LoginScreen(
                             PasswordVisualTransformation()
                         },
                         singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(14.dp),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
@@ -269,7 +322,7 @@ fun LoginScreen(
                         keyboardActions = KeyboardActions(
                             onDone = { handleLogin() }
                         ),
-                        colors = aromaTextFieldColors()
+                        colors = loginFieldColors
                     )
 
                     if (errorMessage != null) {
@@ -280,15 +333,15 @@ fun LoginScreen(
                         )
                     }
 
-                    Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.height(26.dp))
 
                     Button(
                         onClick = { handleLogin() },
                         enabled = !isLoading,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(12.dp),
+                            .height(54.dp),
+                        shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = AromaTerracotta,
                             contentColor = AromaSurface,
@@ -304,28 +357,35 @@ fun LoginScreen(
                             )
                         } else {
                             Text(
-                                text = "Masuk Terminal Kasir",
+                                text = "Masuk ke Kasir",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }
                 }
             }
-        }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "AROMA – Ayam Goreng Lengkuas",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = AromaTextMuted
-            )
+            // Minimal Store Location Footer
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 28.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Ruko Puri Cempaka · Kota Serang, Banten",
+                    fontSize = 11.sp,
+                    color = AromaTextMuted,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

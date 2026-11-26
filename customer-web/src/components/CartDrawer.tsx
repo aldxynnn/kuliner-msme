@@ -109,8 +109,8 @@ const OrderTicketBody: React.FC<
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className={`${compactPadding ? 'p-4' : 'p-5'} space-y-4 flex-1 overflow-y-auto`}>
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className={`${compactPadding ? 'p-4' : 'p-5'} space-y-4 flex-1 min-h-0 overflow-y-auto`}>
         {errorMsg && (
           <div
             role="alert"

@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,7 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -37,15 +35,11 @@ import com.kuliner.msme.admin.R
 import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.api.TokenManager
 import com.kuliner.msme.admin.data.model.LoginRequest
+import com.kuliner.msme.admin.ui.components.AromaCard
+import com.kuliner.msme.admin.ui.components.AromaFeedbackBanner
+import com.kuliner.msme.admin.ui.components.aromaTextFieldColors
+import com.kuliner.msme.admin.ui.theme.*
 import kotlinx.coroutines.launch
-
-private val WarmBg = Color(0xFFFAF8F5)
-private val CardWhite = Color(0xFFFFFFFF)
-private val Terracotta = Color(0xFFE25822)
-private val CharcoalDark = Color(0xFF2B211D)
-private val TextMuted = Color(0xFF81766F)
-private val FieldBg = Color(0xFFF8F6F3)
-private val BorderColor = Color(0xFFE9E1D9)
 
 @Composable
 fun LoginScreen(
@@ -101,7 +95,7 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(WarmBg)
+            .background(AromaCream)
             .systemBarsPadding()
             .imePadding(),
         contentAlignment = Alignment.Center
@@ -109,84 +103,73 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .widthIn(max = 440.dp)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 20.dp),
+                .padding(horizontal = 24.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            // Top Logo & Branding Header
+            // Brand Logo Mark
             Surface(
-                modifier = Modifier.size(100.dp),
-                shape = RoundedCornerShape(26.dp),
-                color = CardWhite,
-                shadowElevation = 6.dp,
-                border = BorderStroke(1.dp, BorderColor)
+                modifier = Modifier.size(84.dp),
+                shape = RoundedCornerShape(22.dp),
+                color = AromaSurface,
+                border = BorderStroke(1.dp, AromaBorder)
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Image(
-                        painter = painterResource(R.drawable.logo_aroma),
-                        contentDescription = "Logo AROMA",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(26.dp))
-                    )
-                }
+                Image(
+                    painter = painterResource(R.drawable.logo_aroma),
+                    contentDescription = "Logo AROMA",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(22.dp))
+                )
             }
 
             Spacer(Modifier.height(16.dp))
 
             Text(
                 text = "AROMA POS",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Black,
-                letterSpacing = (-0.5).sp,
-                color = Terracotta
+                style = MaterialTheme.typography.headlineMedium,
+                color = AromaCharcoal
             )
 
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "Gurih Rempahnya, Hangat Rasanya.",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextMuted
+                text = "Ayam Goreng Lengkuas • Sistem Kasir & Operasional",
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Medium,
+                color = AromaTextSecondary
             )
 
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(28.dp))
 
-            // Login Card Surface
-            Surface(
+            // Login Form Card
+            AromaCard(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                color = CardWhite,
-                border = BorderStroke(1.dp, BorderColor),
-                shadowElevation = 4.dp
+                cornerRadius = 20.dp
             ) {
-                Column(
-                    modifier = Modifier.padding(24.dp)
-                ) {
+                Column(modifier = Modifier.padding(24.dp)) {
                     Text(
-                        text = "Masuk Kasir POS",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = (-0.5).sp,
-                        color = CharcoalDark
+                        text = "Masuk ke Kasir",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = AromaCharcoal
                     )
 
                     Spacer(Modifier.height(4.dp))
 
                     Text(
-                        text = "Masuk ke akun operasional AROMA POS Anda.",
-                        fontSize = 12.sp,
-                        color = TextMuted
+                        text = "Gunakan akun kasir atau pengelola AROMA POS Anda.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = AromaTextMuted
                     )
 
-                    Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.height(22.dp))
 
                     Text(
                         text = "Email",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = CharcoalDark
+                        style = MaterialTheme.typography.labelMedium,
+                        color = AromaCharcoal
                     )
 
                     Spacer(Modifier.height(6.dp))
@@ -199,40 +182,30 @@ fun LoginScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = {
-                            Text("Email admin atau kasir", fontSize = 13.sp)
+                            Text("Email admin atau kasir", style = MaterialTheme.typography.bodyMedium)
                         },
                         leadingIcon = {
                             Icon(
                                 Icons.Default.Email,
                                 contentDescription = null,
-                                tint = Terracotta,
                                 modifier = Modifier.size(18.dp)
                             )
                         },
                         singleLine = true,
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(12.dp),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next
                         ),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = FieldBg,
-                            unfocusedContainerColor = FieldBg,
-                            focusedBorderColor = Terracotta,
-                            unfocusedBorderColor = BorderColor,
-                            focusedTextColor = CharcoalDark,
-                            unfocusedTextColor = CharcoalDark,
-                            cursorColor = Terracotta
-                        )
+                        colors = aromaTextFieldColors()
                     )
 
                     Spacer(Modifier.height(16.dp))
 
                     Text(
                         text = "Password",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = CharcoalDark
+                        style = MaterialTheme.typography.labelMedium,
+                        color = AromaCharcoal
                     )
 
                     Spacer(Modifier.height(6.dp))
@@ -245,22 +218,17 @@ fun LoginScreen(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = {
-                            Text("Masukkan password", fontSize = 13.sp)
+                            Text("Masukkan password", style = MaterialTheme.typography.bodyMedium)
                         },
                         leadingIcon = {
                             Icon(
                                 Icons.Default.Lock,
                                 contentDescription = null,
-                                tint = Terracotta,
                                 modifier = Modifier.size(18.dp)
                             )
                         },
                         trailingIcon = {
-                            IconButton(
-                                onClick = {
-                                    passwordVisible = !passwordVisible
-                                }
-                            ) {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                 Icon(
                                     imageVector = if (passwordVisible) {
                                         Icons.Default.VisibilityOff
@@ -272,7 +240,7 @@ fun LoginScreen(
                                     } else {
                                         "Tampilkan password"
                                     },
-                                    tint = TextMuted,
+                                    tint = AromaTextMuted,
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -283,7 +251,7 @@ fun LoginScreen(
                             PasswordVisualTransformation()
                         },
                         singleLine = true,
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(12.dp),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Password,
                             imeAction = ImeAction.Done
@@ -291,37 +259,18 @@ fun LoginScreen(
                         keyboardActions = KeyboardActions(
                             onDone = { handleLogin() }
                         ),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = FieldBg,
-                            unfocusedContainerColor = FieldBg,
-                            focusedBorderColor = Terracotta,
-                            unfocusedBorderColor = BorderColor,
-                            focusedTextColor = CharcoalDark,
-                            unfocusedTextColor = CharcoalDark,
-                            cursorColor = Terracotta
-                        )
+                        colors = aromaTextFieldColors()
                     )
 
                     if (errorMessage != null) {
                         Spacer(Modifier.height(14.dp))
-
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFFFEE2E2),
-                            border = BorderStroke(1.dp, Color(0xFFFCA5A5))
-                        ) {
-                            Text(
-                                text = errorMessage!!,
-                                color = Color(0xFF991B1B),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(12.dp)
-                            )
-                        }
+                        AromaFeedbackBanner(
+                            message = errorMessage!!,
+                            isError = true
+                        )
                     }
 
-                    Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.height(22.dp))
 
                     Button(
                         onClick = { handleLogin() },
@@ -329,20 +278,18 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Terracotta,
-                            contentColor = CardWhite,
-                            disabledContainerColor = Terracotta.copy(alpha = 0.6f)
+                            containerColor = AromaTerracotta,
+                            contentColor = AromaSurface,
+                            disabledContainerColor = AromaTerracotta.copy(alpha = 0.55f)
                         ),
-                        elevation = ButtonDefaults.buttonElevation(
-                            defaultElevation = 2.dp
-                        )
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                     ) {
                         if (isLoading) {
                             CircularProgressIndicator(
-                                modifier = Modifier.size(22.dp),
-                                color = CardWhite,
+                                modifier = Modifier.size(20.dp),
+                                color = AromaSurface,
                                 strokeWidth = 2.dp
                             )
                         } else {
@@ -356,16 +303,13 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(22.dp))
 
             Text(
-                text = "AROMA POS • Ayam Goreng Lengkuas",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextMuted
+                text = "\"Gurih Rempahnya, Hangat Rasanya.\"",
+                style = MaterialTheme.typography.labelSmall,
+                color = AromaTextMuted
             )
-
-            Spacer(Modifier.height(8.dp))
         }
     }
 }

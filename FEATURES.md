@@ -1,232 +1,128 @@
+# SYSTEM FEATURES — AROMA POS
 
-# SYSTEM FEATURES
-
-## A. CUSTOMER ORDERING WEBSITE
-
-Build a mobile-first customer ordering experience.
-
-### 1. QR Table Access
-- Each table has a unique QR code.
-- QR contains the customer website URL and table ID.
-- Automatically identify the table.
-- Validate table availability.
-
-### 2. Ordering Type
-- Dine In.
-- Take Away.
-- Table selection is required only for Dine In.
-
-### 3. Menu
-- Display product categories.
-- Display product images.
-- Display names, descriptions and prices.
-- Display product availability.
-- Allow customers to select quantities.
-- Add products to cart.
-- Add notes to orders.
-
-### 4. Cart and Checkout
-- View cart.
-- Change quantities.
-- Remove products.
-- Calculate subtotal and total.
-- Enter customer name optionally.
-- Select payment method.
-
-### 5. Payment
-Supported methods:
-- QRIS.
-- Cash at cashier.
-
-QRIS MVP:
-- Display configured QRIS payment information.
-- Cashier manually verifies payment.
-- Do not claim automatic verification.
-
-Cash payment:
-- Order remains unpaid until cashier confirms payment.
-
-### 6. Order Tracking
-- Generate unique order number.
-- Show payment status.
-- Show order processing status.
-- Display order summary.
-- Display digital receipt after payment.
+Dokumen ini mendokumentasikan seluruh fitur yang **benar-benar diimplementasikan** pada repository AROMA POS beserta aturan bisnis yang berlaku.
 
 ---
 
-## B. ANDROID CASHIER AND ADMIN APPLICATION
+## A. CUSTOMER ORDERING WEBSITE (`customer-web`)
 
-Build a native Android POS application.
+Pengalaman pemesanan makanan berbasis web yang responsif (*mobile-first* hingga desktop).
 
-### 1. Authentication
-- Login.
-- Logout.
-- Protected admin features.
+### 1. Akses Meja via QR & Tipe Pesanan
+- Mendeteksi parameter URL `?table=<Nama Meja>` secara otomatis saat pelanggan memindai QR meja.
+- Mendukung pilihan tipe pesanan **Dine In** (Makan di Tempat) dan **Take Away** (Bawa Pulang).
+- Nomor meja wajib tersedia untuk pesanan *Dine In* (otomatis dari URL QR atau input manual pada drawer keranjang bila tidak ada parameter URL); tidak diperlukan untuk *Take Away*.
 
-### 2. Dashboard
-- Today's revenue.
-- Today's transaction count.
-- Pending payments.
-- Active orders.
-- Completed orders.
-- Simple sales summary.
+### 2. Katalog Menu & Pencarian
+- Menampilkan daftar kategori dan menu dari backend (`GET /api/categories`, `GET /api/products`) sesuai urutan `sortOrder`.
+- Bar kategori *sticky* yang mudah diakses saat menggulir menu.
+- Pencarian menu berdasarkan kata kunci.
+- Menampilkan foto produk, kategori, nama, deskripsi, harga dalam Rupiah, serta status ketersediaan (*Tersedia* / *Habis*).
+- Modal detail produk untuk memilih kuantitas dan menambahkan catatan khusus per item.
 
-### 3. Category Management
-- Add category.
-- Edit category.
-- Delete category.
-- Display categories.
+### 3. Keranjang & Checkout
+- Floating cart dock yang menampilkan jumlah item dan total biaya secara langsung.
+- Cart drawer untuk mengubah kuantitas, menghapus item, melihat subtotal per item dan total pembayaran.
+- Input nama pemesan (opsional, default `"Pelanggan AROMA"`).
+- Pemilihan metode pembayaran: **QRIS** atau **Bayar di Kasir (Tunai)**.
 
-### 4. Product Management
-- Add products.
-- Edit products.
-- Delete products.
-- Upload product photos.
-- Set name and description.
-- Set price.
-- Assign category.
-- Enable or disable availability.
-
-Changes must immediately be reflected
-on the customer website.
-
-### 5. Table Management
-- Create tables.
-- Edit table information.
-- Delete tables when safe.
-- Generate unique QR codes.
-- Display and share QR codes.
-
-### 6. Order Management
-- View incoming orders.
-- View order details.
-- Filter orders by status.
-- Update order status.
-- Cancel unpaid orders.
-
-### 7. Manual Cashier Ordering
-Cashiers must be able to create orders manually.
-
-- Select Dine In or Take Away.
-- Select table for Dine In.
-- Select products.
-- Set quantities.
-- Add order notes.
-- Enter customer name optionally.
-- Select payment method.
-- Confirm cash payment.
-
-### 8. Payment Management
-- Display unpaid orders.
-- Confirm cash payments.
-- Manually verify QRIS payments.
-- Display payment history.
-- Prevent duplicate payment confirmation.
-
-Only paid orders count as revenue.
-
-### 9. Order Processing
-
-Use the following order statuses:
-
-- MENUNGGU_PEMBAYARAN
-- MENUNGGU_DIPROSES
-- DIPROSES
-- SIAP_DISAJIKAN
-- SELESAI
-- DIBATALKAN
-
-Separate payment status from order status.
-
-Unpaid orders must not enter the kitchen processing queue.
-
-### 10. Receipt
-- Generate digital receipt.
-- Provide printable receipt.
-- Include business information.
-- Include order number.
-- Include date and time.
-- Include purchased products.
-- Include quantities and prices.
-- Include total and payment method.
-
-### 11. Financial Management
-- Automatically record confirmed sales.
-- Manually record business expenses.
-- Edit and delete expenses.
-- Display daily reports.
-- Display monthly reports.
-- Display transaction counts.
-- Display total revenue.
-- Display total expenses.
-- Display simple operating surplus.
-
-Operating surplus = revenue - recorded expenses.
-
-Do not describe this as complete accounting profit.
+### 4. Pembayaran & Pelacakan Pesanan Live
+- **QRIS:** Menampilkan kode QRIS dan nominal pembayaran; verifikasi pembayaran dilakukan secara manual oleh kasir (bukan verifikasi otomatis gateway).
+- **Tunai di Kasir:** Pesanan berstatus belum dibayar hingga kasir melakukan konfirmasi.
+- Pelacakan pesanan real-time dengan polling otomatis setiap 5 detik (`GET /api/orders/track/:orderNumber`) dan penyimpanan nomor pesanan aktif di `localStorage`.
+- Menampilkan tahapan progres pesanan, status pembayaran, rincian item, serta tampilan ringkasan struk digital saat pembayaran berstatus `PAID`.
 
 ---
 
-## C. BACKEND AND DATABASE
+## B. ANDROID CASHIER & ADMIN APPLICATION (`admin-android`)
 
-Create REST API endpoints for all major features.
+Aplikasi POS native Android berbasis Jetpack Compose & Material 3.
 
-Required database entities:
+### 1. Autentikasi & Profil Akun
+- Login menggunakan email & password ke `POST /api/auth/login` dengan penyimpanan token JWT di `TokenManager`.
+- Proteksi akses layar operasional hingga pengguna login.
+- Layar **Profil & Akun** (`ProfileScreen`) untuk melihat informasi akun, status sesi aktif, dan melakukan logout aman (menghentikan layanan monitor notifikasi & membersihkan sesi).
 
-- users
-- categories
-- products
-- tables
-- orders
-- order_details
-- payments
-- expenses
+### 2. Dashboard Operasional (`DashboardScreen`)
+- Menampilkan omzet lunas hari ini, jumlah transaksi lunas, jumlah pesanan selesai hari ini, pesanan aktif dapur, dan jumlah pembayaran menunggu konfirmasi (`GET /api/reports/dashboard`).
+- Akses cepat menuju daftar pesanan, pembayaran, pusat notifikasi, pengelolaan kategori, meja QR, biaya operasional, laporan surplus, dan profil akun.
 
-Requirements:
-- Proper relational relationships.
-- Foreign key constraints.
-- Appropriate indexes.
-- Created and updated timestamps.
-- Prisma migrations.
-- Seed data.
-- Password hashing.
-- Input validation.
-- Authentication and authorization.
-- Safe payment confirmation.
-- Database transactions for critical operations.
+### 3. Kasir POS Manual (`CashierOrderScreen`)
+- Pembuatan pesanan langsung dari meja kasir (`POST /api/orders/cashier`).
+- Mendukung pilihan *Dine In* (dengan pemilih meja) dan *Take Away*, filter kategori, grid menu, keranjang bottom sheet dengan pengaturan kuantitas, nama pelanggan opsional, serta metode pembayaran Tunai/QRIS.
 
-## D. BUSINESS RULES
+### 4. Manajemen Pesanan & Dapur (`OrdersScreen`)
+- Menampilkan daftar pesanan pelanggan dan kasir dengan filter status:
+  - `MENUNGGU_PEMBAYARAN`
+  - `MENUNGGU_DIPROSES`
+  - `DIPROSES`
+  - `SIAP_DISAJIKAN`
+  - `SELESAI`
+  - `DIBATALKAN`
+- Status pembayaran (`PENDING`, `PAID`, `CANCELLED`) ditampilkan terpisah dari status pesanan.
+- Pesanan yang belum dibayar tidak dapat masuk ke proses dapur dan dapat dibatalkan oleh kasir (`POST /api/orders/:id/cancel`).
+- Pembaruan status dapur bertahap (`MENUNGGU_DIPROSES` → `DIPROSES` → `SIAP_DISAJIKAN` → `SELESAI`) melalui `PATCH /api/orders/:id/status`.
 
-1. Each QR code identifies a specific table.
-2. Dine In orders must have a valid table.
-3. Take Away orders do not require a table.
-4. Unpaid orders cannot be processed.
-5. Payment confirmation must be recorded exactly once.
-6. Only confirmed payments contribute to revenue.
-7. Product availability must be reflected on the website.
-8. Manual cashier orders and customer orders use
-   the same order management system.
-9. Receipts must be generated from actual order data.
-10. Cancelled orders must not count as revenue.
+### 5. Manajemen Pembayaran (`PaymentsScreen`)
+- Tab **Menunggu Bayar** (`GET /api/payments/unpaid`) dengan tombol konfirmasi lunas (`POST /api/payments/confirm`) untuk pembayaran Tunai maupun verifikasi manual QRIS.
+- Tab **Riwayat Lunas** (`GET /api/payments/history`) menampilkan transaksi terverifikasi beserta metode dan verifikatornya.
+- Mencegah konfirmasi pembayaran ganda pada sisi backend.
 
-## E. MVP PRIORITIES
+### 6. Struk Digital, Cetak & Ekspor PDF (`ReceiptDialog`)
+- Mengambil data struk resmi dari `GET /api/orders/:id/receipt`.
+- Menampilkan identitas resmi *Ayam Goreng Lengkuas Aroma*, nomor pesanan, waktu, tipe pesanan, metode & status pembayaran, rincian item beserta catatan, serta total pembayaran.
+- Mendukung cetak melalui Android `PrintManager` dan penyimpanan file PDF ke direktori `Downloads`.
 
-Mandatory:
-- Customer QR ordering.
-- Menu management.
-- Cart and checkout.
-- Manual cashier ordering.
-- Payment confirmation.
-- Order management.
-- Receipt generation.
-- Expense recording.
-- Sales reports.
+### 7. Manajemen Produk (`ProductsScreen`)
+- Filter produk per kategori, tambah menu baru, edit menu, hapus menu, dan toggle ketersediaan (`PATCH /api/products/:id/availability`).
+- Unggah foto menu langsung dari galeri perangkat (`POST /api/products/upload` ke Cloudinary atau fallback lokal).
+- Mode **Urutkan** (*custom sorting*) menggunakan tombol panah naik/turun yang disimpan secara transaksional via `PATCH /api/products/reorder` dan langsung terefleksi di Customer Web.
 
-Optional if time permits:
-- Basic inventory.
-- Sales charts.
-- Thermal printer integration.
-- Automatic payment gateway integration.
+### 8. Manajemen Kategori (`CategoriesScreen`)
+- Menampilkan daftar kategori beserta jumlah produk per kategori.
+- Tambah, edit, dan hapus kategori menu.
 
-Do not sacrifice mandatory features for optional ones.
+### 9. Manajemen Meja & QR Code (`TablesScreen`)
+- Menampilkan daftar meja beserta status ketersediaannya.
+- Tambah meja baru, hapus meja, dan lihat tautan URL QR pemesanan pelanggan untuk setiap meja (endpoint edit meja juga tersedia pada backend API).
+
+### 10. Pengeluaran Operasional (`ExpensesScreen`)
+- Menampilkan total pengeluaran tercatat dan daftar catatan biaya.
+- Tambah catatan pengeluaran baru (keterangan, nominal, kategori) dan hapus catatan pengeluaran (endpoint edit pengeluaran juga tersedia pada backend API).
+
+### 11. Laporan Keuangan & Surplus (`ReportsScreen`)
+- Toggle periode **Harian** dan **Bulanan** (`GET /api/reports/financial?period=daily|monthly`).
+- Menampilkan **Surplus Operasional**, **Total Omzet Lunas** beserta jumlah transaksi, **Total Pengeluaran** beserta rincian pengeluaran periode berjalan.
+- **Definisi:** `Surplus Operasional = Total Omzet Lunas − Total Pengeluaran Tercatat` (bukan laporan laba rugi akuntansi penuh).
+
+### 12. Notifikasi Pesanan & Pusat Notifikasi (`NotificationsScreen`, `OrderMonitorService`)
+- Pemantauan pesanan baru di latar depan/aplikasi melalui `OrderMonitorService` & notifikasi sistem Android (`OrderNotifier`).
+- Pusat notifikasi in-app (`NotificationsScreen`) untuk pesanan baru, pembayaran menunggu konfirmasi, dan pesanan siap disajikan, lengkap dengan badge jumlah belum dibaca di dashboard dan bottom navigation bar.
+
+---
+
+## C. BACKEND & DATABASE (`backend`)
+
+Entitas relasional pada Prisma Schema (`backend/prisma/schema.prisma`):
+- `User` (`ADMIN`, `CASHIER`)
+- `Category`
+- `Product` (termasuk `isAvailable` dan `sortOrder`)
+- `Table` (`tableNumber`, `qrCode`, `isAvailable`)
+- `Order` (`orderType`, `paymentMethod`, `paymentStatus`, `orderStatus`, `subtotal`, `total`)
+- `OrderDetail`
+- `Payment`
+- `Expense`
+
+---
+
+## D. ATURAN BISNIS UTAMA
+
+1. Setiap tautan QR mengidentifikasi nomor meja spesifik (`?table=...`).
+2. Pesanan *Dine In* wajib memiliki meja; pesanan *Take Away* tidak memerlukan meja.
+3. Pesanan belum dibayar tidak masuk antrean proses dapur.
+4. Konfirmasi pembayaran hanya dicatat satu kali per pesanan.
+5. Hanya pesanan dengan status pembayaran `PAID` yang dihitung sebagai omzet.
+6. Pesanan `DIBATALKAN` tidak dihitung sebagai omzet.
+7. Perubahan ketersediaan, harga, foto, dan urutan produk langsung tersinkronisasi antara Android POS dan Customer Web.
+8. Pesanan pelanggan dan pesanan manual kasir dikelola pada sistem antrean pesanan yang sama.
+9. Data struk dihasilkan dari data transaksi aktual di database.

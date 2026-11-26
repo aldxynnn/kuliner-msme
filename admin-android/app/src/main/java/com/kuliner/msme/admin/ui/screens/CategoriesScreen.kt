@@ -6,17 +6,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -24,6 +23,8 @@ import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.model.Category
 import com.kuliner.msme.admin.data.model.CreateCategoryRequest
+import com.kuliner.msme.admin.ui.components.*
+import com.kuliner.msme.admin.ui.theme.*
 import kotlinx.coroutines.launch
 
 @Composable
@@ -78,78 +79,115 @@ fun CategoriesScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFAF8F5))
+            .background(AromaCream)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = 76.dp)
         ) {
-            Spacer(modifier = Modifier.height(12.dp))
-
             if (isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color(0xFFE25822))
-                }
+                AromaLoadingState(message = "Memuat daftar kategori...")
+            } else if (categories.isEmpty()) {
+                AromaEmptyState(
+                    icon = Icons.Default.Category,
+                    title = "Belum ada kategori menu",
+                    subtitle = "Buat kategori seperti Makanan, Minuman, atau Tambahan untuk merapikan katalog."
+                )
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(categories) { category ->
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(20.dp),
-                            color = Color.White,
-                            shadowElevation = 2.dp,
-                            border = BorderStroke(1.dp, Color(0xFFE9E1D9))
-                        ) {
+                        AromaCard(modifier = Modifier.fillMaxWidth()) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
+                                    .padding(14.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(category.name, fontWeight = FontWeight.Black, fontSize = 15.sp, color = Color(0xFF2B211D))
-                                    if (!category.description.isNullOrBlank()) {
-                                        Spacer(modifier = Modifier.height(2.dp))
-                                        Text(category.description, fontSize = 12.sp, color = Color(0xFF81766F))
-                                    }
-                                    if (category.count != null) {
-                                        Spacer(modifier = Modifier.height(6.dp))
-                                        Surface(
-                                            color = Color(0xFFFFF0E8),
-                                            shape = RoundedCornerShape(8.dp)
-                                        ) {
-                                            Text(
-                                                "${category.count.products} Produk Menu",
-                                                fontSize = 11.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = Color(0xFFE25822),
-                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                                            )
-                                        }
+                                Surface(
+                                    modifier = Modifier.size(42.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = AromaTerracottaSoft
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            Icons.Default.Category,
+                                            contentDescription = null,
+                                            tint = AromaTerracotta,
+                                            modifier = Modifier.size(20.dp)
+                                        )
                                     }
                                 }
 
-                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    IconButton(
+                                Spacer(modifier = Modifier.width(12.dp))
+
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = category.name,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp,
+                                        color = AromaCharcoal
+                                    )
+                                    if (!category.description.isNullOrBlank()) {
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = category.description,
+                                            fontSize = 12.sp,
+                                            color = AromaTextMuted
+                                        )
+                                    }
+                                    if (category.count != null) {
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        AromaTag(
+                                            label = "${category.count.products} Produk Menu",
+                                            backgroundColor = AromaTerracottaSoft,
+                                            textColor = AromaTerracotta,
+                                            borderColor = AromaTerracottaBorder
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    Surface(
                                         onClick = {
                                             editingCategory = category
                                             isDialogVisible = true
                                         },
-                                        modifier = Modifier.size(32.dp)
+                                        modifier = Modifier.size(36.dp),
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = AromaCreamSoft,
+                                        border = BorderStroke(1.dp, AromaBorder)
                                     ) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color(0xFF2B211D), modifier = Modifier.size(16.dp))
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(
+                                                Icons.Default.Edit,
+                                                contentDescription = "Edit",
+                                                tint = AromaCharcoal,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
                                     }
-                                    IconButton(
+                                    Surface(
                                         onClick = { handleDelete(category.id) },
-                                        modifier = Modifier.size(32.dp)
+                                        modifier = Modifier.size(36.dp),
+                                        shape = RoundedCornerShape(10.dp),
+                                        color = AromaErrorSoft,
+                                        border = BorderStroke(1.dp, AromaErrorBorder)
                                     ) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Hapus", tint = Color(0xFFC94136), modifier = Modifier.size(16.dp))
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(
+                                                Icons.Default.Delete,
+                                                contentDescription = "Hapus",
+                                                tint = AromaError,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -159,7 +197,7 @@ fun CategoriesScreen() {
             }
         }
 
-        // Prominent Floating Action Button at Bottom
+        // Bottom Primary Button
         Button(
             onClick = {
                 editingCategory = null
@@ -168,17 +206,18 @@ fun CategoriesScreen() {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 14.dp)
+                .padding(horizontal = 20.dp, vertical = 12.dp)
                 .height(50.dp),
-            shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822)),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp)
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AromaTerracotta,
+                contentColor = AromaSurface
+            ),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Tambah Kategori Baru", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-            }
+            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(6.dp))
+            Text("Tambah Kategori Baru", fontWeight = FontWeight.Bold, fontSize = 14.sp)
         }
     }
 
@@ -188,23 +227,34 @@ fun CategoriesScreen() {
 
         AlertDialog(
             onDismissRequest = { isDialogVisible = false },
-            title = { Text(if (editingCategory != null) "Edit Kategori" else "Tambah Kategori Baru", fontWeight = FontWeight.Black, fontSize = 16.sp, color = Color(0xFF2B211D)) },
+            containerColor = AromaSurface,
+            shape = RoundedCornerShape(22.dp),
+            title = {
+                Text(
+                    text = if (editingCategory != null) "Edit Kategori" else "Tambah Kategori Baru",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = AromaCharcoal
+                )
+            },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
                         label = { Text("Nama Kategori") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        colors = aromaTextFieldColors()
                     )
                     OutlinedTextField(
                         value = description,
                         onValueChange = { description = it },
-                        label = { Text("Deskripsi") },
+                        label = { Text("Deskripsi (Opsional)") },
+                        maxLines = 3,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        colors = aromaTextFieldColors()
                     )
                 }
             },
@@ -231,14 +281,14 @@ fun CategoriesScreen() {
                         }
                     },
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822))
+                    colors = ButtonDefaults.buttonColors(containerColor = AromaTerracotta)
                 ) {
                     Text("Simpan", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { isDialogVisible = false }) {
-                    Text("Batal")
+                    Text("Batal", fontWeight = FontWeight.Bold, color = AromaTextSecondary)
                 }
             }
         )

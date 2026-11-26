@@ -1,5 +1,6 @@
 package com.kuliner.msme.admin.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,24 +18,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.R
 import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.model.DashboardSummary
 import com.kuliner.msme.admin.data.model.User
+import com.kuliner.msme.admin.ui.components.AromaCard
+import com.kuliner.msme.admin.ui.components.AromaSectionHeader
 import com.kuliner.msme.admin.ui.components.NotificationBellButton
+import com.kuliner.msme.admin.ui.components.formatRupiah
+import com.kuliner.msme.admin.ui.theme.*
 import com.kuliner.msme.admin.ui.util.friendlyUserName
 import kotlinx.coroutines.launch
-import java.text.NumberFormat
-import java.util.Locale
 
 @Composable
 fun DashboardScreen(
@@ -69,25 +72,17 @@ fun DashboardScreen(
         loadData()
     }
 
-    fun formatRp(amount: Int): String {
-        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-        format.maximumFractionDigits = 0
-        return format.format(amount)
-    }
-
-    val primaryGradient = Brush.linearGradient(
-        colors = listOf(Color(0xFFE25822), Color(0xFFF27B3D))
-    )
+    val pendingCount = summary?.pendingPaymentsCount ?: 0
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFAF8F5))
+            .background(AromaCream)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        // Header bersih: brand di kiri, notifikasi di kanan.
+        // Top Header: Brand on left, Notification Bell on right
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -95,26 +90,36 @@ fun DashboardScreen(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Surface(
-                    modifier = Modifier.size(38.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    color = Color.White,
-                    shadowElevation = 2.dp
+                    modifier = Modifier.size(40.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    color = AromaSurface,
+                    border = BorderStroke(1.dp, AromaBorder)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.logo_aroma),
                         contentDescription = "Logo AROMA",
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp))
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(12.dp))
                     )
                 }
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text = "AROMA POS",
-                    fontWeight = FontWeight.Black,
-                    fontSize = 18.sp,
-                    color = Color(0xFFE25822),
-                    letterSpacing = (-0.5).sp
-                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = "AROMA POS",
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 17.sp,
+                        color = AromaCharcoal,
+                        letterSpacing = (-0.3).sp
+                    )
+                    Text(
+                        text = "Ayam Goreng Lengkuas",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = AromaTextMuted
+                    )
+                }
             }
 
             NotificationBellButton(
@@ -123,192 +128,149 @@ fun DashboardScreen(
             )
         }
 
-        // Greeting Section
-        Column {
+        // Greeting
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
-                text = "Selamat Datang,",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF81766F)
+                text = "Selamat bertugas,",
+                style = MaterialTheme.typography.bodyMedium,
+                color = AromaTextSecondary
             )
             Text(
-                text = "Halo, ${friendlyUserName(user?.name)}!",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Black,
-                color = Color(0xFF2B211D),
+                text = friendlyUserName(user?.name),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.ExtraBold,
+                color = AromaCharcoal,
                 maxLines = 1,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis
             )
         }
 
-        // Hero Gradient Banner Card (Omzet Summary)
+        // Primary Revenue Summary Panel (Solid Aroma Terracotta, clean commercial POS aesthetic)
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
-            shadowElevation = 6.dp
+            shape = RoundedCornerShape(20.dp),
+            color = AromaTerracotta
         ) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(primaryGradient)
-                    .padding(22.dp)
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "Total Omzet Hari Ini",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.White.copy(alpha = 0.9f)
+                        text = "OMZET LUNAS HARI INI",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.8.sp,
+                        color = AromaSurface.copy(alpha = 0.85f)
                     )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        Column {
-                            Text(
-                                text = formatRp(summary?.todayRevenue ?: 0),
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.Black,
-                                color = Color.White
-                            )
-
-                            Spacer(modifier = Modifier.height(4.dp))
-
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.TrendingUp,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "${summary?.todayTransactionCount ?: 0} Transaksi Lunas",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White.copy(alpha = 0.95f)
-                                )
-                            }
-                        }
-
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            color = AromaSurface,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
                         Icon(
-                            Icons.Default.BarChart,
+                            Icons.AutoMirrored.Filled.TrendingUp,
                             contentDescription = null,
-                            tint = Color.White.copy(alpha = 0.35f),
-                            modifier = Modifier.size(56.dp)
+                            tint = AromaSurface.copy(alpha = 0.85f),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+
+                Text(
+                    text = formatRupiah(summary?.todayRevenue ?: 0),
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = (-0.5).sp,
+                    color = AromaSurface
+                )
+
+                HorizontalDivider(color = AromaSurface.copy(alpha = 0.18f), thickness = 1.dp)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(
+                            text = "Transaksi Lunas",
+                            fontSize = 11.sp,
+                            color = AromaSurface.copy(alpha = 0.78f)
+                        )
+                        Text(
+                            text = "${summary?.todayTransactionCount ?: 0} transaksi",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AromaSurface
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = "Pesanan Selesai",
+                            fontSize = 11.sp,
+                            color = AromaSurface.copy(alpha = 0.78f)
+                        )
+                        Text(
+                            text = "${summary?.completedOrdersTodayCount ?: 0} selesai",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AromaSurface
                         )
                     }
                 }
             }
         }
 
-        // Operational Metric Cards
+        // Key Live Operations KPI Cards
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(14.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Card 1: Pesanan Dapur
-            Surface(
-                onClick = { onNavigateTo("orders") },
+            DashboardKpiCard(
+                label = "Pesanan Aktif",
+                value = "${summary?.activeOrdersCount ?: 0}",
+                helper = "Antrean & dapur",
+                icon = Icons.AutoMirrored.Filled.ReceiptLong,
+                iconBg = AromaTerracottaSoft,
+                iconTint = AromaTerracotta,
                 modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(20.dp),
-                color = Color.White,
-                shadowElevation = 2.dp,
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE9E1D9))
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Surface(
-                        modifier = Modifier.size(42.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color(0xFFFFF0E8)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ReceiptLong,
-                                contentDescription = null,
-                                tint = Color(0xFFE25822),
-                                modifier = Modifier.size(22.dp)
-                            )
-                        }
-                    }
+                onClick = { onNavigateTo("orders") }
+            )
 
-                    Column {
-                        Text("Pesanan Dapur", fontSize = 11.sp, color = Color(0xFF81766F), fontWeight = FontWeight.Medium)
-                        Text(
-                            "${summary?.activeOrdersCount ?: 0}",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Color(0xFF2B211D)
-                        )
-                    }
-                }
-            }
-
-            // Card 2: Belum Bayar
-            Surface(
-                onClick = { onNavigateTo("payments") },
+            DashboardKpiCard(
+                label = "Belum Bayar",
+                value = "$pendingCount",
+                helper = if (pendingCount > 0) "Perlu konfirmasi" else "Semua lunas",
+                icon = Icons.Default.AccessTime,
+                iconBg = if (pendingCount > 0) AromaWarningSoft else AromaSuccessSoft,
+                iconTint = if (pendingCount > 0) AromaWarning else AromaSuccess,
                 modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(20.dp),
-                color = Color.White,
-                shadowElevation = 2.dp,
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE9E1D9))
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Surface(
-                        modifier = Modifier.size(42.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color(0xFFFFF0E8)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                Icons.Default.AccessTime,
-                                contentDescription = null,
-                                tint = Color(0xFFE25822),
-                                modifier = Modifier.size(22.dp)
-                            )
-                        }
-                    }
-
-                    Column {
-                        Text("Belum Bayar", fontSize = 11.sp, color = Color(0xFF81766F), fontWeight = FontWeight.Medium)
-                        Text(
-                            "${summary?.pendingPaymentsCount ?: 0}",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Color(0xFF2B211D)
-                        )
-                    }
-                }
-            }
+                onClick = { onNavigateTo("payments") }
+            )
         }
 
-        // Secondary Operational Management Hub (NON-REDUNDANT)
-        Text(
-            text = "Pengelolaan Resto & Operasional",
-            fontWeight = FontWeight.Bold,
-            fontSize = 15.sp,
-            color = Color(0xFF2B211D),
-            modifier = Modifier.padding(top = 4.dp)
+        // Secondary Operational Management Hub
+        AromaSectionHeader(
+            title = "Pengelolaan Resto",
+            subtitle = "Kategori, meja QR, biaya operasional, dan laporan"
         )
 
-        // 2x2 Grid for Secondary Features NOT in bottom navbar
-        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 DashboardActionCard(
                     title = "Kelola Kategori",
+                    subtitle = "Susun kelompok menu",
                     icon = Icons.Default.Category,
                     modifier = Modifier.weight(1f),
                     onClick = { onNavigateTo("categories") }
@@ -316,6 +278,7 @@ fun DashboardScreen(
 
                 DashboardActionCard(
                     title = "Meja & QR Code",
+                    subtitle = "Tautan meja pelanggan",
                     icon = Icons.Default.QrCode,
                     modifier = Modifier.weight(1f),
                     onClick = { onNavigateTo("tables") }
@@ -324,10 +287,11 @@ fun DashboardScreen(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 DashboardActionCard(
                     title = "Biaya Operasional",
+                    subtitle = "Catat pengeluaran harian",
                     icon = Icons.Default.MoneyOff,
                     modifier = Modifier.weight(1f),
                     onClick = { onNavigateTo("expenses") }
@@ -335,6 +299,7 @@ fun DashboardScreen(
 
                 DashboardActionCard(
                     title = "Laporan Surplus",
+                    subtitle = "Rekap harian & bulanan",
                     icon = Icons.Default.Assessment,
                     modifier = Modifier.weight(1f),
                     onClick = { onNavigateTo("reports") }
@@ -342,21 +307,88 @@ fun DashboardScreen(
             }
         }
 
-        // Account Access Hub — pintu masuk ke profil & logout
-        Text(
-            text = "Akun & Keamanan",
-            fontWeight = FontWeight.Bold,
-            fontSize = 15.sp,
-            color = Color(0xFF2B211D),
-            modifier = Modifier.padding(top = 4.dp)
-        )
+        // Account Access Hub
+        AromaSectionHeader(title = "Akun & Sesi")
 
         DashboardAccountCard(
             user = user,
             onClick = { onNavigateTo("profile") }
         )
 
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(6.dp))
+    }
+}
+
+@Composable
+private fun DashboardKpiCard(
+    label: String,
+    value: String,
+    helper: String,
+    icon: ImageVector,
+    iconBg: Color,
+    iconTint: Color,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    AromaCard(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    modifier = Modifier.size(36.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    color = iconBg
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = iconTint,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = AromaTextMuted,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+
+            Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
+                Text(
+                    text = value,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = AromaCharcoal
+                )
+                Text(
+                    text = label,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AromaCharcoal
+                )
+                Text(
+                    text = helper,
+                    fontSize = 11.sp,
+                    color = AromaTextMuted,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
     }
 }
 
@@ -370,13 +402,9 @@ private fun DashboardAccountCard(
         ?: "Kelola profil dan keamanan akun"
     val initial = displayName.trim().firstOrNull()?.uppercase() ?: "A"
 
-    Surface(
+    AromaCard(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        color = Color.White,
-        shadowElevation = 2.dp,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE9E1D9))
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 14.dp),
@@ -385,14 +413,15 @@ private fun DashboardAccountCard(
             Surface(
                 modifier = Modifier.size(42.dp),
                 shape = CircleShape,
-                color = Color(0xFFFFF0E8)
+                color = AromaTerracottaSoft,
+                border = BorderStroke(1.dp, AromaTerracottaBorder)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(
                         text = initial,
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Black,
-                        color = Color(0xFFE25822)
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = AromaTerracotta
                     )
                 }
             }
@@ -402,28 +431,27 @@ private fun DashboardAccountCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = displayName,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color(0xFF2B211D),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AromaCharcoal,
                     maxLines = 1,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = displayEmail,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF81766F),
+                    fontSize = 12.sp,
+                    color = AromaTextMuted,
                     maxLines = 1,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "Buka profil akun",
-                tint = Color(0xFFB9AEA6),
-                modifier = Modifier.size(22.dp)
+                tint = AromaTextMuted,
+                modifier = Modifier.size(20.dp)
             )
         }
     }
@@ -432,46 +460,53 @@ private fun DashboardAccountCard(
 @Composable
 private fun DashboardActionCard(
     title: String,
+    subtitle: String,
     icon: ImageVector,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Surface(
+    AromaCard(
         onClick = onClick,
-        modifier = modifier.height(96.dp),
-        shape = RoundedCornerShape(22.dp),
-        color = Color.White,
-        shadowElevation = 2.dp,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE9E1D9))
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.Start
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Surface(
-                modifier = Modifier.size(34.dp),
+                modifier = Modifier.size(36.dp),
                 shape = RoundedCornerShape(10.dp),
-                color = Color(0xFFFFF0E8)
+                color = AromaTerracottaSoft
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         icon,
                         contentDescription = title,
-                        tint = Color(0xFFE25822),
+                        tint = AromaTerracotta,
                         modifier = Modifier.size(18.dp)
                     )
                 }
             }
 
-            Text(
-                text = title,
-                fontWeight = FontWeight.Bold,
-                fontSize = 12.sp,
-                color = Color(0xFF2B211D)
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp,
+                    color = AromaCharcoal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = subtitle,
+                    fontSize = 11.sp,
+                    color = AromaTextMuted,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

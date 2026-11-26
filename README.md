@@ -1,4 +1,4 @@
-# AROMA POS – Sistem Pemesanan dan Manajemen Kuliner UMKM Terintegrasi
+# AROMA POS — Sistem Pemesanan Mandiri & Operasional Kasir Kuliner UMKM
 
 [![NestJS](https://img.shields.io/badge/Backend-NestJS_v10-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com)
 [![React](https://img.shields.io/badge/Customer_Web-React_v18-61DAFB?logo=react&logoColor=black)](https://react.dev)
@@ -7,288 +7,274 @@
 [![Prisma ORM](https://img.shields.io/badge/Database_ORM-Prisma_v5-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL_v16-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
 [![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind_CSS_v3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Cloudinary](https://img.shields.io/badge/Cloud_Storage-Cloudinary_CDN-3448C5?logo=cloudinary&logoColor=white)](https://cloudinary.com)
+[![Cloudinary](https://img.shields.io/badge/Media_Storage-Cloudinary_CDN-3448C5?logo=cloudinary&logoColor=white)](https://cloudinary.com)
 
-**AROMA POS** adalah sistem pemesanan mandiri dan manajemen kasir komersial terintegrasi yang dirancang khusus untuk bisnis kuliner UMKM (*AROMA – Ayam Goreng Lengkuas*). Sistem ini menghubungkan **Customer Website** untuk pemesanan mandiri pelanggan via QR meja, **Android POS** untuk operasional kasir/admin, serta **Backend NestJS REST API** dengan database **PostgreSQL Neon** sebagai sumber data terpusat (*Single Source of Truth*).
-
----
-
-## 📌 1. Tentang Aplikasi
-
-### Latar Belakang & Masalah
-Usaha kuliner UMKM sering kali menghadapi kendala efisiensi operasional akibat pemesanan manual berbasis kertas, antrean panjang di meja kasir saat jam sibuk, keterlambatan informasi ke bagian dapur, serta pencatatan keuangan harian yang tidak transparan.
-
-### Solusi & Tujuan
-AROMA POS hadir untuk memberikan solusi teknologi kuliner yang modern, bersih, dan mudah digunakan:
-- **Pemesanan Mandiri via QR Meja:** Pelanggan dapat melihat menu, menambah catatan khusus, dan memesan dari meja tanpa memanggil pelayan.
-- **Operasional Kasir Efisien:** Kasir dapat memproses pemesanan manual (*POS*), mengonfirmasi pembayaran tunai/QRIS, memantau antrean dapur, dan mencetak/menyimpan PDF struk resmi.
-- **Manajemen Menu & Laporan Terpusat:** Admin dapat mengelola kategori, mengunggah foto menu ke cloud storage, mengatur urutan produk per kategori (*custom sorting*), serta memantau surplus keuangan harian.
-
-### Target Pengguna
-- **Pelanggan Restoran:** Pengunjung restoran (*Dine In*) atau pembeli bawa pulang (*Take Away*).
-- **Kasir & Admin Restoran:** Pengelola operasional harian dan pemilik restoran.
+**AROMA POS** adalah sistem pemesanan makanan mandiri dan manajemen operasional kasir terintegrasi untuk UMKM kuliner **AROMA – Ayam Goreng Lengkuas**. Seluruh platform terhubung ke satu **Backend REST API (NestJS + Prisma)** dan satu database **PostgreSQL** sebagai *Single Source of Truth*.
 
 ---
 
-## ✨ 2. Fitur Utama
+## 1. Ringkasan Sistem
 
-### 📱 Customer Website (`customer-web`) — Pelanggan
-- **Akses Meja Otomatis via QR:** Mendeteksi nomor meja dari parameter URL (`?table=Meja 01`).
-- **Tipe Pemesanan:** Pilihan *Dine In* (Makan di Tempat) atau *Take Away* (Bawa Pulang).
-- **Katalog Menu & Kategori:** Penampilan menu berdasarkan kategori (*Makanan*, *Minuman*, *Tambahan*) dengan pengurutan presisi (*sortOrder*).
-- **Sticky Category Bar:** Bar navigasi kategori yang menempel secara mulus di bawah header saat di-scroll.
-- **Keranjang & Checkout:** Penambahan kuantitas, catatan khusus, dan pilihan metode pembayaran (Tunai di Kasir / QRIS).
-- **Live Order Tracking:** Pemantauan status alur dapur secara *real-time* (poling 5 detik).
+Repository ini terdiri dari tiga komponen utama:
 
-### 🤖 Android POS (`admin-android`) — Kasir & Admin
-- **Autentikasi Keamanan:** Login kasir/admin dengan token JWT dan perlindungan rute.
-- **Dashboard Omzet Harian:** Ringkasan pendapatan lunas, jumlah transaksi, dan pesanan aktif.
-- **Kasir POS Manual:** Pembuatan pesanan langsung dari meja kasir dengan pilihan meja dan metode bayar.
-- **Antrean Pesanan & Alur Dapur:** Pembaruan status pesanan (*Masuk Antrean* → *Sedang Dimasak* → *Siap Disajikan* → *Selesai*).
-- **Manajemen Menu & Upload Foto:** Tambah/edit menu dengan pengunggahan foto dari galeri HP ke Cloud Storage (Cloudinary).
-- **Penataan Urutan Produk (Custom Sorting):** Penataan posisi produk per kategori menggunakan tombol panah Naik/Turun yang langsung tersinkronisasi ke website.
-- **Konfirmasi Pembayaran:** Verifikasi pembayaran Tunai dan QRIS manual.
-- **Pencatatan Biaya Operasional (Expenses):** Pengelolaan data pengeluaran harian resto.
-- **Laporan Keuangan & Surplus:** Rekap harian/bulanan dengan perhitungan *Surplus Operasional = Total Omzet Lunas - Pengeluaran*.
-- **Cetak & Ekspor PDF Struk:** Cetak struk via Android *PrintManager* dan ekspor file PDF ke folder *Downloads*.
-
-### ⚡ Backend REST API (`backend`) — Server
-- **RESTful Endpoints:** Layanan API untuk autentikasi, produk, kategori, meja, pesanan, pembayaran, biaya, dan laporan.
-- **Dual-Mode Media Storage:** Pengunggahan foto ke **Cloudinary CDN** untuk produksi, dengan *fallback* persisten lokal untuk pengembangan.
-- **Database Transaction Safety:** Pengurutan produk dan transaksi pembayaran menggunakan `prisma.$transaction`.
+| Komponen | Folder | Target Pengguna | Teknologi Utama |
+| :--- | :--- | :--- | :--- |
+| **Customer Web** | `customer-web/` | Pelanggan (*Dine In* via QR meja & *Take Away*) | React 18, Vite 5, TypeScript, Tailwind CSS 3, Lucide React |
+| **Admin Android POS** | `admin-android/` | Kasir & pengelola operasional resto | Native Kotlin, Jetpack Compose, Material 3, Retrofit 2, Coil |
+| **Backend REST API** | `backend/` | Layanan data terpusat untuk Web & Android | NestJS 10, TypeScript, Prisma ORM 5, PostgreSQL 16, JWT, Multer + Cloudinary |
 
 ---
 
-## 🖼️ 3. Preview Antarmuka Aplikasi
+## 2. Fitur yang Diimplementasikan
 
-Antarmuka AROMA POS dirancang dengan tema visual **Warm Ivory** (`#FAF8F5`), **Terracotta** (`#C94F1D`), dan **Dark Charcoal** (`#2B211D`) yang elegan dan intuitif:
+### Customer Web (`customer-web`)
+- **Deteksi Meja Otomatis via URL QR:** Membaca parameter `?table=Meja 01` secara otomatis saat pelanggan memindai QR meja, dengan input nomor meja manual jika pelanggan mengakses tanpa parameter QR pada mode *Dine In*.
+- **Pilihan Tipe Pesanan:** *Dine In* (Makan di Tempat) dan *Take Away* (Bawa Pulang).
+- **Penjelajahan Menu Responsif:** Filter kategori *sticky* (terurut mengikuti `sortOrder` dari backend), pencarian menu, kartu produk responsif (mobile-first hingga desktop), serta indikator status ketersediaan (*Tersedia* / *Habis*).
+- **Detail Produk & Catatan Khusus:** Modal detail produk dengan pengaturan kuantitas dan catatan khusus per item.
+- **Keranjang & Checkout:** Drawer keranjang dengan pengaturan kuantitas, penghapusan item, input nama pemesan opsional, dan pilihan metode pembayaran (**QRIS** atau **Bayar di Kasir / Tunai**).
+- **Pelacakan Pesanan Live & Ringkasan Struk:** Pembaruan status otomatis setiap 5 detik (`GET /api/orders/track/:orderNumber`), tampilan tahapan progres dapur, tampilan kode QRIS untuk verifikasi kasir, serta ringkasan struk digital saat pembayaran lunas.
 
-- **Customer Web Header & Catalog:** Tampilan menu bersih dengan gambar resolusi tinggi dari Cloudinary CDN dan bar navigasi kategori sticky.
-- **Android POS Dashboard & Cashier Order:** Layout antarmuka kasir yang nyaman digunakan pada layar sentuh ponsel Android.
-- **Struk Pembayaran Digital:** Tampilan struk resmi AROMA Ayam Goreng Lengkuas beridentitas lengkap di Serang, Banten.
+### Admin Android POS (`admin-android`)
+- **Autentikasi Kasir/Admin:** Login berbasis JWT (`TokenManager` + `AuthInterceptor`) dan halaman **Profil & Akun** dengan konfirmasi logout.
+- **Dashboard Operasional:** Ringkasan omzet lunas hari ini, jumlah transaksi lunas, pesanan selesai, pesanan aktif dapur, dan tagihan belum bayar, serta akses cepat pengelolaan resto.
+- **Kasir POS Manual:** Pembuatan pesanan langsung dari kasir untuk *Dine In* (pilih meja) maupun *Take Away* dengan keranjang bottom sheet dan metode bayar Tunai/QRIS.
+- **Manajemen Pesanan & Alur Dapur:** Filter status (`Belum Bayar`, `Masuk Antrean`, `Sedang Dimasak`, `Siap Disajikan`, `Selesai`, `Dibatalkan`), detail pesanan, pembaruan status dapur bertahap untuk pesanan lunas, pembatalan pesanan belum bayar, serta struk digital.
+- **Konfirmasi & Riwayat Pembayaran:** Daftar pesanan belum lunas untuk verifikasi pembayaran Tunai/QRIS oleh kasir serta tab riwayat pembayaran lunas.
+- **Manajemen Menu & Penataan Urutan:** Tambah/edit/hapus menu, toggle ketersediaan langsung tersinkronisasi ke Customer Web, unggah foto dari galeri HP (Cloudinary / fallback lokal), serta mode penataan urutan produk (*custom sorting* via `PATCH /api/products/reorder`).
+- **Manajemen Kategori & Meja QR:** Pengelolaan kategori menu (tambah, edit, hapus) serta pengelolaan meja (tambah, hapus, lihat tautan QR meja).
+- **Biaya Operasional & Laporan Surplus:** Pencatatan dan penghapusan pengeluaran operasional harian serta laporan keuangan harian dan bulanan (*Surplus Operasional = Total Omzet Lunas − Total Pengeluaran*).
+- **Struk Digital, Cetak & Ekspor PDF:** Tampilan struk resmi *Ayam Goreng Lengkuas Aroma*, cetak melalui Android `PrintManager`, dan simpan PDF ke folder `Downloads`.
+- **Notifikasi Pesanan Masuk & Pusat Notifikasi:** Pemantauan pesanan baru melalui `OrderMonitorService`, badge angka pada navigasi, dan halaman daftar notifikasi (`NotificationsScreen`).
+
+### Backend REST API (`backend`)
+- **REST API Modular (NestJS):** Modul `auth`, `categories`, `products`, `tables`, `orders`, `payments`, `expenses`, dan `reports`.
+- **Dual-Mode Upload Gambar:** Mengunggah ke Cloudinary jika kredensial tersedia di environment, atau menyimpan ke folder lokal `/uploads` saat pengembangan lokal.
+- **Keamanan & Integritas Data:** Hash kata sandi dengan `bcrypt`, proteksi endpoint dengan `JwtAuthGuard`, validasi DTO global (`ValidationPipe`), dan transaksi Prisma (`prisma.$transaction`) pada operasi kritikal.
 
 ---
 
-## 🏗️ 4. Arsitektur Sistem
+## 3. Identitas Visual (Aroma POS Design System)
 
-Sistem AROMA POS mengadopsi arsitektur terpusat berbasis **Single Source of Truth**:
+Customer Web dan Admin Android berbagi sistem desain yang seragam:
+
+| Token | Kode Warna | Penggunaan |
+| :--- | :--- | :--- |
+| **Terracotta (Primary)** | `#A9472D` | Aksi utama, highlight brand, status aktif |
+| **Warm Cream (Canvas)** | `#F6F0E6` | Latar belakang utama halaman & layar |
+| **Charcoal (Ink)** | `#292722` | Teks utama, judul, elemen kontras tinggi |
+| **Pure White (Surface)** | `#FFFFFF` | Kartu, form input, modal, header, drawer |
+| **Success / Warning / Error** | `#1F7A4C` / `#B76E14` / `#C4382B` | Status lunas, menunggu pembayaran, pembatalan & pengeluaran |
+
+Detail lengkap sistem desain terdokumentasi pada [DESIGN.md](DESIGN.md).
+
+---
+
+## 4. Arsitektur Sistem
 
 ```mermaid
 flowchart TD
-    subgraph Klien["Klien Antarmuka (Clients)"]
-        A["Customer Website\n(React + Vite + Tailwind)"]
-        B["Android POS App\n(Native Kotlin + Compose)"]
+    subgraph Clients["Aplikasi Klien"]
+        A["Customer Web\n(React + Vite + Tailwind)"]
+        B["Admin Android POS\n(Kotlin + Jetpack Compose)"]
     end
 
-    subgraph Server["Infrastruktur Server & Cloud"]
-        C["Backend REST API\n(NestJS + TypeScript)"]
-        D["Database Cloud\n(Neon PostgreSQL)"]
-        E["Media Storage CDN\n(Cloudinary Storage)"]
+    subgraph Server["Server & Penyimpanan"]
+        C["Backend REST API\n(NestJS + Prisma ORM)"]
+        D["PostgreSQL 16\n(Neon / Docker Lokal)"]
+        E["Media Storage\n(Cloudinary CDN / Local /uploads)"]
     end
 
-    A -->|HTTP/HTTPS REST API| C
-    B -->|Retrofit 2 REST API + JWT| C
-    C -->|Prisma ORM / Connection Pool| D
-    C -->|Upload & Store Image SDK| E
-    A -.->|Render CDN Image| E
+    A -->|REST API| C
+    B -->|Retrofit 2 + JWT| C
+    C -->|Prisma Client| D
+    C -->|Upload Foto Menu| E
+    A -.->|Tampil Foto Menu| E
+    B -.->|Tampil Foto Menu| E
 ```
 
-### Alur Kerja Data (Data Flow):
-1. Admin mengubah menu atau mengurutkan produk di Android POS → Request `PATCH /api/products/reorder` dikirim ke Backend NestJS.
-2. Backend NestJS memperbarui kolom `sortOrder` di database **Neon PostgreSQL** secara transaksional.
-3. Pelanggan membuka Customer Website → Request `GET /api/products` mengembalikan daftar produk terurut terbaru.
-4. Gambar produk dimuat secara langsung dari **Cloudinary CDN** (`https://res.cloudinary.com/...`).
+Penjelasan arsitektur dan skema relasional database tersedia pada [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 
-## 🛠️ 5. Tech Stack
-
-### Backend
-- **Framework:** NestJS (Node.js v20)
-- **Bahasa:** TypeScript
-- **ORM:** Prisma v5
-- **Autentikasi:** Passport JWT & bcrypt
-- **Upload File:** Multer & Cloudinary SDK
-
-### Android POS
-- **Bahasa & SDK:** Native Kotlin (Min SDK 24 / Android 7.0+)
-- **UI Framework:** Jetpack Compose & Material 3
-- **Networking:** Retrofit 2 & OkHttp 4 (dengan AuthInterceptor)
-- **Image Loader:** Coil Compose v2.5
-
-### Customer Web
-- **Framework:** React v18 & Vite v5
-- **Styling:** Tailwind CSS v3 & Lucide Icons
-- **Language:** TypeScript
-
-### Database & Cloud Storage
-- **Database:** PostgreSQL 16 (Neon Serverless PostgreSQL)
-- **Object Storage:** Cloudinary CDN
-
-### Hosting & Deployment
-- **Backend Production:** SnapDeploy Container Hosting
-- **Customer Web Production:** Vercel Hosting
-- **Android Release:** Gradle Built APK
-
----
-
-## 📁 6. Struktur Repository
+## 5. Struktur Repository
 
 ```text
 kuliner-msme/
-├── admin-android/               # Aplikasi Native Android POS (Kotlin + Jetpack Compose)
+├── admin-android/                       # Aplikasi Native Android POS (Kotlin + Compose + Material 3)
 │   ├── app/src/main/java/com/kuliner/msme/admin/
+│   │   ├── MainActivity.kt              # Entry point & penanganan sesi login
 │   │   ├── data/
-│   │   │   ├── api/            # RetrofitClient, ApiService, AuthInterceptor, TokenManager
-│   │   │   └── model/          # Data Models (Product, Order, Category, dll)
+│   │   │   ├── api/                     # ApiService, RetrofitClient, AuthInterceptor, TokenManager
+│   │   │   └── model/                   # Data models & helper URL gambar/QR
+│   │   ├── notification/                # OrderMonitorService, NotificationCenter, OrderNotifier, dll.
 │   │   └── ui/
-│   │       ├── screens/        # Screen Composables (Products, Orders, Cashier, Reports, dll)
-│   │       └── theme/          # Material 3 Color Theme (Terracotta & Warm Ivory)
+│   │       ├── MainScreen.kt            # Shell navigasi utama & bottom navigation bar
+│   │       ├── components/              # AromaComponents, NotificationComponents
+│   │       ├── screens/                 # Login, Dashboard, Orders, CashierOrder, Payments,
+│   │       │                            # Products, Categories, Tables, Expenses, Reports,
+│   │       │                            # ReceiptDialog, Notifications, Profile
+│   │       ├── theme/                   # Color.kt, Type.kt, Theme.kt (Aroma POS Design System)
+│   │       └── util/                    # UserDisplay.kt
 │   └── build.gradle.kts
 │
-├── backend/                     # Backend REST API (NestJS + Prisma ORM)
-│   ├── prisma/                  # Schema Prisma, Migrasi SQL, & Idempotent Seed Script
-│   ├── src/                     # NestJS Modules (Auth, Products, Orders, Payments, dll)
-│   ├── Dockerfile               # Multi-stage Docker Build Backend
+├── backend/                             # Backend REST API (NestJS + Prisma ORM)
+│   ├── prisma/                          # schema.prisma, migrations/, seed.ts
+│   ├── src/
+│   │   ├── auth/                        # Login JWT, guard, decorator
+│   │   ├── categories/                  # CRUD kategori menu
+│   │   ├── products/                    # CRUD produk, upload foto, toggle stok, reorder
+│   │   ├── tables/                      # CRUD meja & generator tautan QR
+│   │   ├── orders/                      # Order pelanggan, kasir, tracking, status, cancel, struk
+│   │   ├── payments/                    # Konfirmasi bayar, daftar belum lunas, riwayat bayar
+│   │   ├── expenses/                    # CRUD pengeluaran operasional
+│   │   ├── reports/                     # Ringkasan dashboard & laporan surplus harian/bulanan
+│   │   └── prisma/                      # PrismaService & PrismaModule
+│   ├── Dockerfile
 │   └── package.json
 │
-├── customer-web/                # Website Pemesanan Pelanggan (React + Vite + Tailwind)
+├── customer-web/                        # Customer Ordering Website (React + Vite + Tailwind)
+│   ├── public/logo-aroma.png
 │   ├── src/
-│   │   ├── components/         # Header, ProductCard, CategoryBar, OrderTrackingModal, dll
-│   │   ├── api.ts              # API Client & Helper getImageUrl() Dinamis
-│   │   └── App.tsx
-│   ├── Dockerfile               # Multi-stage Docker Build Web (Nginx SPA)
-│   └── vite.config.ts
+│   │   ├── components/                  # Header, HeroSection, CategoryBar, ProductCard,
+│   │   │                                # ProductDetailModal, CartDrawer, OrderTrackingModal
+│   │   ├── utils/format.ts              # Format Rupiah & tanggal Indonesia
+│   │   ├── api.ts                       # REST API client & resolver getImageUrl()
+│   │   ├── types.ts                     # TypeScript interfaces
+│   │   ├── App.tsx                      # Halaman pemesanan utama
+│   │   └── index.css                    # Design tokens & animasi halus
+│   ├── Dockerfile
+│   ├── tailwind.config.js
+│   └── package.json
 │
-├── docs/                        # Dokumentasi Proyek Lengkap
-│   ├── ARCHITECTURE.md          # Penjelasan Arsitektur & Pemodelan Data
-│   └── INSTALLATION.md          # Panduan Jalankan Proyek & Docker Compose
-│
-├── docker-compose.yml           # Orkestrasi Docker Lokal (PostgreSQL, Backend, Web)
-├── logo-aroma.png               # Logo Resmi AROMA
-└── README.md                    # Halaman Utama Dokumentasi Repositori
+├── docs/
+│   ├── ARCHITECTURE.md                  # Arsitektur sistem & ERD database
+│   └── INSTALLATION.md                  # Panduan instalasi lokal (Docker, manual, Android Studio)
+├── .env.example                         # Contoh konfigurasi environment lokal
+├── docker-compose.yml                   # Orkestrasi PostgreSQL, Backend, dan Customer Web
+├── PROJECT.md                           # Ringkasan proyek & tech stack
+├── FEATURES.md                          # Spesifikasi fitur aktual & aturan bisnis
+├── DESIGN.md                            # Panduan Design System Aroma POS
+└── README.md                            # Dokumentasi utama repository
 ```
 
 ---
 
-## 🚀 7. Getting Started
+## 6. Menjalankan Proyek Secara Lokal
 
-### Persyaratan Singkat:
-- **Git**
-- **Docker Desktop** (untuk menjalankan stack lokal)
-- **Android Studio** (untuk aplikasi Android POS)
+### Opsi A: Docker Compose (Disarankan untuk Stack Penuh)
 
-### Perintah Cepat Jalankan Lokal:
 ```bash
 # 1. Clone repository
 git clone https://github.com/aldxynnn/kuliner-msme.git
 cd kuliner-msme
 
-# 2. Salin environment variable
+# 2. Salin konfigurasi environment
 cp .env.example .env
 
-# 3. Jalankan Docker Compose
+# 3. Build dan jalankan PostgreSQL, Backend, serta Customer Web
 docker compose up --build -d
 
-# 4. Jalankan seed data master pertama kali
+# 4. Jalankan seed data awal (idempotent)
 docker compose exec backend npm run prisma:seed
 ```
 
-> 📖 **Panduan Instalasi Lengkap:**  
-> Untuk panduan langkah demi langkah, koneksi pgAdmin, troubleshooting, dan cara menghubungkan Android Studio / HP Fisik, silakan buka **[Panduan Instalasi (docs/INSTALLATION.md)](docs/INSTALLATION.md)**.
+Akses layanan lokal:
+- **Customer Web:** `http://localhost:5173` (uji QR meja: `http://localhost:5173/?table=Meja%2001`)
+- **Backend API:** `http://localhost:3000/api/products`
+
+### Opsi B: Menjalankan Customer Web & Backend Tanpa Docker
+
+```bash
+# Backend (pastikan PostgreSQL aktif & DATABASE_URL terisi di backend/.env)
+cd backend
+npm install
+npx prisma migrate deploy
+npm run prisma:seed
+npm run start:dev
+
+# Customer Web (terminal terpisah)
+cd customer-web
+npm install
+npm run dev
+```
+
+### Menjalankan Admin Android (`admin-android`)
+1. Buka folder `admin-android/` di **Android Studio** (atau jalankan `./gradlew assembleDebug` dengan Android SDK terpasang).
+2. Konfigurasikan `DEFAULT_BASE_URL` di `admin-android/app/src/main/java/com/kuliner/msme/admin/data/api/RetrofitClient.kt`:
+   - Backend lokal via Android Emulator: `http://10.0.2.2:3000/api/`
+   - Backend lokal via perangkat fisik (Wi-Fi sama): `http://<IP-LOKAL-KOMPUTER>:3000/api/`
+   - Backend produksi: `https://aroma-backend-15717.containers.snapdeploy.app/api/`
+3. Login dengan akun seed awal:
+   - Admin: `admin@kuliner.com` / `admin123`
+   - Kasir: `kasir@kuliner.com` / `kasir123`
+
+Panduan instalasi lengkap, akses pgAdmin/Prisma Studio, dan troubleshooting tersedia di [docs/INSTALLATION.md](docs/INSTALLATION.md).
 
 ---
 
-## ⚙️ 8. Environment Configuration (`.env.example`)
+## 7. Konfigurasi Environment
 
-Seluruh variabel lingkungan dikonfigurasi melalui file `.env`. Berikut adalah contoh variabel dan nilainya:
+File `.env.example` menyediakan variabel dasar pengembangan lokal:
 
 ```env
-# Database Configuration (PostgreSQL / Neon)
-POSTGRES_USER=YOUR_POSTGRES_USER
-POSTGRES_PASSWORD=YOUR_POSTGRES_PASSWORD
+# Database Configuration (Docker Compose / PostgreSQL)
+POSTGRES_USER=kuliner_user
+POSTGRES_PASSWORD=kuliner_pass
 POSTGRES_DB=kuliner_db
 POSTGRES_PORT=5433
-DATABASE_URL="YOUR_DATABASE_URL"
-DIRECT_URL="YOUR_DIRECT_URL"
+DATABASE_URL="postgresql://kuliner_user:kuliner_pass@localhost:5433/kuliner_db?schema=public"
+DIRECT_URL="postgresql://kuliner_user:kuliner_pass@localhost:5433/kuliner_db?schema=public"
 
 # Backend Configuration
 PORT=3000
-JWT_SECRET=YOUR_JWT_SECRET
+JWT_SECRET=kuliner_msme_jwt_secret_dev_key_2025
 FRONTEND_URL=http://localhost:5173
-
-# Cloudinary Storage Configuration (Production Cloud Storage)
-CLOUDINARY_CLOUD_NAME=YOUR_CLOUDINARY_CLOUD_NAME
-CLOUDINARY_API_KEY=YOUR_CLOUDINARY_API_KEY
-CLOUDINARY_API_SECRET=YOUR_CLOUDINARY_API_SECRET
 
 # Frontend Configuration (Build-time Vite API URL)
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
----
+Untuk lingkungan produksi dengan upload gambar cloud, tambahkan variabel opsional berikut pada environment backend (jangan pernah commit kredensial asli ke Git):
 
-## 🗄️ 9. Database & Prisma Migration
-
-Proyek ini menggunakan **Prisma ORM** untuk pengelolaan skema database transaksional PostgreSQL.
-
-- **Menjalankan Migrasi Produksi (Aman untuk data):**
-  ```bash
-  npx prisma migrate deploy
-  ```
-- **Menjalankan Seed Data Master (Idempotent / Tanpa Hapus Transaksi):**
-  ```bash
-  npm run prisma:seed
-  ```
-- **Membuka Prisma Studio:**
-  ```bash
-  npx prisma studio
-  ```
+```env
+CLOUDINARY_CLOUD_NAME=<nama_cloud>
+CLOUDINARY_API_KEY=<api_key>
+CLOUDINARY_API_SECRET=<api_secret>
+```
 
 ---
 
-## 🌐 10. Deployment Architecture
+## 8. Ringkasan Endpoint API (`/api`)
 
-| Komponen | Platform Hosting | Environment URL / Endpoint |
+| Modul | Method & Path | Autentikasi | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| **Auth** | `POST /api/auth/login`, `GET /api/auth/me` | Publik / JWT | Login kasir/admin & profil pengguna aktif |
+| **Categories** | `GET /api/categories`, `GET /api/categories/:id`, `POST /api/categories`, `PUT /api/categories/:id`, `DELETE /api/categories/:id` | GET Publik, Mutasi JWT | Pengelolaan kategori menu |
+| **Products** | `GET /api/products`, `GET /api/products/:id`, `POST /api/products`, `PUT /api/products/:id`, `PATCH /api/products/:id/availability`, `PATCH /api/products/reorder`, `POST /api/products/upload`, `DELETE /api/products/:id` | GET Publik, Mutasi JWT | Pengelolaan katalog menu, foto, stok, dan urutan |
+| **Tables** | `GET /api/tables`, `GET /api/tables/by-number/:tableNumber`, `GET /api/tables/:id`, `POST /api/tables`, `PUT /api/tables/:id`, `DELETE /api/tables/:id` | GET Publik, Mutasi JWT | Pengelolaan meja & URL QR pemesanan |
+| **Orders** | `POST /api/orders`, `POST /api/orders/cashier`, `GET /api/orders`, `GET /api/orders/track/:orderNumber`, `GET /api/orders/:id`, `GET /api/orders/:id/receipt`, `PATCH /api/orders/:id/status`, `POST /api/orders/:id/cancel` | Pelanggan Publik, Kasir/Admin JWT | Pemesanan, tracking live, proses dapur, pembatalan, dan data struk |
+| **Payments** | `POST /api/payments/confirm`, `GET /api/payments/unpaid`, `GET /api/payments/history` | JWT | Konfirmasi pembayaran lunas & riwayat pembayaran |
+| **Expenses** | `GET /api/expenses`, `GET /api/expenses/:id`, `POST /api/expenses`, `PUT /api/expenses/:id`, `DELETE /api/expenses/:id` | JWT | Pencatatan dan pengelolaan biaya operasional |
+| **Reports** | `GET /api/reports/dashboard`, `GET /api/reports/financial?period=daily\|monthly` | JWT | Ringkasan dashboard & laporan surplus operasional |
+
+---
+
+## 9. Deployment Produksi
+
+| Komponen | Platform | Endpoint / URL |
 | :--- | :--- | :--- |
+| **Customer Web** | Vercel | `https://aroma-ayam-goreng-lengkuas.vercel.app` |
 | **Backend REST API** | SnapDeploy Container | `https://aroma-backend-15717.containers.snapdeploy.app/api` |
-| **Database Produksi** | Neon PostgreSQL | Cloud PostgreSQL (Pooled + Direct URL) |
-| **Customer Web** | Vercel Hosting | `https://aroma-web-production.vercel.app` |
-| **Android POS Release**| APK Standalone | `https://aroma-backend-15717.containers.snapdeploy.app/api/` |
+| **Database** | Neon PostgreSQL | Serverless PostgreSQL (Pooled + Direct URL) |
+| **Media Storage** | Cloudinary CDN | Penyimpanan foto produk produksi |
 
 ---
 
-## 📡 11. API Endpoint Overview
+## 10. Dokumentasi Terkait
 
-### Auth
-- `POST /api/auth/login` – Login Kasir/Admin & Dapatkan JWT
-- `GET /api/auth/me` – Profil pengguna aktif
-
-### Products & Categories
-- `GET /api/categories` – Daftar kategori menu
-- `GET /api/products` – Daftar produk menu (Terurut `sortOrder asc`)
-- `POST /api/products/upload` – Upload foto ke Cloudinary / local storage
-- `PATCH /api/products/reorder` – Simpan urutan produk per kategori
-- `POST /api/products` – Tambah produk baru
-- `PUT /api/products/:id` – Edit produk
-- `PATCH /api/products/:id/availability` – Toggle ketersediaan menu
-
-### Orders & Payments
-- `POST /api/orders` – Pemesanan mandiri pelanggan via QR
-- `POST /api/orders/cashier` – Pemesanan manual kasir POS
-- `GET /api/orders/track/:orderNumber` – Pemantauan status live pesanan
-- `POST /api/payments/confirm` – Konfirmasi pembayaran kasir (Tunai / QRIS)
-
----
-
-## 🛠️ 12. Troubleshooting
-
-- **Error CORS di Website:** Pastikan backend memuat `app.enableCors({ origin: '*' })` pada `main.ts`.
-- **Gambar Produk 404:** Pastikan kredensial Cloudinary telah terisi di environment backend produksi, atau jalankan skrip seed untuk memperbarui path gambar.
-- **Android POS Gagal Login (404/500):** Pastikan `RetrofitClient.kt` mengarah ke `http://10.0.2.2:3000/api/` (saat uji emulator lokal) atau ke `https://aroma-backend-15717.containers.snapdeploy.app/api/` (saat uji produksi).
-
----
-
-## 📜 13. Lisensi & Hak Cipta
-
-Proyek AROMA POS dikembangkan untuk memenuhi tugas dan portofolio sistem manajemen kuliner UMKM terintegrasi. Hak cipta milik pengembang AROMA POS © 2026.
+- [PROJECT.md](PROJECT.md) — Tujuan proyek, stack teknologi aktual, dan ruang lingkup.
+- [FEATURES.md](FEATURES.md) — Daftar fitur terimplementasi & aturan bisnis.
+- [DESIGN.md](DESIGN.md) — Sistem desain visual Aroma POS untuk Web & Android.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Diagram arsitektur, alur data, dan ERD database.
+- [docs/INSTALLATION.md](docs/INSTALLATION.md) — Panduan setup lokal, database, dan Android Studio.

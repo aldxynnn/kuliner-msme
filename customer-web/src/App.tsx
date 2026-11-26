@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Category, Product, CartItem, OrderType, Order, PaymentMethod } from './types';
 import { fetchCategories, fetchProducts, createOrder, trackOrder } from './api';
 import { Header } from './components/Header';
@@ -8,7 +8,16 @@ import { ProductCard } from './components/ProductCard';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { CartDrawer } from './components/CartDrawer';
 import { OrderTrackingModal } from './components/OrderTrackingModal';
-import { Search, ShoppingBag, UtensilsCrossed } from 'lucide-react';
+import {
+  Search,
+  ShoppingBag,
+  UtensilsCrossed,
+  X,
+  RefreshCw,
+  AlertCircle,
+  CheckCircle2,
+  ArrowRight,
+} from 'lucide-react';
 import { formatRupiah } from './utils/format';
 
 export const App: React.FC = () => {
@@ -18,6 +27,11 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [orderType, setOrderType] = useState<OrderType>('DINE_IN');
   const [tableNumber, setTableNumber] = useState<string | null>(null);
+
+  // Visual Loading & Error States
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [addedToast, setAddedToast] = useState<string | null>(null);
 
   // Cart State
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -59,18 +73,52 @@ export const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [activeOrder?.orderNumber]);
 
-  // Load Categories & Products
-  useEffect(() => {
+  // Load Categories
+  const loadCategories = useCallback(() => {
     fetchCategories()
       .then((data) => setCategories(data))
       .catch((err) => console.error(err));
   }, []);
 
   useEffect(() => {
+    loadCategories();
+  }, [loadCategories]);
+
+  // Load Products
+  const loadProducts = useCallback(() => {
+    let active = true;
+    setIsLoadingProducts(true);
+    setLoadError(null);
+
     fetchProducts(selectedCategoryId || undefined, searchQuery || undefined)
-      .then((data) => setProducts(data))
-      .catch((err) => console.error(err));
+      .then((data) => {
+        if (!active) return;
+        setProducts(data);
+      })
+      .catch((err) => {
+        if (!active) return;
+        console.error(err);
+        setLoadError('Tidak dapat memuat daftar menu. Pastikan koneksi internet Anda aktif.');
+      })
+      .finally(() => {
+        if (active) setIsLoadingProducts(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [selectedCategoryId, searchQuery]);
+
+  useEffect(() => {
+    return loadProducts();
+  }, [loadProducts]);
+
+  // Auto-dismiss subtle cart feedback toast
+  useEffect(() => {
+    if (!addedToast) return;
+    const timer = setTimeout(() => setAddedToast(null), 2200);
+    return () => clearTimeout(timer);
+  }, [addedToast]);
 
   // Cart Actions
   const handleAddToCart = (product: Product, quantity: number, notes: string) => {
@@ -87,6 +135,7 @@ export const App: React.FC = () => {
       }
       return [...prev, { product, quantity, notes }];
     });
+    setAddedToast(`${quantity}× ${product.name} ditambahkan ke keranjang`);
   };
 
   const handleUpdateQuantity = (productId: string, newQuantity: number) => {
@@ -136,52 +185,146 @@ export const App: React.FC = () => {
     0
   );
 
+  const selectedCategoryName = selectedCategoryId
+    ? categories.find((c) => c.id === selectedCategoryId)?.name || 'Menu Pilihan'
+    : 'Semua Menu';
+
+  const hasActiveFilters = Boolean(selectedCategoryId || searchQuery.trim());
+
   return (
-    <div className="min-h-screen pb-28 bg-cream-50 text-charcoal font-sans">
-      {/* Navbar Header */}
-      <Header
-        tableNumber={tableNumber}
-        orderType={orderType}
-        onOrderTypeChange={(type) => setOrderType(type)}
-        activeOrderNumber={activeOrder?.orderNumber || null}
-        onOpenOrderTracking={() => setIsTrackingModalOpen(true)}
-      />
+    <div className="min-h-screen flex flex-col bg-cream-100 text-charcoal font-sans">
+      {/* Unified Sticky Top Shell (Navbar + Category Bar) */}
+      <div className="sticky top-0 z-30">
+        <Header
+          tableNumber={tableNumber}
+          orderType={orderType}
+          onOrderTypeChange={(type) => setOrderType(type)}
+          activeOrderNumber={activeOrder?.orderNumber || null}
+          activeOrderStatus={activeOrder?.orderStatus}
+          onOpenOrderTracking={() => setIsTrackingModalOpen(true)}
+        />
 
-      {/* Main Container */}
-      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        {/* Hero Banner Section */}
-        <HeroSection />
-
-        {/* Search Input */}
-        <div className="relative max-w-lg mx-auto">
-          <Search className="w-4 h-4 absolute left-4 top-3.5 text-charcoal-muted" />
-          <input
-            type="text"
-            placeholder="Cari menu ayam goreng, minuman, atau camilan..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 rounded-2xl border border-cream-200 bg-white text-xs font-semibold focus:outline-none focus:border-brand-500 shadow-xs transition-all"
-          />
-        </div>
-
-        {/* Category Filter Bar */}
         <CategoryBar
           categories={categories}
           selectedCategoryId={selectedCategoryId}
           onSelectCategory={(id) => setSelectedCategoryId(id)}
         />
+      </div>
 
-        {/* Product Cards Grid */}
-        {products.length === 0 ? (
-          <div className="text-center py-20 space-y-3 bg-white rounded-3xl border border-cream-200 shadow-xs">
-            <UtensilsCrossed className="w-12 h-12 mx-auto text-charcoal-muted opacity-40" />
-            <h3 className="font-extrabold text-base text-charcoal">Tidak ada menu ditemukan</h3>
-            <p className="text-xs text-charcoal-muted max-w-xs mx-auto">
-              Coba cari dengan kata kunci lain atau pilih kategori berbeda.
+      {/* Main Content */}
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-5 pb-32 space-y-6">
+        {/* Compact Editorial Culinary Header */}
+        <HeroSection tableNumber={tableNumber} orderType={orderType} />
+
+        {/* Search & Section Toolbar */}
+        <section aria-label="Pencarian Menu" className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h2 className="font-extrabold text-lg sm:text-xl text-charcoal tracking-tight">
+              {selectedCategoryName}
+            </h2>
+            <p className="text-xs text-charcoal-muted mt-0.5">
+              {isLoadingProducts
+                ? 'Memuat daftar hidangan...'
+                : `${products.length} menu tersedia untuk dipesan`}
             </p>
           </div>
+
+          <div className="relative w-full sm:w-80">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-muted pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Cari menu makanan atau minuman..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Cari menu"
+              className="w-full min-h-[44px] pl-10 pr-10 py-2.5 rounded-xl border border-cream-200 bg-white text-sm text-charcoal placeholder:text-charcoal-light focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 shadow-card transition-all"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                aria-label="Hapus pencarian"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg text-charcoal-muted hover:text-charcoal hover:bg-cream-100 flex items-center justify-center transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </section>
+
+        {/* Menu Grid States: Loading / Error / Empty / Products */}
+        {isLoadingProducts ? (
+          <div
+            aria-label="Memuat menu"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
+          >
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl border border-cream-200 overflow-hidden flex flex-row sm:flex-col animate-pulse"
+              >
+                <div className="w-28 h-28 m-3 sm:m-0 sm:w-full sm:h-44 rounded-xl sm:rounded-none bg-cream-200/70 shrink-0" />
+                <div className="flex-1 p-3 sm:p-4 space-y-2.5">
+                  <div className="h-3 w-16 rounded bg-cream-200/80" />
+                  <div className="h-4 w-3/4 rounded bg-cream-200" />
+                  <div className="h-3 w-full rounded bg-cream-200/60" />
+                  <div className="pt-3 flex items-center justify-between">
+                    <div className="h-4 w-20 rounded bg-cream-200" />
+                    <div className="h-9 w-24 rounded-xl bg-cream-200/80" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : loadError ? (
+          <div className="bg-white rounded-3xl border border-semantic-error-border p-8 sm:p-10 text-center space-y-4 shadow-card">
+            <div className="w-12 h-12 mx-auto rounded-2xl bg-semantic-error-bg text-semantic-error flex items-center justify-center">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-extrabold text-base text-charcoal">Gagal Memuat Menu</h3>
+              <p className="text-xs sm:text-sm font-body text-charcoal-muted max-w-sm mx-auto">
+                {loadError}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                loadCategories();
+                loadProducts();
+              }}
+              className="min-h-[42px] inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Coba Muat Ulang</span>
+            </button>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-cream-200 p-10 sm:p-14 text-center space-y-4 shadow-card">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-cream-100 border border-cream-200 flex items-center justify-center text-charcoal-muted">
+              <UtensilsCrossed className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-extrabold text-base text-charcoal">Tidak ada menu ditemukan</h3>
+              <p className="text-xs sm:text-sm font-body text-charcoal-muted max-w-xs mx-auto">
+                Coba gunakan kata kunci lain atau lihat seluruh kategori menu yang tersedia.
+              </p>
+            </div>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedCategoryId(null);
+                  setSearchQuery('');
+                }}
+                className="min-h-[40px] inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cream-100 hover:bg-cream-200 text-charcoal text-xs font-bold border border-cream-200 transition-colors"
+              >
+                <span>Tampilkan Semua Menu</span>
+              </button>
+            )}
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {products.map((product) => {
               const inCart = cartItems.find((i) => i.product.id === product.id);
               return (
@@ -197,26 +340,53 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* Floating Bottom Cart Bar */}
+      {/* Subtle Store Footer */}
+      <footer className="border-t border-cream-200 bg-cream-50/80 py-6 px-4 text-center">
+        <p className="text-xs font-bold text-charcoal">AROMA – Ayam Goreng Lengkuas</p>
+        <p className="text-[11px] text-charcoal-muted mt-1">
+          Ruko Puri Cempaka Blok R1 No. 10, Panancangan, Cipocok Jaya, Kota Serang, Banten
+        </p>
+      </footer>
+
+      {/* Subtle Add-to-Cart Feedback Toast */}
+      {addedToast && (
+        <div
+          role="status"
+          className={`fixed left-1/2 -translate-x-1/2 z-40 px-4 py-2.5 rounded-xl bg-charcoal text-white text-xs font-bold shadow-dock flex items-center gap-2 max-w-[90vw] animate-aroma-sheet ${
+            totalCartCount > 0 ? 'bottom-24' : 'bottom-6'
+          }`}
+        >
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span className="truncate">{addedToast}</span>
+        </div>
+      )}
+
+      {/* Floating Bottom Cart Dock */}
       {totalCartCount > 0 && (
-        <div className="fixed bottom-5 inset-x-4 max-w-xl mx-auto z-30">
+        <div className="fixed bottom-4 inset-x-4 max-w-xl mx-auto z-30">
           <button
+            type="button"
             onClick={() => setIsCartOpen(true)}
-            className="w-full bg-brand-500 hover:bg-brand-600 text-white rounded-2xl p-4 shadow-xl shadow-brand-500/25 flex items-center justify-between active:scale-[0.99] transition-all"
+            className="w-full min-h-[64px] bg-charcoal hover:bg-charcoal/95 text-white rounded-2xl px-4 py-3 shadow-dock flex items-center justify-between gap-3 active:scale-[0.99] transition-all border border-white/10"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center font-extrabold text-xs">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center font-extrabold text-sm tabular-nums shrink-0">
                 {totalCartCount}
               </div>
-              <div className="text-left">
-                <p className="text-[11px] font-semibold text-brand-100 tracking-wider uppercase">Keranjang</p>
-                <p className="font-extrabold text-sm md:text-base">{formatRupiah(totalCartPrice)}</p>
+              <div className="text-left min-w-0">
+                <p className="text-[11px] font-semibold text-cream-200/80 uppercase tracking-wider">
+                  Total Keranjang
+                </p>
+                <p className="font-extrabold text-base text-white tabular-nums truncate">
+                  {formatRupiah(totalCartPrice)}
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 font-extrabold text-xs bg-white text-brand-600 px-4 py-2.5 rounded-xl shadow-sm">
+            <div className="inline-flex items-center gap-1.5 font-bold text-xs bg-brand-500 text-white px-4 py-2.5 rounded-xl shrink-0">
               <ShoppingBag className="w-4 h-4" />
               <span>Lihat Pesanan</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </button>
         </div>

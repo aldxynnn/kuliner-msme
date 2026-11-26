@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.notification.AppNotification
 import com.kuliner.msme.admin.notification.NotificationCenter
 import com.kuliner.msme.admin.notification.NotificationType
+import com.kuliner.msme.admin.ui.components.AromaCard
+import com.kuliner.msme.admin.ui.components.AromaEmptyState
+import com.kuliner.msme.admin.ui.theme.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -64,7 +67,7 @@ fun NotificationsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFAF8F5))
+            .background(AromaCream)
     ) {
         Row(
             modifier = Modifier
@@ -79,15 +82,15 @@ fun NotificationsScreen(
                     } else {
                         "${notifications.size} notifikasi perlu ditindaklanjuti"
                     },
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color(0xFF2B211D)
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AromaCharcoal
                 )
                 Text(
-                    text = lastUpdatedAt?.let { "Diperbarui ${formatClock(it)}" } ?: "Memuat notifikasi...",
+                    text = lastUpdatedAt?.let { "Diperbarui ${formatClock(it)}" }
+                        ?: "Memuat notifikasi...",
                     fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF81766F)
+                    color = AromaTextMuted
                 )
             }
 
@@ -98,33 +101,45 @@ fun NotificationsScreen(
                 ) {
                     Text(
                         "Tandai dibaca",
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE25822)
+                        color = AromaTerracotta
                     )
                 }
             }
 
-            IconButton(onClick = { refresh() }) {
-                if (isRefreshing) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(18.dp),
-                        strokeWidth = 2.dp,
-                        color = Color(0xFFE25822)
-                    )
-                } else {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = "Muat ulang notifikasi",
-                        tint = Color(0xFF81766F),
-                        modifier = Modifier.size(20.dp)
-                    )
+            Surface(
+                onClick = { refresh() },
+                modifier = Modifier.size(40.dp),
+                shape = RoundedCornerShape(10.dp),
+                color = AromaSurface,
+                border = BorderStroke(1.dp, AromaBorder)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    if (isRefreshing) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp,
+                            color = AromaTerracotta
+                        )
+                    } else {
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = "Muat ulang notifikasi",
+                            tint = AromaCharcoal,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
         }
 
         if (notifications.isEmpty()) {
-            EmptyNotifications()
+            AromaEmptyState(
+                icon = Icons.Default.NotificationsNone,
+                title = "Belum ada notifikasi",
+                subtitle = "Notifikasi muncul saat ada pesanan baru, pembayaran menunggu verifikasi, atau pesanan siap disajikan."
+            )
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -140,7 +155,7 @@ fun NotificationsScreen(
                         }
                     )
                 }
-                item { Spacer(modifier = Modifier.height(12.dp)) }
+                item { Spacer(modifier = Modifier.height(14.dp)) }
             }
         }
     }
@@ -153,13 +168,10 @@ private fun NotificationCard(
 ) {
     val style = notificationStyle(notification.type)
 
-    Surface(
+    AromaCard(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        color = Color.White,
-        shadowElevation = 2.dp,
-        border = BorderStroke(1.dp, Color(0xFFE9E1D9))
+        borderColor = if (!notification.isRead) AromaTerracottaBorder else AromaBorder
     ) {
         Row(
             modifier = Modifier.padding(14.dp),
@@ -187,9 +199,9 @@ private fun NotificationCard(
                     Text(
                         text = notification.title,
                         modifier = Modifier.weight(1f),
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Black,
-                        color = Color(0xFF2B211D),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = AromaCharcoal,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -197,8 +209,8 @@ private fun NotificationCard(
                         Spacer(modifier = Modifier.width(6.dp))
                         Box(
                             modifier = Modifier
-                                .size(7.dp)
-                                .background(Color(0xFFE25822), CircleShape)
+                                .size(8.dp)
+                                .background(AromaTerracotta, CircleShape)
                         )
                     }
                 }
@@ -208,8 +220,7 @@ private fun NotificationCard(
                 Text(
                     text = notification.message,
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF81766F),
+                    color = AromaTextSecondary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -218,53 +229,11 @@ private fun NotificationCard(
 
                 Text(
                     text = formatNotificationTime(notification.createdAt),
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
                     color = style.tint
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun EmptyNotifications() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Surface(
-                modifier = Modifier.size(64.dp),
-                shape = CircleShape,
-                color = Color(0xFFFFF0E8)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        Icons.Default.NotificationsNone,
-                        contentDescription = null,
-                        tint = Color(0xFFE25822),
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(14.dp))
-            Text(
-                text = "Belum ada notifikasi",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Black,
-                color = Color(0xFF2B211D)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Notifikasi akan muncul di sini saat ada pesanan baru, pembayaran menunggu konfirmasi, atau pesanan yang siap disajikan.",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF81766F),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-            )
         }
     }
 }
@@ -278,18 +247,18 @@ private data class NotificationStyle(
 private fun notificationStyle(type: NotificationType): NotificationStyle = when (type) {
     NotificationType.PAYMENT -> NotificationStyle(
         icon = Icons.Default.Payments,
-        background = Color(0xFFFFF0E8),
-        tint = Color(0xFFE25822)
+        background = AromaTerracottaSoft,
+        tint = AromaTerracotta
     )
     NotificationType.NEW_ORDER -> NotificationStyle(
         icon = Icons.AutoMirrored.Filled.ReceiptLong,
-        background = Color(0xFFE6F4EA),
-        tint = Color(0xFF166534)
+        background = AromaSuccessSoft,
+        tint = AromaSuccess
     )
     NotificationType.READY_TO_SERVE -> NotificationStyle(
         icon = Icons.Default.Restaurant,
-        background = Color(0xFFFEF3C7),
-        tint = Color(0xFFB45309)
+        background = AromaWarningSoft,
+        tint = AromaWarning
     )
 }
 

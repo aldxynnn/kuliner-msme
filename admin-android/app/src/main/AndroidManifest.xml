@@ -18,7 +18,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:label="Kuliner Kasir POS"
+            android:label="AROMA POS"
             android:theme="@style/Theme.KulinerAdmin"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

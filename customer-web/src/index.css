@@ -2,31 +2,102 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --aroma-terracotta: #A9472D;
+  --aroma-terracotta-dark: #923B24;
+  --aroma-cream: #F6F0E6;
+  --aroma-surface: #FFFFFF;
+  --aroma-charcoal: #292722;
+  --aroma-border: #E8DFD1;
+}
+
 @layer base {
-  html, body {
-    overflow-x: hidden;
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html,
+  body {
+    overflow-x: clip;
     -webkit-tap-highlight-color: transparent;
-    background-color: #FAF8F5;
-    color: #2C221E;
+    background-color: var(--aroma-cream);
+    color: var(--aroma-charcoal);
   }
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Subtle modal & sheet entrance transitions */
+@keyframes aromaFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes aromaSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes aromaSlideRight {
+  from {
+    opacity: 0.4;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes aromaScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-aroma-fade {
+  animation: aromaFadeIn 180ms ease-out both;
+}
+
+.animate-aroma-sheet {
+  animation: aromaSlideUp 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-aroma-drawer {
+  animation: aromaSlideRight 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-aroma-modal {
+  animation: aromaScaleIn 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Hide horizontal scrollbar on category pill strip */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* Remove distracting gray scrollbar on mobile */
-@media (max-width: 768px) {
-  ::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
-    background: transparent;
-  }
 }

@@ -6,26 +6,27 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoneyOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.model.CreateExpenseRequest
 import com.kuliner.msme.admin.data.model.Expense
+import com.kuliner.msme.admin.ui.components.*
+import com.kuliner.msme.admin.ui.theme.*
 import kotlinx.coroutines.launch
-import java.text.NumberFormat
-import java.util.Locale
 
 @Composable
 fun ExpensesScreen() {
@@ -74,122 +75,179 @@ fun ExpensesScreen() {
         }
     }
 
-    fun formatRp(amount: Int): String {
-        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-        format.maximumFractionDigits = 0
-        return format.format(amount)
-    }
-
     val totalExpense = expenses.sumOf { it.amount }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFAF8F5))
+            .background(AromaCream)
     ) {
-        // Header Bar
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 14.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(bottom = 76.dp)
         ) {
-            Column {
-                Text("Biaya Operasional", fontWeight = FontWeight.Black, fontSize = 20.sp, color = Color(0xFF2B211D))
-                Text("Catat & kelola pengeluaran harian resto", fontSize = 11.sp, color = Color(0xFF81766F))
-            }
+            Spacer(modifier = Modifier.height(14.dp))
 
+            // Summary Card
             Surface(
-                onClick = { isDialogVisible = true },
-                modifier = Modifier.size(40.dp),
-                shape = CircleShape,
-                color = Color(0xFFE25822),
-                shadowElevation = 2.dp
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                shape = RoundedCornerShape(18.dp),
+                color = AromaSurface,
+                border = BorderStroke(1.dp, AromaErrorBorder)
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Add, contentDescription = "Tambah", tint = Color.White, modifier = Modifier.size(20.dp))
-                }
-            }
-        }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = "TOTAL PENGELUARAN TERCATAT",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AromaTextMuted,
+                            letterSpacing = 0.6.sp
+                        )
+                        Text(
+                            text = formatRupiah(totalExpense),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = AromaError
+                        )
+                        Text(
+                            text = "${expenses.size} catatan pengeluaran operasional",
+                            fontSize = 12.sp,
+                            color = AromaTextSecondary
+                        )
+                    }
 
-        // Summary Card
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            shape = RoundedCornerShape(22.dp),
-            color = Color(0xFFFEE2E2),
-            shadowElevation = 2.dp,
-            border = BorderStroke(1.dp, Color(0xFFFCA5A5))
-        ) {
-            Column(modifier = Modifier.padding(18.dp)) {
-                Text(
-                    "TOTAL PENGELUARAN DITAMBAHKAN",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF991B1B),
-                    letterSpacing = 0.5.sp
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    formatRp(totalExpense),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color(0xFF991B1B)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = Color(0xFFE25822))
-            }
-        } else if (expenses.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Belum ada pengeluaran dicatat", color = Color(0xFF81766F), fontWeight = FontWeight.Bold, fontSize = 13.sp)
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                items(expenses) { exp ->
                     Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp),
-                        color = Color.White,
-                        shadowElevation = 2.dp,
-                        border = BorderStroke(1.dp, Color(0xFFE9E1D9))
+                        modifier = Modifier.size(44.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = AromaErrorSoft
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(exp.description, fontWeight = FontWeight.Black, fontSize = 15.sp, color = Color(0xFF2B211D))
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Text("Kategori: ${exp.category} • ${exp.date.take(10)}", fontSize = 11.sp, color = Color(0xFF81766F))
-                                Spacer(modifier = Modifier.height(6.dp))
-                                Text(formatRp(exp.amount), fontWeight = FontWeight.Black, fontSize = 15.sp, color = Color(0xFFC94136))
-                            }
-
-                            IconButton(
-                                onClick = { handleDelete(exp.id) },
-                                modifier = Modifier.size(32.dp)
-                            ) {
-                                Icon(Icons.Default.Delete, contentDescription = "Hapus", tint = Color(0xFFC94136), modifier = Modifier.size(16.dp))
-                            }
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.MoneyOff,
+                                contentDescription = null,
+                                tint = AromaError,
+                                modifier = Modifier.size(22.dp)
+                            )
                         }
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            if (isLoading) {
+                AromaLoadingState(message = "Memuat catatan pengeluaran...")
+            } else if (expenses.isEmpty()) {
+                AromaEmptyState(
+                    icon = Icons.Default.MoneyOff,
+                    title = "Belum ada pengeluaran dicatat",
+                    subtitle = "Catat pembelian bahan baku dan biaya operasional harian agar laporan surplus akurat."
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(expenses) { exp ->
+                        AromaCard(modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(14.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        AromaTag(
+                                            label = exp.category,
+                                            backgroundColor = AromaCreamSoft,
+                                            textColor = AromaCharcoal,
+                                            borderColor = AromaBorder
+                                        )
+                                        Text(
+                                            text = exp.date.take(10),
+                                            fontSize = 11.sp,
+                                            color = AromaTextMuted
+                                        )
+                                    }
+
+                                    Text(
+                                        text = exp.description,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        color = AromaCharcoal
+                                    )
+
+                                    Text(
+                                        text = formatRupiah(exp.amount),
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 15.sp,
+                                        color = AromaError
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Surface(
+                                    onClick = { handleDelete(exp.id) },
+                                    modifier = Modifier.size(38.dp),
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = AromaErrorSoft,
+                                    border = BorderStroke(1.dp, AromaErrorBorder)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            Icons.Default.Delete,
+                                            contentDescription = "Hapus",
+                                            tint = AromaError,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    item { Spacer(modifier = Modifier.height(10.dp)) }
+                }
+            }
+        }
+
+        // Bottom Primary Button
+        Button(
+            onClick = { isDialogVisible = true },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp)
+                .height(50.dp),
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AromaTerracotta,
+                contentColor = AromaSurface
+            ),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(6.dp))
+            Text("Catat Pengeluaran Baru", fontWeight = FontWeight.Bold, fontSize = 14.sp)
         }
     }
 
@@ -200,32 +258,44 @@ fun ExpensesScreen() {
 
         AlertDialog(
             onDismissRequest = { isDialogVisible = false },
-            title = { Text("Catat Pengeluaran Baru", fontWeight = FontWeight.Black, fontSize = 16.sp, color = Color(0xFF2B211D)) },
+            containerColor = AromaSurface,
+            shape = RoundedCornerShape(22.dp),
+            title = {
+                Text(
+                    text = "Catat Pengeluaran Baru",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = AromaCharcoal
+                )
+            },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(
                         value = description,
                         onValueChange = { description = it },
                         label = { Text("Keterangan Pengeluaran") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        colors = aromaTextFieldColors()
                     )
                     OutlinedTextField(
                         value = amountStr,
                         onValueChange = { amountStr = it },
                         label = { Text("Nominal (Rp)") },
                         singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        colors = aromaTextFieldColors()
                     )
                     OutlinedTextField(
                         value = category,
                         onValueChange = { category = it },
-                        label = { Text("Kategori (e.g. Bahan Baku / Operasional)") },
+                        label = { Text("Kategori (mis. Bahan Baku / Operasional)") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        colors = aromaTextFieldColors()
                     )
                 }
             },
@@ -236,7 +306,9 @@ fun ExpensesScreen() {
                         if (description.isNotBlank() && amt > 0) {
                             scope.launch {
                                 val api = RetrofitClient.getApiService(context)
-                                val res = api.createExpense(CreateExpenseRequest(description.trim(), amt, category.trim()))
+                                val res = api.createExpense(
+                                    CreateExpenseRequest(description.trim(), amt, category.trim())
+                                )
                                 if (res.isSuccessful) {
                                     Toast.makeText(context, "Pengeluaran dicatat", Toast.LENGTH_SHORT).show()
                                     isDialogVisible = false
@@ -248,14 +320,14 @@ fun ExpensesScreen() {
                         }
                     },
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE25822))
+                    colors = ButtonDefaults.buttonColors(containerColor = AromaTerracotta)
                 ) {
                     Text("Simpan", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { isDialogVisible = false }) {
-                    Text("Batal")
+                    Text("Batal", fontWeight = FontWeight.Bold, color = AromaTextSecondary)
                 }
             }
         )

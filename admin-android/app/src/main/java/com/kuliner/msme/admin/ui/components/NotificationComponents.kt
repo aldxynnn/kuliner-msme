@@ -21,14 +21,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kuliner.msme.admin.ui.theme.AromaBorder
+import com.kuliner.msme.admin.ui.theme.AromaCharcoal
+import com.kuliner.msme.admin.ui.theme.AromaError
+import com.kuliner.msme.admin.ui.theme.AromaSurface
 
 /** Badge angka kecil di pojok ikon notifikasi / navigasi. */
 @Composable
 fun CountBadge(
     count: Int,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = Color(0xFFDC2626),
-    textColor: Color = Color.White,
+    backgroundColor: Color = AromaError,
+    textColor: Color = AromaSurface,
     borderColor: Color? = null
 ) {
     if (count <= 0) return
@@ -41,7 +45,7 @@ fun CountBadge(
     ) {
         Box(
             modifier = Modifier
-                .defaultMinSize(minWidth = 16.dp, minHeight = 16.dp)
+                .defaultMinSize(minWidth = 17.dp, minHeight = 17.dp)
                 .padding(horizontal = 4.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -49,7 +53,7 @@ fun CountBadge(
                 text = label,
                 color = textColor,
                 fontSize = 9.sp,
-                fontWeight = FontWeight.Black,
+                fontWeight = FontWeight.Bold,
                 maxLines = 1
             )
         }
@@ -62,18 +66,18 @@ fun NotificationBellButton(
     unreadCount: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = Color.White,
-    iconTint: Color = Color(0xFF2B211D),
-    borderColor: Color = Color(0xFFE9E1D9),
+    containerColor: Color = AromaSurface,
+    iconTint: Color = AromaCharcoal,
+    borderColor: Color = AromaBorder,
     icon: ImageVector = Icons.Default.Notifications
 ) {
     Box(modifier = modifier) {
         Surface(
             onClick = onClick,
-            modifier = Modifier.size(42.dp),
+            modifier = Modifier.size(44.dp),
             shape = CircleShape,
             color = containerColor,
-            shadowElevation = 2.dp,
+            shadowElevation = 0.dp,
             border = BorderStroke(1.dp, borderColor)
         ) {
             Box(contentAlignment = Alignment.Center) {
@@ -89,8 +93,8 @@ fun NotificationBellButton(
             count = unreadCount,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .offset(x = 4.dp, y = (-4).dp),
-            borderColor = Color.White
+                .offset(x = 3.dp, y = (-3).dp),
+            borderColor = AromaSurface
         )
     }
 }

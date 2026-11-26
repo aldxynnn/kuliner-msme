@@ -1,7 +1,7 @@
 package com.kuliner.msme.admin.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -12,18 +12,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kuliner.msme.admin.notification.NotificationCenter
-import com.kuliner.msme.admin.notification.OrderAlerts
 import com.kuliner.msme.admin.data.api.RetrofitClient
 import com.kuliner.msme.admin.data.model.User
+import com.kuliner.msme.admin.notification.NotificationCenter
+import com.kuliner.msme.admin.notification.OrderAlerts
 import com.kuliner.msme.admin.ui.components.CountBadge
 import com.kuliner.msme.admin.ui.screens.*
+import com.kuliner.msme.admin.ui.theme.*
 import kotlinx.coroutines.delay
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
@@ -100,102 +103,124 @@ fun MainScreen(
     val isDashboard = currentRoute == Screen.Dashboard.route
 
     Scaffold(
+        containerColor = AromaCream,
         topBar = {
             if (!isDashboard) {
                 Surface(
-                    color = Color.White,
-                    shadowElevation = 2.dp
+                    color = AromaSurface,
+                    shadowElevation = 0.dp
                 ) {
-                    // Header halaman selain dashboard hanya berisi tombol kembali + judul.
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(onClick = { currentRoute = Screen.Dashboard.route }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Kembali",
-                                tint = Color(0xFF2B211D),
-                                modifier = Modifier.size(20.dp)
+                    Column(modifier = Modifier.statusBarsPadding()) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp)
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = { currentRoute = Screen.Dashboard.route },
+                                modifier = Modifier.size(48.dp)
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Kembali",
+                                    tint = AromaCharcoal,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = when (currentRoute) {
+                                    Screen.Orders.route -> "Pesanan"
+                                    Screen.CashierOrder.route -> "Kasir POS"
+                                    Screen.Payments.route -> "Konfirmasi Pembayaran"
+                                    Screen.Products.route -> "Kelola Menu"
+                                    Screen.Categories.route -> "Kelola Kategori"
+                                    Screen.Tables.route -> "Meja & QR Code"
+                                    Screen.Expenses.route -> "Biaya Operasional"
+                                    Screen.Reports.route -> "Laporan Surplus"
+                                    Screen.Notifications.route -> "Notifikasi"
+                                    Screen.Profile.route -> "Profil & Akun"
+                                    else -> "AROMA POS"
+                                },
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = AromaCharcoal,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = when (currentRoute) {
-                                Screen.Orders.route -> "Pesanan"
-                                Screen.CashierOrder.route -> "POS"
-                                Screen.Payments.route -> "Konfirmasi Pembayaran"
-                                Screen.Products.route -> "Kelola Menu"
-                                Screen.Categories.route -> "Kelola Kategori"
-                                Screen.Tables.route -> "Meja & QR Code"
-                                Screen.Expenses.route -> "Pengeluaran Resto"
-                                Screen.Reports.route -> "Laporan Surplus"
-                                Screen.Notifications.route -> "Notifikasi"
-                                Screen.Profile.route -> "Profil & Akun"
-                                else -> "AROMA POS"
-                            },
-                            fontWeight = FontWeight.Black,
-                            fontSize = 20.sp,
-                            color = Color(0xFF2B211D)
-                        )
+                        HorizontalDivider(color = AromaDivider, thickness = 1.dp)
                     }
                 }
             }
         },
         bottomBar = {
-            // Sleek Floating Bottom Navigation Bar (Height 54.dp, Rounded 27.dp)
             Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 10.dp),
-                shape = RoundedCornerShape(27.dp),
-                color = Color.White,
-                shadowElevation = 6.dp,
-                border = BorderStroke(1.dp, Color(0xFFE9E1D9))
+                color = AromaSurface,
+                shadowElevation = 0.dp
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(54.dp)
-                        .padding(horizontal = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    mainNavItems.forEach { screen ->
-                        val isSelected = currentRoute == screen.route
-                        val badgeCount = when (screen.route) {
-                            Screen.Orders.route -> NotificationCenter.unreadForRoute(notifications, Screen.Orders.route)
-                            Screen.Payments.route -> NotificationCenter.unreadForRoute(notifications, Screen.Payments.route)
-                            else -> 0
-                        }
-                        Surface(
-                            onClick = { currentRoute = screen.route },
-                            shape = RoundedCornerShape(20.dp),
-                            color = if (isSelected) Color(0xFFFFF0E8) else Color.Transparent,
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                NavIconWithBadge(
-                                    icon = screen.icon,
-                                    label = screen.title,
-                                    tint = if (isSelected) Color(0xFFE25822) else Color(0xFF81766F),
-                                    count = badgeCount
+                Column(modifier = Modifier.navigationBarsPadding()) {
+                    HorizontalDivider(color = AromaBorder, thickness = 1.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(66.dp)
+                            .padding(horizontal = 6.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        mainNavItems.forEach { screen ->
+                            val isSelected = currentRoute == screen.route
+                            val badgeCount = when (screen.route) {
+                                Screen.Orders.route -> NotificationCenter.unreadForRoute(
+                                    notifications,
+                                    Screen.Orders.route
                                 )
-                                if (isSelected) {
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = screen.title,
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Black,
-                                        color = Color(0xFFE25822)
+                                Screen.Payments.route -> NotificationCenter.unreadForRoute(
+                                    notifications,
+                                    Screen.Payments.route
+                                )
+                                else -> 0
+                            }
+
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable { currentRoute = screen.route }
+                                    .padding(vertical = 6.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .height(30.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(
+                                            if (isSelected) AromaTerracottaSoft else Color.Transparent
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    NavIconWithBadge(
+                                        icon = screen.icon,
+                                        label = screen.title,
+                                        tint = if (isSelected) AromaTerracotta else AromaTextMuted,
+                                        count = badgeCount
                                     )
                                 }
+                                Spacer(modifier = Modifier.height(3.dp))
+                                Text(
+                                    text = screen.title,
+                                    fontSize = 11.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) AromaTerracotta else AromaTextMuted,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                             }
                         }
                     }
@@ -205,9 +230,10 @@ fun MainScreen(
     ) { innerPadding ->
         Surface(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color(0xFFFAF8F5)),
-            color = Color(0xFFFAF8F5)
+                .then(if (isDashboard) Modifier.statusBarsPadding() else Modifier),
+            color = AromaCream
         ) {
             when (currentRoute) {
                 Screen.Dashboard.route -> DashboardScreen(
@@ -217,7 +243,9 @@ fun MainScreen(
                     unreadNotifications = unreadNotifications
                 )
                 Screen.Orders.route -> OrdersScreen()
-                Screen.CashierOrder.route -> CashierOrderScreen(onOrderCreated = { currentRoute = Screen.Orders.route })
+                Screen.CashierOrder.route -> CashierOrderScreen(
+                    onOrderCreated = { currentRoute = Screen.Orders.route }
+                )
                 Screen.Payments.route -> PaymentsScreen()
                 Screen.Products.route -> ProductsScreen()
                 Screen.Categories.route -> CategoriesScreen()
@@ -250,19 +278,21 @@ private fun NavIconWithBadge(
     count: Int
 ) {
     Box(
-        modifier = Modifier.size(26.dp),
+        modifier = Modifier.size(28.dp),
         contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = icon,
             contentDescription = label,
             tint = tint,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(20.dp)
         )
         CountBadge(
             count = count,
-            modifier = Modifier.align(Alignment.TopEnd),
-            borderColor = Color.White
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(x = 6.dp, y = (-3).dp),
+            borderColor = AromaSurface
         )
     }
 }

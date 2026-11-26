@@ -5,7 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -98,10 +99,22 @@ fun CategoriesScreen() {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    items(categories) { category ->
-                        AromaCard(modifier = Modifier.fillMaxWidth()) {
+                    item {
+                        AromaSectionHeader(
+                            overline = "Struktur Katalog",
+                            title = "${categories.size} Kategori Menu",
+                            subtitle = "Urutan kelompok hidangan di aplikasi"
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                    }
+
+                    itemsIndexed(categories) { idx, category ->
+                        AromaCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            cornerRadius = 12.dp
+                        ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -109,16 +122,17 @@ fun CategoriesScreen() {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Surface(
-                                    modifier = Modifier.size(42.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    color = AromaTerracottaSoft
+                                    modifier = Modifier.size(40.dp),
+                                    shape = RoundedCornerShape(10.dp),
+                                    color = AromaCharcoal
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
-                                        Icon(
-                                            Icons.Default.Category,
-                                            contentDescription = null,
-                                            tint = AromaTerracotta,
-                                            modifier = Modifier.size(20.dp)
+                                        Text(
+                                            text = (idx + 1).toString().padStart(2, '0'),
+                                            fontFamily = FontFamily.Monospace,
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = AromaSurface
                                         )
                                     }
                                 }
@@ -160,7 +174,7 @@ fun CategoriesScreen() {
                                             isDialogVisible = true
                                         },
                                         modifier = Modifier.size(36.dp),
-                                        shape = RoundedCornerShape(10.dp),
+                                        shape = RoundedCornerShape(8.dp),
                                         color = AromaCreamSoft,
                                         border = BorderStroke(1.dp, AromaBorder)
                                     ) {
@@ -176,7 +190,7 @@ fun CategoriesScreen() {
                                     Surface(
                                         onClick = { handleDelete(category.id) },
                                         modifier = Modifier.size(36.dp),
-                                        shape = RoundedCornerShape(10.dp),
+                                        shape = RoundedCornerShape(8.dp),
                                         color = AromaErrorSoft,
                                         border = BorderStroke(1.dp, AromaErrorBorder)
                                     ) {
@@ -208,12 +222,12 @@ fun CategoriesScreen() {
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 12.dp)
                 .height(50.dp),
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = AromaTerracotta,
                 contentColor = AromaSurface
             ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
         ) {
             Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(6.dp))
@@ -228,7 +242,7 @@ fun CategoriesScreen() {
         AlertDialog(
             onDismissRequest = { isDialogVisible = false },
             containerColor = AromaSurface,
-            shape = RoundedCornerShape(22.dp),
+            shape = RoundedCornerShape(18.dp),
             title = {
                 Text(
                     text = if (editingCategory != null) "Edit Kategori" else "Tambah Kategori Baru",
@@ -244,7 +258,7 @@ fun CategoriesScreen() {
                         label = { Text("Nama Kategori") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = aromaTextFieldColors()
                     )
                     OutlinedTextField(
@@ -253,7 +267,7 @@ fun CategoriesScreen() {
                         label = { Text("Deskripsi (Opsional)") },
                         maxLines = 3,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = aromaTextFieldColors()
                     )
                 }
@@ -280,7 +294,7 @@ fun CategoriesScreen() {
                             }
                         }
                     },
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AromaTerracotta)
                 ) {
                     Text("Simpan", fontWeight = FontWeight.Bold)

@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,9 +18,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -57,7 +56,6 @@ fun CashierOrderScreen(
     var customerName by remember { mutableStateOf("") }
     var paymentMethod by remember { mutableStateOf("CASH") } // "CASH" or "QRIS"
     var searchQuery by remember { mutableStateOf("") }
-    var isSearchActive by remember { mutableStateOf(false) }
 
     val cartItems = remember { mutableStateListOf<CartItem>() }
     var isCartSheetVisible by remember { mutableStateOf(false) }
@@ -175,89 +173,29 @@ fun CashierOrderScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = if (totalCartCount > 0) 86.dp else 0.dp)
+                .padding(bottom = if (totalCartCount > 0) 84.dp else 0.dp)
         ) {
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Bright Segmented Order Type Selector (White active tab on Warm Linen track)
-            Surface(
+            // Unified Commercial Segmented Order Mode Switcher
+            AromaSegmentedControl(
+                options = listOf(
+                    "Dine In" to Icons.Default.TableBar,
+                    "Take Away" to Icons.Default.ShoppingBag
+                ),
+                selectedIndex = if (orderType == "DINE_IN") 0 else 1,
+                onSelect = { index ->
+                    if (index == 0) {
+                        orderType = "DINE_IN"
+                    } else {
+                        orderType = "TAKE_AWAY"
+                        selectedTable = null
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                shape = RoundedCornerShape(12.dp),
-                color = AromaCreamTrack,
-                border = BorderStroke(1.dp, AromaBorder)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    val isDineIn = orderType == "DINE_IN"
-                    Surface(
-                        onClick = { orderType = "DINE_IN" },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(40.dp),
-                        shape = RoundedCornerShape(9.dp),
-                        color = if (isDineIn) AromaSurface else Color.Transparent,
-                        shadowElevation = if (isDineIn) 1.dp else 0.dp
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                Icons.Default.TableBar,
-                                contentDescription = null,
-                                tint = if (isDineIn) AromaTerracotta else AromaTextSecondary,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Dine In",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                color = if (isDineIn) AromaTerracotta else AromaTextSecondary
-                            )
-                        }
-                    }
-
-                    val isTakeAway = orderType == "TAKE_AWAY"
-                    Surface(
-                        onClick = {
-                            orderType = "TAKE_AWAY"
-                            selectedTable = null
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(40.dp),
-                        shape = RoundedCornerShape(9.dp),
-                        color = if (isTakeAway) AromaSurface else Color.Transparent,
-                        shadowElevation = if (isTakeAway) 1.dp else 0.dp
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                Icons.Default.ShoppingBag,
-                                contentDescription = null,
-                                tint = if (isTakeAway) AromaTerracotta else AromaTextSecondary,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Take Away",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                color = if (isTakeAway) AromaTerracotta else AromaTextSecondary
-                            )
-                        }
-                    }
-                }
-            }
+                    .padding(horizontal = 20.dp)
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -270,15 +208,18 @@ fun CashierOrderScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Pilih Meja",
-                            fontSize = 12.sp,
+                            text = "PILIH MEJA",
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            color = AromaCharcoal
+                            letterSpacing = 0.8.sp,
+                            color = AromaTextMuted
                         )
                         Text(
                             text = selectedTable?.tableNumber ?: "Belum dipilih",
+                            fontFamily = FontFamily.Monospace,
                             fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold,
+                            fontWeight = FontWeight.Bold,
                             color = if (selectedTable != null) AromaTerracotta else AromaTextMuted
                         )
                     }
@@ -291,7 +232,7 @@ fun CashierOrderScreen(
                             Surface(
                                 onClick = { selectedTable = table },
                                 modifier = Modifier.defaultMinSize(minHeight = 36.dp),
-                                shape = RoundedCornerShape(10.dp),
+                                shape = RoundedCornerShape(8.dp),
                                 color = if (isSelected) AromaTerracottaSoft else AromaSurface,
                                 border = BorderStroke(
                                     1.dp,
@@ -304,7 +245,8 @@ fun CashierOrderScreen(
                                 ) {
                                     Text(
                                         text = table.tableNumber,
-                                        fontSize = 12.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = if (isSelected) AromaTerracotta else AromaCharcoal
                                     )
@@ -317,7 +259,7 @@ fun CashierOrderScreen(
                 }
             }
 
-            // Category Horizontal Selector Pills
+            // Category Filter Rail
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(horizontal = 20.dp),
@@ -341,7 +283,7 @@ fun CashierOrderScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 2-Column POS Product Cards Grid
+            // Photo-Forward 2-Column Register Grid
             if (isLoading) {
                 AromaLoadingState(message = "Memuat daftar menu POS...")
             } else if (filteredProducts.isEmpty()) {
@@ -365,14 +307,15 @@ fun CashierOrderScreen(
                         AromaCard(
                             onClick = { if (product.isAvailable) handleAddToCart(product) },
                             modifier = Modifier.fillMaxWidth(),
-                            borderColor = if (inCart != null) AromaTerracotta else AromaBorder
+                            borderColor = if (inCart != null) AromaTerracotta else AromaBorder,
+                            cornerRadius = 12.dp
                         ) {
                             Column(modifier = Modifier.fillMaxWidth()) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(110.dp)
-                                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                                        .height(120.dp)
+                                        .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
                                         .background(AromaCreamSoft),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -396,16 +339,17 @@ fun CashierOrderScreen(
                                         Box(
                                             modifier = Modifier
                                                 .fillMaxSize()
-                                                .background(AromaCharcoal.copy(alpha = 0.6f)),
+                                                .background(AromaCharcoal.copy(alpha = 0.65f)),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Surface(
                                                 shape = RoundedCornerShape(6.dp),
-                                                color = AromaCharcoal.copy(alpha = 0.85f)
+                                                color = AromaSurface
                                             ) {
                                                 Text(
                                                     text = "HABIS",
-                                                    color = AromaSurface,
+                                                    fontFamily = FontFamily.Monospace,
+                                                    color = AromaCharcoal,
                                                     fontWeight = FontWeight.Bold,
                                                     fontSize = 10.sp,
                                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
@@ -419,11 +363,12 @@ fun CashierOrderScreen(
                                             modifier = Modifier
                                                 .align(Alignment.TopEnd)
                                                 .padding(8.dp),
-                                            shape = RoundedCornerShape(8.dp),
+                                            shape = RoundedCornerShape(6.dp),
                                             color = AromaSuccess
                                         ) {
                                             Text(
                                                 text = "${inCart.quantity}×",
+                                                fontFamily = FontFamily.Monospace,
                                                 color = AromaSurface,
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 11.sp,
@@ -454,9 +399,10 @@ fun CashierOrderScreen(
                                     ) {
                                         Text(
                                             text = formatRupiah(product.price),
+                                            fontFamily = FontFamily.Monospace,
                                             fontSize = 13.sp,
-                                            fontWeight = FontWeight.ExtraBold,
-                                            color = AromaTerracotta,
+                                            fontWeight = FontWeight.Bold,
+                                            color = AromaCharcoal,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis,
                                             modifier = Modifier.weight(1f)
@@ -467,8 +413,12 @@ fun CashierOrderScreen(
                                         Surface(
                                             onClick = { if (product.isAvailable) handleAddToCart(product) },
                                             modifier = Modifier.size(34.dp),
-                                            shape = RoundedCornerShape(10.dp),
-                                            color = if (product.isAvailable) AromaTerracotta else AromaCreamTrack
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = when {
+                                                !product.isAvailable -> AromaCreamTrack
+                                                inCart != null -> AromaTerracotta
+                                                else -> AromaCharcoal
+                                            }
                                         ) {
                                             Box(contentAlignment = Alignment.Center) {
                                                 Icon(
@@ -488,7 +438,7 @@ fun CashierOrderScreen(
             }
         }
 
-        // Bright Warm Terracotta Floating Cart Bar
+        // Deep Roast Ink Floating Register Checkout Bar
         if (totalCartCount > 0) {
             Surface(
                 onClick = { isCartSheetVisible = true },
@@ -496,8 +446,8 @@ fun CashierOrderScreen(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
-                shape = RoundedCornerShape(16.dp),
-                color = AromaTerracotta,
+                shape = RoundedCornerShape(14.dp),
+                color = AromaCharcoal,
                 shadowElevation = 4.dp
             ) {
                 Row(
@@ -510,15 +460,16 @@ fun CashierOrderScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
                             modifier = Modifier.size(38.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            color = AromaSurface.copy(alpha = 0.22f)
+                            shape = RoundedCornerShape(9.dp),
+                            color = AromaTerracotta
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
                                     text = "$totalCartCount",
+                                    fontFamily = FontFamily.Monospace,
                                     color = AromaSurface,
                                     fontSize = 14.sp,
-                                    fontWeight = FontWeight.ExtraBold
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
@@ -527,14 +478,17 @@ fun CashierOrderScreen(
 
                         Column {
                             Text(
-                                text = "Total Pesanan",
+                                text = "TOTAL PESANAN",
+                                fontFamily = FontFamily.Monospace,
                                 fontSize = 10.sp,
-                                color = AromaSurface.copy(alpha = 0.85f),
-                                fontWeight = FontWeight.SemiBold
+                                color = AromaSurface.copy(alpha = 0.65f),
+                                fontWeight = FontWeight.SemiBold,
+                                letterSpacing = 0.6.sp
                             )
                             Text(
                                 text = formatRupiah(totalCartPrice),
-                                fontWeight = FontWeight.ExtraBold,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
                                 color = AromaSurface
                             )
@@ -546,11 +500,11 @@ fun CashierOrderScreen(
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = AromaSurface,
-                            contentColor = AromaTerracotta
+                            contentColor = AromaCharcoal
                         ),
                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
                     ) {
-                        Text("Keranjang", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        Text("Checkout", fontWeight = FontWeight.Bold, fontSize = 12.sp)
                         Spacer(modifier = Modifier.width(4.dp))
                         Icon(
                             Icons.Default.ChevronRight,
@@ -563,7 +517,7 @@ fun CashierOrderScreen(
         }
     }
 
-    // Cart & Checkout Bottom Sheet
+    // Checkout Bottom Sheet
     if (isCartSheetVisible) {
         ModalBottomSheet(
             onDismissRequest = { isCartSheetVisible = false },
@@ -583,15 +537,23 @@ fun CashierOrderScreen(
                 ) {
                     Column {
                         Text(
+                            text = "TIKET KASIR",
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp,
+                            color = AromaTerracotta
+                        )
+                        Text(
                             text = "Keranjang Pesanan",
                             style = MaterialTheme.typography.titleLarge,
                             color = AromaCharcoal
                         )
                         Text(
                             text = if (orderType == "DINE_IN") {
-                                "Dine In • ${selectedTable?.tableNumber ?: "Meja belum dipilih"}"
+                                "Dine In · ${selectedTable?.tableNumber ?: "Meja belum dipilih"}"
                             } else {
-                                "Take Away • $totalCartCount item"
+                                "Take Away · $totalCartCount item"
                             },
                             fontSize = 12.sp,
                             color = AromaTextMuted
@@ -632,7 +594,7 @@ fun CashierOrderScreen(
 
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(14.dp),
+                                shape = RoundedCornerShape(12.dp),
                                 color = AromaCreamSoft,
                                 border = BorderStroke(1.dp, AromaBorder)
                             ) {
@@ -645,7 +607,7 @@ fun CashierOrderScreen(
                                     Box(
                                         modifier = Modifier
                                             .size(46.dp)
-                                            .clip(RoundedCornerShape(10.dp))
+                                            .clip(RoundedCornerShape(8.dp))
                                             .background(AromaSurface),
                                         contentAlignment = Alignment.Center
                                     ) {
@@ -679,6 +641,7 @@ fun CashierOrderScreen(
                                         )
                                         Text(
                                             text = formatRupiah(item.product.price * item.quantity),
+                                            fontFamily = FontFamily.Monospace,
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = AromaTerracotta
@@ -708,7 +671,8 @@ fun CashierOrderScreen(
 
                                         Text(
                                             text = "${item.quantity}",
-                                            fontWeight = FontWeight.ExtraBold,
+                                            fontFamily = FontFamily.Monospace,
+                                            fontWeight = FontWeight.Bold,
                                             fontSize = 13.sp,
                                             color = AromaCharcoal,
                                             modifier = Modifier.padding(horizontal = 4.dp)
@@ -718,7 +682,7 @@ fun CashierOrderScreen(
                                             onClick = { handleUpdateQty(item.product.id, 1) },
                                             modifier = Modifier.size(32.dp),
                                             shape = RoundedCornerShape(8.dp),
-                                            color = AromaTerracotta
+                                            color = AromaCharcoal
                                         ) {
                                             Box(contentAlignment = Alignment.Center) {
                                                 Icon(
@@ -749,7 +713,7 @@ fun CashierOrderScreen(
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
-                HorizontalDivider(color = AromaDivider)
+                AromaDashedDivider()
                 Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedTextField(
@@ -782,11 +746,11 @@ fun CashierOrderScreen(
                         modifier = Modifier
                             .weight(1f)
                             .height(44.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        color = if (isCash) AromaTerracottaSoft else AromaSurface,
+                        shape = RoundedCornerShape(10.dp),
+                        color = if (isCash) AromaCharcoal else AromaSurface,
                         border = BorderStroke(
                             1.dp,
-                            if (isCash) AromaTerracotta else AromaBorder
+                            if (isCash) AromaCharcoal else AromaBorder
                         )
                     ) {
                         Row(
@@ -796,7 +760,7 @@ fun CashierOrderScreen(
                             Icon(
                                 Icons.Default.Payments,
                                 contentDescription = null,
-                                tint = if (isCash) AromaTerracotta else AromaTextMuted,
+                                tint = if (isCash) AromaSurface else AromaTextMuted,
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
@@ -804,7 +768,7 @@ fun CashierOrderScreen(
                                 text = "Tunai (Cash)",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isCash) AromaTerracotta else AromaCharcoal
+                                color = if (isCash) AromaSurface else AromaCharcoal
                             )
                         }
                     }
@@ -815,11 +779,11 @@ fun CashierOrderScreen(
                         modifier = Modifier
                             .weight(1f)
                             .height(44.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        color = if (isQris) AromaTerracottaSoft else AromaSurface,
+                        shape = RoundedCornerShape(10.dp),
+                        color = if (isQris) AromaCharcoal else AromaSurface,
                         border = BorderStroke(
                             1.dp,
-                            if (isQris) AromaTerracotta else AromaBorder
+                            if (isQris) AromaCharcoal else AromaBorder
                         )
                     ) {
                         Row(
@@ -829,7 +793,7 @@ fun CashierOrderScreen(
                             Icon(
                                 Icons.Default.QrCode,
                                 contentDescription = null,
-                                tint = if (isQris) AromaTerracotta else AromaTextMuted,
+                                tint = if (isQris) AromaSurface else AromaTextMuted,
                                 modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
@@ -837,7 +801,7 @@ fun CashierOrderScreen(
                                 text = "QRIS",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isQris) AromaTerracotta else AromaCharcoal
+                                color = if (isQris) AromaSurface else AromaCharcoal
                             )
                         }
                     }
@@ -858,7 +822,8 @@ fun CashierOrderScreen(
                     )
                     Text(
                         text = formatRupiah(totalCartPrice),
-                        fontWeight = FontWeight.ExtraBold,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         color = AromaCharcoal
                     )
@@ -872,7 +837,7 @@ fun CashierOrderScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = AromaTerracotta,
                         contentColor = AromaSurface

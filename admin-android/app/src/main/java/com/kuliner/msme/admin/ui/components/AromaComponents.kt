@@ -1,6 +1,7 @@
 package com.kuliner.msme.admin.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -12,10 +13,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,7 +68,7 @@ fun orderStatusVisual(orderStatus: String): StatusVisual = when (orderStatus) {
     )
     "SELESAI" -> StatusVisual(
         label = "Selesai",
-        bg = AromaCreamTrack,
+        bg = AromaCreamSoft,
         text = AromaCharcoal,
         border = AromaBorder
     )
@@ -75,7 +80,7 @@ fun orderStatusVisual(orderStatus: String): StatusVisual = when (orderStatus) {
     )
     else -> StatusVisual(
         label = orderStatus,
-        bg = AromaCreamTrack,
+        bg = AromaCreamSoft,
         text = AromaCharcoal,
         border = AromaBorder
     )
@@ -108,7 +113,7 @@ fun AromaCard(
     onClick: (() -> Unit)? = null,
     containerColor: Color = AromaSurface,
     borderColor: Color = AromaBorder,
-    cornerRadius: Dp = 14.dp,
+    cornerRadius: Dp = 12.dp,
     content: @Composable () -> Unit
 ) {
     val shape = RoundedCornerShape(cornerRadius)
@@ -143,7 +148,7 @@ fun AromaStatusBadge(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(6.dp),
         color = visual.bg,
         border = BorderStroke(1.dp, visual.border)
     ) {
@@ -174,13 +179,13 @@ fun AromaStatusBadge(
 fun AromaTag(
     label: String,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = AromaTerracottaSoft,
-    textColor: Color = AromaTerracotta,
-    borderColor: Color? = null
+    backgroundColor: Color = AromaCreamSoft,
+    textColor: Color = AromaCharcoal,
+    borderColor: Color? = AromaBorder
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(6.dp),
         color = backgroundColor,
         border = borderColor?.let { BorderStroke(1.dp, it) }
     ) {
@@ -205,8 +210,8 @@ fun AromaFilterPill(
     Surface(
         onClick = onClick,
         modifier = modifier.defaultMinSize(minHeight = 36.dp),
-        shape = RoundedCornerShape(10.dp),
-        color = if (selected) AromaTerracotta else AromaSurface,
+        shape = RoundedCornerShape(8.dp),
+        color = if (selected) AromaCharcoal else AromaSurface,
         border = if (selected) null else BorderStroke(1.dp, AromaBorder)
     ) {
         Box(
@@ -225,10 +230,90 @@ fun AromaFilterPill(
 }
 
 @Composable
+fun AromaSegmentedControl(
+    options: List<Pair<String, ImageVector?>>,
+    selectedIndex: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(10.dp),
+        color = AromaCreamTrack,
+        border = BorderStroke(1.dp, AromaBorder)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(3.dp),
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
+        ) {
+            options.forEachIndexed { index, (label, icon) ->
+                val isSelected = selectedIndex == index
+                Surface(
+                    onClick = { onSelect(index) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(38.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    color = if (isSelected) AromaCharcoal else Color.Transparent,
+                    shadowElevation = 0.dp
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        if (icon != null) {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null,
+                                tint = if (isSelected) AromaSurface else AromaTextSecondary,
+                                modifier = Modifier.size(15.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                        }
+                        Text(
+                            text = label,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isSelected) AromaSurface else AromaTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AromaDashedDivider(
+    modifier: Modifier = Modifier,
+    color: Color = AromaBorder
+) {
+    Canvas(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(1.dp)
+    ) {
+        drawLine(
+            color = color,
+            start = Offset(0f, 0f),
+            end = Offset(size.width, 0f),
+            strokeWidth = 2f,
+            pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f), 0f)
+        )
+    }
+}
+
+@Composable
 fun AromaSectionHeader(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    overline: String? = null,
     trailing: (@Composable () -> Unit)? = null
 ) {
     Row(
@@ -237,6 +322,17 @@ fun AromaSectionHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
+            if (!overline.isNullOrBlank()) {
+                Text(
+                    text = overline.uppercase(),
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.1.sp,
+                    color = AromaTerracotta
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleSmall,
@@ -272,8 +368,8 @@ fun AromaLoadingState(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             CircularProgressIndicator(
-                color = AromaTerracotta,
-                trackColor = AromaTerracottaSoft,
+                color = AromaCharcoal,
+                trackColor = AromaCreamTrack,
                 strokeWidth = 3.dp,
                 modifier = Modifier.size(32.dp)
             )
@@ -293,8 +389,8 @@ fun AromaEmptyState(
     title: String,
     subtitle: String,
     modifier: Modifier = Modifier,
-    iconBackground: Color = AromaTerracottaSoft,
-    iconTint: Color = AromaTerracotta
+    iconBackground: Color = AromaCreamSoft,
+    iconTint: Color = AromaCharcoal
 ) {
     Box(
         modifier = modifier
@@ -308,8 +404,9 @@ fun AromaEmptyState(
         ) {
             Surface(
                 modifier = Modifier.size(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                color = iconBackground
+                shape = RoundedCornerShape(14.dp),
+                color = iconBackground,
+                border = BorderStroke(1.dp, AromaBorder)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
@@ -351,7 +448,7 @@ fun AromaFeedbackBanner(
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(10.dp),
         color = bg,
         border = BorderStroke(1.dp, border)
     ) {
@@ -381,13 +478,13 @@ fun AromaFeedbackBanner(
 fun aromaTextFieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors(
     focusedContainerColor = AromaSurface,
     unfocusedContainerColor = AromaCreamSoft,
-    focusedBorderColor = AromaTerracotta,
+    focusedBorderColor = AromaCharcoal,
     unfocusedBorderColor = AromaBorder,
-    focusedLabelColor = AromaTerracotta,
+    focusedLabelColor = AromaCharcoal,
     unfocusedLabelColor = AromaTextSecondary,
     focusedTextColor = AromaCharcoal,
     unfocusedTextColor = AromaCharcoal,
     cursorColor = AromaTerracotta,
-    focusedLeadingIconColor = AromaTerracotta,
+    focusedLeadingIconColor = AromaCharcoal,
     unfocusedLeadingIconColor = AromaTextMuted
 )

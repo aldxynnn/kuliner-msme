@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.kuliner.msme.admin.R
 import com.kuliner.msme.admin.data.model.ReceiptInfo
+import com.kuliner.msme.admin.ui.components.AromaDashedDivider
 import com.kuliner.msme.admin.ui.components.AromaStatusBadge
 import com.kuliner.msme.admin.ui.components.formatRupiah
 import com.kuliner.msme.admin.ui.components.paymentStatusVisual
@@ -173,7 +175,7 @@ fun ReceiptDialog(
 
             paint.textSize = 14f
             paint.isFakeBoldText = true
-            paint.color = android.graphics.Color.rgb(201, 79, 29)
+            paint.color = android.graphics.Color.rgb(200, 67, 25)
             canvas.drawText("TOTAL: ${formatRupiah(receipt.total)}", 20f, y, paint)
 
             pdfDocument.finishPage(page)
@@ -195,7 +197,7 @@ fun ReceiptDialog(
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(22.dp),
+            shape = RoundedCornerShape(18.dp),
             color = AromaSurface,
             border = BorderStroke(1.dp, AromaBorder)
         ) {
@@ -212,15 +214,17 @@ fun ReceiptDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Struk Digital",
-                        style = MaterialTheme.typography.titleMedium,
+                        text = "STRUK DIGITAL",
+                        fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        letterSpacing = 1.sp,
                         color = AromaCharcoal
                     )
                     Surface(
                         onClick = onDismiss,
                         modifier = Modifier.size(34.dp),
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(8.dp),
                         color = AromaCreamSoft,
                         border = BorderStroke(1.dp, AromaBorder)
                     ) {
@@ -237,10 +241,10 @@ fun ReceiptDialog(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Store Identity
+                // Store Thermal Header
                 Surface(
-                    modifier = Modifier.size(52.dp),
-                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier.size(50.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = AromaCreamSoft,
                     border = BorderStroke(1.dp, AromaBorder)
                 ) {
@@ -250,7 +254,7 @@ fun ReceiptDialog(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
-                            .clip(RoundedCornerShape(14.dp))
+                            .clip(RoundedCornerShape(12.dp))
                     )
                 }
 
@@ -258,12 +262,12 @@ fun ReceiptDialog(
 
                 Text(
                     text = storeName,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 15.sp,
+                    style = AromaBrandSerifStyle,
+                    fontSize = 16.sp,
                     color = AromaCharcoal,
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(3.dp))
                 Text(
                     text = storeAddress,
                     fontSize = 11.sp,
@@ -273,21 +277,24 @@ fun ReceiptDialog(
                 )
                 Text(
                     text = "Telp: $storePhone",
+                    fontFamily = FontFamily.Monospace,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,
                     color = AromaTextSecondary,
                     textAlign = TextAlign.Center
                 )
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = AromaDivider)
+                Spacer(modifier = Modifier.height(12.dp))
+                AromaDashedDivider()
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Order Metadata
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    ReceiptMetaRow("No. Pesanan", receipt.orderNumber, boldValue = true)
-                    ReceiptMetaRow("Tanggal", receipt.dateTime.take(19).replace("T", " "))
+                    ReceiptMetaRow("No. Pesanan", receipt.orderNumber, boldValue = true, monoValue = true)
+                    ReceiptMetaRow("Tanggal", receipt.dateTime.take(19).replace("T", " "), monoValue = true)
                     ReceiptMetaRow("Pelanggan", receipt.customerName ?: "Pelanggan")
                     ReceiptMetaRow(
                         "Tipe Pesanan",
@@ -309,6 +316,7 @@ fun ReceiptDialog(
                         ) {
                             Text(
                                 text = receipt.paymentMethod,
+                                fontFamily = FontFamily.Monospace,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = AromaCharcoal
@@ -318,7 +326,9 @@ fun ReceiptDialog(
                     }
                 }
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = AromaDivider)
+                Spacer(modifier = Modifier.height(12.dp))
+                AromaDashedDivider()
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // Purchased Items
                 Column(
@@ -349,6 +359,7 @@ fun ReceiptDialog(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = formatRupiah(item.subtotal),
+                                fontFamily = FontFamily.Monospace,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = AromaCharcoal
@@ -362,8 +373,8 @@ fun ReceiptDialog(
                 // Total Summary Band
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    color = AromaCreamSoft,
+                    shape = RoundedCornerShape(10.dp),
+                    color = AromaReceiptBg,
                     border = BorderStroke(1.dp, AromaBorder)
                 ) {
                     Row(
@@ -375,13 +386,15 @@ fun ReceiptDialog(
                     ) {
                         Text(
                             text = "TOTAL BAYAR",
+                            fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 12.sp,
+                            fontSize = 11.sp,
                             color = AromaTextSecondary
                         )
                         Text(
                             text = formatRupiah(receipt.total),
-                            fontWeight = FontWeight.ExtraBold,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
                             fontSize = 17.sp,
                             color = AromaTerracotta
                         )
@@ -390,7 +403,7 @@ fun ReceiptDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Print & Save PDF Action Buttons
+                // Print (#171311) & Save PDF (#C84319) Action Buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -400,9 +413,9 @@ fun ReceiptDialog(
                         modifier = Modifier
                             .weight(1f)
                             .height(46.dp),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = AromaTerracotta,
+                            containerColor = AromaCharcoal,
                             contentColor = AromaSurface
                         ),
                         contentPadding = PaddingValues(horizontal = 8.dp)
@@ -412,16 +425,15 @@ fun ReceiptDialog(
                         Text("Cetak", fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
                     }
 
-                    OutlinedButton(
+                    Button(
                         onClick = { handleSavePdf() },
                         modifier = Modifier
                             .weight(1f)
                             .height(46.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, AromaBorder),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = AromaCreamSoft,
-                            contentColor = AromaCharcoal
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = AromaTerracotta,
+                            contentColor = AromaSurface
                         ),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
@@ -443,7 +455,8 @@ fun ReceiptDialog(
 private fun ReceiptMetaRow(
     label: String,
     value: String,
-    boldValue: Boolean = false
+    boldValue: Boolean = false,
+    monoValue: Boolean = false
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -452,6 +465,7 @@ private fun ReceiptMetaRow(
         Text(text = label, fontSize = 11.sp, color = AromaTextMuted)
         Text(
             text = value,
+            fontFamily = if (monoValue) FontFamily.Monospace else FontFamily.SansSerif,
             fontSize = 11.sp,
             fontWeight = if (boldValue) FontWeight.Bold else FontWeight.Medium,
             color = AromaCharcoal

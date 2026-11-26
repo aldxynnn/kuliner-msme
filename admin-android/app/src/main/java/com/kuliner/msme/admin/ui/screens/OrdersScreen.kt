@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -17,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -128,7 +130,7 @@ fun OrdersScreen() {
             .fillMaxSize()
             .background(AromaCream)
     ) {
-        // Horizontal Status Filter Bar
+        // Horizontal Status Filter Rail
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
@@ -172,29 +174,104 @@ fun OrdersScreen() {
         }
     }
 
-    // Order Details Modal Dialog
+    // Kitchen Order Detail Dialog with Dark Roast Header & 5-Step Progress
     if (selectedOrderForDetails != null) {
         val ord = selectedOrderForDetails!!
+        val steps = listOf(
+            "MENUNGGU_PEMBAYARAN" to "Bayar",
+            "MENUNGGU_DIPROSES" to "Antre",
+            "DIPROSES" to "Masak",
+            "SIAP_DISAJIKAN" to "Siap",
+            "SELESAI" to "Selesai"
+        )
+        val currentIdx = steps.indexOfFirst { it.first == ord.orderStatus }
+
         AlertDialog(
             onDismissRequest = { selectedOrderForDetails = null },
             containerColor = AromaSurface,
-            shape = RoundedCornerShape(22.dp),
+            shape = RoundedCornerShape(18.dp),
             title = {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(
-                        text = "Detail Pesanan",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = AromaTextMuted
-                    )
-                    Text(
-                        text = "#${ord.orderNumber}",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.ExtraBold,
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
                         color = AromaCharcoal
-                    )
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        AromaStatusBadge(visual = orderStatusVisual(ord.orderStatus), showDot = true)
-                        AromaStatusBadge(visual = paymentStatusVisual(ord.paymentStatus))
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                text = "DETAIL TIKET DAPUR",
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.sp,
+                                color = AromaTerracottaLight
+                            )
+                            Text(
+                                text = "#${ord.orderNumber}",
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = AromaSurface
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                AromaStatusBadge(
+                                    visual = orderStatusVisual(ord.orderStatus),
+                                    showDot = true
+                                )
+                                AromaStatusBadge(visual = paymentStatusVisual(ord.paymentStatus))
+                            }
+                        }
+                    }
+
+                    if (ord.orderStatus != "DIBATALKAN" && currentIdx >= 0) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 2.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            steps.forEachIndexed { idx, (_, stepLabel) ->
+                                val completed = idx < currentIdx || ord.orderStatus == "SELESAI"
+                                val active = idx == currentIdx && ord.orderStatus != "SELESAI"
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(18.dp)
+                                            .background(
+                                                when {
+                                                    completed -> AromaSuccess
+                                                    active -> AromaTerracotta
+                                                    else -> AromaCreamTrack
+                                                },
+                                                CircleShape
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = if (completed) "✓" else "${idx + 1}",
+                                            fontFamily = FontFamily.Monospace,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (completed || active) AromaSurface else AromaTextMuted
+                                        )
+                                    }
+                                    Spacer(Modifier.height(3.dp))
+                                    Text(
+                                        text = stepLabel,
+                                        fontSize = 10.sp,
+                                        fontWeight = if (active) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (active) AromaTerracotta else AromaTextMuted
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -205,10 +282,9 @@ fun OrdersScreen() {
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Metadata summary box
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(12.dp),
                         color = AromaCreamSoft,
                         border = BorderStroke(1.dp, AromaBorder)
                     ) {
@@ -225,11 +301,13 @@ fun OrdersScreen() {
                                     "Take Away"
                                 }
                             )
-                            OrderMetaRow("Pembayaran", "${ord.paymentMethod} (${paymentStatusVisual(ord.paymentStatus).label})")
+                            OrderMetaRow(
+                                "Pembayaran",
+                                "${ord.paymentMethod} (${paymentStatusVisual(ord.paymentStatus).label})"
+                            )
                         }
                     }
 
-                    // Order items
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = "Rincian Menu",
@@ -239,11 +317,14 @@ fun OrdersScreen() {
 
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = RoundedCornerShape(12.dp),
                             color = AromaSurface,
-                            border = BorderStroke(1.dp, AromaDivider)
+                            border = BorderStroke(1.dp, AromaBorder)
                         ) {
-                            Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Column(
+                                modifier = Modifier.padding(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
                                 ord.orderDetails.forEachIndexed { idx, item ->
                                     if (idx > 0) {
                                         HorizontalDivider(color = AromaDivider, thickness = 1.dp)
@@ -271,14 +352,15 @@ fun OrdersScreen() {
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
                                             text = formatRupiah(item.subtotal),
-                                            fontSize = 13.sp,
+                                            fontFamily = FontFamily.Monospace,
+                                            fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = AromaCharcoal
                                         )
                                     }
                                 }
 
-                                HorizontalDivider(color = AromaBorder, thickness = 1.dp)
+                                AromaDashedDivider()
 
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -293,8 +375,9 @@ fun OrdersScreen() {
                                     )
                                     Text(
                                         text = formatRupiah(ord.total),
+                                        fontFamily = FontFamily.Monospace,
                                         fontSize = 16.sp,
-                                        fontWeight = FontWeight.ExtraBold,
+                                        fontWeight = FontWeight.Bold,
                                         color = AromaTerracotta
                                     )
                                 }
@@ -318,7 +401,7 @@ fun OrdersScreen() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(46.dp),
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(10.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = AromaTerracotta)
                             ) {
                                 Text("Proses di Dapur", fontWeight = FontWeight.Bold)
@@ -330,7 +413,7 @@ fun OrdersScreen() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(46.dp),
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(10.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = AromaTerracotta)
                             ) {
                                 Text("Siap Disajikan", fontWeight = FontWeight.Bold)
@@ -342,7 +425,7 @@ fun OrdersScreen() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(46.dp),
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(10.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = AromaSuccess)
                             ) {
                                 Text("Selesaikan Pesanan", fontWeight = FontWeight.Bold)
@@ -358,7 +441,7 @@ fun OrdersScreen() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(46.dp),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(10.dp),
                             border = BorderStroke(1.dp, AromaErrorBorder),
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = AromaError)
                         ) {
@@ -369,7 +452,7 @@ fun OrdersScreen() {
             },
             confirmButton = {
                 TextButton(onClick = { selectedOrderForDetails = null }) {
-                    Text("Tutup", fontWeight = FontWeight.Bold, color = AromaTerracotta)
+                    Text("Tutup", fontWeight = FontWeight.Bold, color = AromaCharcoal)
                 }
             }
         )
@@ -411,105 +494,120 @@ fun OrderCardItem(
 
     AromaCard(
         onClick = onSelect,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        cornerRadius = 12.dp
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
         ) {
-            // Top Row: Order Number + Order Status
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = order.orderNumber,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 15.sp,
-                    color = AromaCharcoal,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                AromaStatusBadge(visual = orderStatus, showDot = true)
-            }
-
-            // Context Chips Row: Order Type + Customer + Payment Status
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                AromaTag(
-                    label = if (order.orderType == "DINE_IN") {
-                        "Dine In • ${order.table?.tableNumber ?: "-"}"
-                    } else {
-                        "Take Away"
-                    },
-                    backgroundColor = AromaCreamSoft,
-                    textColor = AromaCharcoal,
-                    borderColor = AromaBorder
-                )
-                AromaTag(
-                    label = "${order.paymentMethod} • ${payStatus.label}",
-                    backgroundColor = payStatus.bg,
-                    textColor = payStatus.text,
-                    borderColor = payStatus.border
-                )
-            }
-
-            // Items preview
-            Text(
-                text = order.orderDetails.joinToString(", ") { "${it.quantity}× ${it.productName}" },
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                color = AromaTextSecondary,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+            // Left Vertical Kitchen Status Rail
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight()
+                    .background(orderStatus.text)
             )
 
-            HorizontalDivider(color = AromaDivider, thickness = 1.dp)
-
-            // Bottom Row: Total + Print Receipt Button
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = order.customerName?.takeIf { it.isNotBlank() } ?: "Pelanggan",
-                        fontSize = 11.sp,
-                        color = AromaTextMuted
+                        text = order.orderNumber,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = AromaCharcoal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
-                    Text(
-                        text = formatRupiah(order.total),
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 16.sp,
-                        color = AromaCharcoal
+                    Spacer(modifier = Modifier.width(8.dp))
+                    AromaStatusBadge(visual = orderStatus, showDot = true)
+                }
+
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    AromaTag(
+                        label = if (order.orderType == "DINE_IN") {
+                            "Dine In · ${order.table?.tableNumber ?: "-"}"
+                        } else {
+                            "Take Away"
+                        },
+                        backgroundColor = AromaCreamSoft,
+                        textColor = AromaCharcoal,
+                        borderColor = AromaBorder
+                    )
+                    AromaTag(
+                        label = "${order.paymentMethod} · ${payStatus.label}",
+                        backgroundColor = payStatus.bg,
+                        textColor = payStatus.text,
+                        borderColor = payStatus.border
                     )
                 }
 
-                OutlinedButton(
-                    onClick = onPrintReceipt,
-                    modifier = Modifier.height(38.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    border = BorderStroke(1.dp, AromaTerracottaBorder),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = AromaTerracottaSoft,
-                        contentColor = AromaTerracotta
-                    ),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
+                Text(
+                    text = order.orderDetails.joinToString(", ") { "${it.quantity}× ${it.productName}" },
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = AromaTextSecondary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                AromaDashedDivider()
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.Default.Receipt,
-                        contentDescription = "Struk",
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Struk", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Column {
+                        Text(
+                            text = order.customerName?.takeIf { it.isNotBlank() } ?: "Pelanggan",
+                            fontSize = 11.sp,
+                            color = AromaTextMuted
+                        )
+                        Text(
+                            text = formatRupiah(order.total),
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = AromaCharcoal
+                        )
+                    }
+
+                    OutlinedButton(
+                        onClick = onPrintReceipt,
+                        modifier = Modifier.height(36.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, AromaBorder),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = AromaCreamSoft,
+                            contentColor = AromaCharcoal
+                        ),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Receipt,
+                            contentDescription = "Struk",
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Struk", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }

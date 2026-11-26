@@ -25,17 +25,17 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
   return (
     <nav
       aria-label="Kategori Menu"
-      className="bg-white/95 backdrop-blur-md border-b border-cream-200"
+      className="bg-paper-50/95 backdrop-blur-md border-b border-paper-200"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-2 sm:gap-5 overflow-x-auto no-scrollbar">
         <button
           type="button"
           onClick={() => onSelectCategory(null)}
           aria-pressed={selectedCategoryId === null}
-          className={`min-h-[44px] inline-flex items-center gap-2 px-3.5 py-2.5 text-xs sm:text-[13px] whitespace-nowrap border-b-2 transition-colors shrink-0 ${
+          className={`min-h-[46px] inline-flex items-center gap-2 px-1 py-2.5 text-xs sm:text-[13px] whitespace-nowrap border-b-2 transition-colors shrink-0 ${
             selectedCategoryId === null
-              ? 'border-brand-500 text-brand-600 font-bold'
-              : 'border-transparent text-charcoal-secondary font-semibold hover:text-charcoal'
+              ? 'border-ink text-ink font-bold'
+              : 'border-transparent text-ink-muted font-medium hover:text-ink'
           }`}
         >
           <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
@@ -51,24 +51,22 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
               type="button"
               onClick={() => onSelectCategory(cat.id)}
               aria-pressed={isSelected}
-              className={`min-h-[44px] inline-flex items-center gap-2 px-3.5 py-2.5 text-xs sm:text-[13px] whitespace-nowrap border-b-2 transition-colors shrink-0 ${
+              className={`min-h-[46px] inline-flex items-center gap-1.5 px-1 py-2.5 text-xs sm:text-[13px] whitespace-nowrap border-b-2 transition-colors shrink-0 ${
                 isSelected
-                  ? 'border-brand-500 text-brand-600 font-bold'
-                  : 'border-transparent text-charcoal-secondary font-semibold hover:text-charcoal'
+                  ? 'border-ink text-ink font-bold'
+                  : 'border-transparent text-ink-muted font-medium hover:text-ink'
               }`}
             >
               {getCategoryIcon(cat.name)}
               <span>{cat.name}</span>
               {typeof productCount === 'number' && productCount > 0 && (
-                <span
-                  className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md tabular-nums ${
-                    isSelected
-                      ? 'bg-brand-50 text-brand-600'
-                      : 'bg-cream-100 text-charcoal-muted'
+                <sup
+                  className={`font-mono text-[10px] font-bold tabular-nums ml-0.5 ${
+                    isSelected ? 'text-spice-500' : 'text-ink-light'
                   }`}
                 >
                   {productCount}
-                </span>
+                </sup>
               )}
             </button>
           );

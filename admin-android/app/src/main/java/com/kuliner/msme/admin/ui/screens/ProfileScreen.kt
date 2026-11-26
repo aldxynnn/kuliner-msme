@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -79,37 +80,57 @@ fun ProfileScreen(
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Bright White Account Identity Card
+        // Operator Identity Badge Sheet with Dark Roast Band
         AromaCard(
             modifier = Modifier.fillMaxWidth(),
             cornerRadius = 16.dp
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(3.dp)
-                        .background(AromaTerracotta)
-                )
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = AromaCharcoal
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "OPERATOR SHIFT",
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp,
+                            color = AromaSurface.copy(alpha = 0.72f)
+                        )
+                        AromaTag(
+                            label = sessionStatus,
+                            backgroundColor = AromaSuccessSoft,
+                            textColor = AromaSuccess,
+                            borderColor = AromaSuccessBorder
+                        )
+                    }
+                }
 
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 22.dp),
+                        .padding(horizontal = 20.dp, vertical = 20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Surface(
                         modifier = Modifier.size(64.dp),
                         shape = CircleShape,
-                        color = AromaTerracottaSoft,
-                        border = BorderStroke(1.5.dp, AromaTerracottaBorder)
+                        color = AromaCharcoal
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
                                 text = initial,
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.ExtraBold,
-                                color = AromaTerracotta
+                                color = AromaSurface
                             )
                         }
                     }
@@ -139,6 +160,7 @@ fun ProfileScreen(
 
                     Text(
                         text = displayEmail,
+                        fontFamily = FontFamily.Monospace,
                         fontSize = 12.sp,
                         color = AromaTextMuted,
                         maxLines = 1,
@@ -153,25 +175,28 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(3.dp),
-                color = AromaTerracotta,
-                trackColor = AromaTerracottaSoft
+                color = AromaCharcoal,
+                trackColor = AromaCreamTrack
             )
         }
 
         // Account Info Section
-        AromaSectionHeader(title = "Informasi Akun")
+        AromaSectionHeader(
+            overline = "Kredensial",
+            title = "Informasi Akun"
+        )
 
         AromaCard(
             modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 14.dp
+            cornerRadius = 12.dp
         ) {
             Column {
                 AccountInfoRow(
                     icon = Icons.Default.Email,
                     label = "Email",
                     value = displayEmail,
-                    iconTint = AromaTerracotta,
-                    iconBackground = AromaTerracottaSoft
+                    iconTint = AromaCharcoal,
+                    iconBackground = AromaCreamSoft
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -193,19 +218,22 @@ fun ProfileScreen(
                     label = "Status Sesi",
                     value = sessionStatus,
                     valueColor = if (sessionStatus == "Sesi aktif") AromaSuccess else AromaTextMuted,
-                    iconTint = AromaWarning,
-                    iconBackground = AromaWarningSoft
+                    iconTint = AromaTerracotta,
+                    iconBackground = AromaTerracottaSoft
                 )
             }
         }
 
         // Logout Action Section
-        AromaSectionHeader(title = "Sesi Perangkat")
+        AromaSectionHeader(
+            overline = "Keamanan",
+            title = "Sesi Perangkat"
+        )
 
         Surface(
             onClick = { showLogoutDialog = true },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(12.dp),
             color = AromaErrorSoft,
             border = BorderStroke(1.dp, AromaErrorBorder)
         ) {
@@ -244,7 +272,7 @@ fun ProfileScreen(
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
             containerColor = AromaSurface,
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(18.dp),
             title = {
                 Text(
                     text = "Keluar dari akun?",
@@ -265,7 +293,7 @@ fun ProfileScreen(
                         showLogoutDialog = false
                         onLogout()
                     },
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AromaError)
                 ) {
                     Text("Keluar", fontWeight = FontWeight.Bold)
@@ -295,7 +323,7 @@ private fun AccountInfoRow(
     ) {
         Surface(
             modifier = Modifier.size(36.dp),
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(9.dp),
             color = iconBackground
         ) {
             Box(contentAlignment = Alignment.Center) {

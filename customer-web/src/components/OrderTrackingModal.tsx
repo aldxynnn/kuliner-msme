@@ -60,7 +60,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
       case 'DIPROSES':
         return {
           label: 'Sedang Dimasak Dapur',
-          badgeClass: 'bg-brand-50 text-brand-600 border-brand-200',
+          badgeClass: 'bg-spice-50 text-spice-600 border-spice-200',
           icon: <ChefHat className="w-4 h-4 shrink-0" />,
           desc: 'Koki sedang menyiapkan hidangan hangat Anda. Mohon tunggu sebentar.',
         };
@@ -88,7 +88,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
       default:
         return {
           label: order.orderStatus,
-          badgeClass: 'bg-cream-100 text-charcoal border-cream-200',
+          badgeClass: 'bg-paper-100 text-ink border-paper-200',
           icon: <Clock className="w-4 h-4 shrink-0" />,
           desc: '',
         };
@@ -105,7 +105,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
       ? 'LUNAS'
       : order.paymentStatus === 'CANCELLED'
       ? 'DIBATALKAN'
-      : 'MENUNGGU BAYAR';
+      : 'BELUM BAYAR';
 
   const paymentStatusClass =
     order.paymentStatus === 'PAID'
@@ -120,27 +120,27 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
       aria-modal="true"
       aria-labelledby="tracking-modal-title"
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-charcoal/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-aroma-fade"
+      className="fixed inset-0 z-50 bg-ink/65 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-aroma-fade"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh] animate-aroma-sheet sm:animate-aroma-modal"
+        className="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl border border-paper-200 overflow-hidden shadow-2xl flex flex-col max-h-[92vh] animate-aroma-sheet sm:animate-aroma-modal"
       >
-        {/* Header */}
-        <div className="px-5 py-4 border-b border-cream-200 bg-cream-50 flex items-center justify-between gap-3 shrink-0">
+        {/* Deep Roast Architectural Ticket Header */}
+        <div className="px-5 py-4 bg-ink text-white flex items-center justify-between gap-3 shrink-0">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-600 uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 font-mono text-[10px] font-bold text-spice-200 uppercase tracking-[0.14em]">
                 {!isCancelled && order.orderStatus !== 'SELESAI' && (
-                  <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-spice-500 animate-pulse" />
                 )}
-                Status Pesanan
+                Live Tracking
               </span>
-              <span className="text-[11px] text-charcoal-muted">• Auto-update</span>
+              <span className="font-mono text-[10px] text-paper-300">&bull; Auto-update 5s</span>
             </div>
             <h3
               id="tracking-modal-title"
-              className="font-extrabold text-base sm:text-lg text-charcoal break-all leading-tight mt-0.5 tabular-nums"
+              className="font-mono font-bold text-base sm:text-lg text-white break-all leading-tight mt-1 tabular-nums"
             >
               {order.orderNumber}
             </h3>
@@ -149,7 +149,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
             type="button"
             onClick={onClose}
             aria-label="Tutup pelacakan pesanan"
-            className="w-10 h-10 rounded-xl bg-white border border-cream-200 text-charcoal flex items-center justify-center hover:bg-cream-100 transition-colors shrink-0"
+            className="w-10 h-10 rounded-full bg-white/10 border border-white/15 text-white flex items-center justify-center hover:bg-white/20 transition-colors shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -157,7 +157,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
 
         {/* Scrollable Body */}
         <div className="p-5 sm:p-6 overflow-y-auto space-y-5 bg-white">
-          {/* Step Progression Indicator */}
+          {/* 5-Step Progress Rail */}
           {!isCancelled && currentStepIndex >= 0 && (
             <div className="px-1">
               <div className="grid grid-cols-5 gap-1">
@@ -172,17 +172,17 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
                             index === 0
                               ? 'bg-transparent'
                               : index <= currentStepIndex
-                              ? 'bg-brand-500'
-                              : 'bg-cream-200'
+                              ? 'bg-pandan-600'
+                              : 'bg-paper-200'
                           }`}
                         />
                         <div
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-extrabold shrink-0 transition-colors ${
+                          className={`w-6 h-6 rounded-full flex items-center justify-center font-mono text-[10px] font-bold shrink-0 transition-colors ${
                             isCompleted
-                              ? 'bg-semantic-success text-white'
+                              ? 'bg-pandan-600 text-white'
                               : isActive
-                              ? 'bg-brand-500 text-white ring-4 ring-brand-100'
-                              : 'bg-cream-100 text-charcoal-light border border-cream-200'
+                              ? 'bg-spice-500 text-white ring-4 ring-spice-100'
+                              : 'bg-paper-100 text-ink-light border border-paper-200'
                           }`}
                         >
                           {isCompleted ? <Check className="w-3.5 h-3.5" /> : index + 1}
@@ -192,18 +192,18 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
                             index === PROGRESS_STEPS.length - 1
                               ? 'bg-transparent'
                               : index < currentStepIndex
-                              ? 'bg-brand-500'
-                              : 'bg-cream-200'
+                              ? 'bg-pandan-600'
+                              : 'bg-paper-200'
                           }`}
                         />
                       </div>
                       <span
                         className={`text-[10px] font-bold leading-tight ${
                           isActive
-                            ? 'text-brand-600'
+                            ? 'text-spice-600'
                             : isCompleted
-                            ? 'text-charcoal'
-                            : 'text-charcoal-light'
+                            ? 'text-ink'
+                            : 'text-ink-light'
                         }`}
                       >
                         {step.label}
@@ -218,26 +218,26 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
           {/* Status Banner */}
           <div className={`p-4 rounded-2xl border ${statusInfo.badgeClass} space-y-1.5`}>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2 font-extrabold text-sm">
+              <div className="flex items-center gap-2 font-bold text-sm">
                 {statusInfo.icon}
                 <span>{statusInfo.label}</span>
               </div>
-              <span className="text-[11px] font-semibold opacity-80 tabular-nums">
+              <span className="font-mono text-[11px] font-semibold opacity-80 tabular-nums">
                 {formatDate(order.createdAt)}
               </span>
             </div>
-            <p className="text-xs font-body leading-relaxed opacity-95">{statusInfo.desc}</p>
+            <p className="text-xs leading-relaxed opacity-95">{statusInfo.desc}</p>
           </div>
 
-          {/* QRIS Payment Instructions */}
+          {/* QRIS Payment Block */}
           {order.paymentMethod === 'QRIS' && order.paymentStatus === 'PENDING' && !isCancelled && (
-            <div className="p-5 rounded-2xl border border-brand-200 bg-brand-50/70 text-center space-y-3">
-              <div className="inline-flex items-center justify-center gap-1.5 text-brand-700 font-extrabold text-xs uppercase tracking-wider">
+            <div className="p-5 rounded-2xl border border-spice-200 bg-spice-50/75 text-center space-y-3">
+              <div className="inline-flex items-center justify-center gap-1.5 text-spice-700 font-mono font-bold text-xs uppercase tracking-wider">
                 <QrCode className="w-4 h-4" />
                 <span>Pindai QRIS untuk Membayar</span>
               </div>
 
-              <div className="w-44 h-44 sm:w-48 sm:h-48 mx-auto bg-white p-3 rounded-2xl border border-brand-200 shadow-card flex items-center justify-center">
+              <div className="w-44 h-44 sm:w-48 sm:h-48 mx-auto bg-white p-3 rounded-2xl border border-spice-200 shadow-ticket flex items-center justify-center">
                 <img
                   src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=AROMA-MSME-QRIS-MOCK"
                   alt="Kode QRIS Pembayaran AROMA"
@@ -246,108 +246,111 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
               </div>
 
               <div className="space-y-1">
-                <p className="font-extrabold text-charcoal text-base tabular-nums">
-                  Nominal: {formatRupiah(order.total)}
+                <p className="font-mono font-bold text-ink text-base tabular-nums">
+                  {formatRupiah(order.total)}
                 </p>
-                <p className="text-xs font-body text-charcoal-secondary max-w-xs mx-auto leading-relaxed">
+                <p className="text-xs text-ink-secondary max-w-xs mx-auto leading-relaxed">
                   Setelah transfer QRIS berhasil, tunjukkan bukti pembayaran ke kasir untuk konfirmasi.
                 </p>
               </div>
             </div>
           )}
 
-          {/* Cash Payment Instructions */}
+          {/* Cash Payment Block */}
           {order.paymentMethod === 'CASH' && order.paymentStatus === 'PENDING' && !isCancelled && (
-            <div className="p-4 rounded-2xl border border-cream-200 bg-cream-50 flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-white border border-cream-200 flex items-center justify-center text-brand-500 shrink-0">
+            <div className="p-4 rounded-2xl border border-paper-200 bg-paper-50 flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white border border-paper-200 flex items-center justify-center text-spice-500 shrink-0">
                 <Banknote className="w-4 h-4" />
               </div>
               <div className="text-xs space-y-1">
-                <p className="font-bold text-charcoal">Pembayaran Tunai di Kasir</p>
-                <p className="font-body text-charcoal-muted leading-relaxed">
-                  Tunjukkan nomor pesanan <strong className="text-charcoal">{order.orderNumber}</strong> di
-                  meja kasir sebesar{' '}
-                  <strong className="text-charcoal tabular-nums">{formatRupiah(order.total)}</strong>.
+                <p className="font-bold text-ink">Pembayaran Tunai di Kasir</p>
+                <p className="text-ink-secondary leading-relaxed">
+                  Tunjukkan nomor pesanan{' '}
+                  <strong className="font-mono text-ink">{order.orderNumber}</strong> di meja kasir sebesar{' '}
+                  <strong className="font-mono text-ink tabular-nums">
+                    {formatRupiah(order.total)}
+                  </strong>
+                  .
                 </p>
               </div>
             </div>
           )}
 
-          {/* Digital Receipt / Order Summary Card */}
-          <div className="rounded-2xl border border-cream-200 bg-cream-50/50 overflow-hidden">
-            <div className="px-4 py-3 border-b border-cream-200 bg-cream-50 flex items-center justify-between gap-2">
+          {/* Thermal Receipt Card */}
+          <div className="rounded-2xl border border-paper-200 bg-paper-50/50 overflow-hidden">
+            <div className="px-4 py-3 border-b border-paper-200 bg-paper-50 flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Receipt className="w-4 h-4 text-brand-500" />
-                <h4 className="font-extrabold text-xs text-charcoal uppercase tracking-wider">
+                <Receipt className="w-4 h-4 text-ink" />
+                <h4 className="font-mono font-bold text-[11px] text-ink uppercase tracking-wider">
                   {isPaid ? 'Struk Digital Pesanan' : 'Ringkasan Pesanan'}
                 </h4>
               </div>
               <span
-                className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border ${paymentStatusClass}`}
+                className={`font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-md border ${paymentStatusClass}`}
               >
                 {paymentStatusLabel}
               </span>
             </div>
 
             {isPaid && (
-              <div className="px-4 pt-3.5 pb-2 text-center border-b border-dashed border-cream-300 bg-white">
-                <p className="font-extrabold text-xs text-charcoal">AROMA – Ayam Goreng Lengkuas</p>
-                <p className="text-[11px] text-charcoal-muted mt-0.5">
+              <div className="px-4 pt-3.5 pb-2.5 text-center border-b border-dashed border-paper-300 bg-white">
+                <p className="font-display font-bold text-sm text-ink">
+                  AROMA – Ayam Goreng Lengkuas
+                </p>
+                <p className="text-[11px] text-ink-muted mt-0.5">
                   Terima kasih, pembayaran Anda telah terverifikasi.
                 </p>
               </div>
             )}
 
-            {/* Itemized List */}
-            <div className="divide-y divide-cream-200/70 bg-white">
+            <div className="divide-y divide-paper-200/70 bg-white">
               {order.orderDetails.map((detail) => (
                 <div
                   key={detail.id}
                   className="px-4 py-3 flex items-start justify-between gap-3 text-xs"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-charcoal leading-snug">
-                      <span className="font-extrabold tabular-nums">{detail.quantity}×</span>{' '}
+                    <p className="text-ink leading-snug">
+                      <span className="font-mono font-bold tabular-nums">{detail.quantity}×</span>{' '}
                       <span className="font-semibold break-words">{detail.productName}</span>
                     </p>
                     {detail.notes && (
-                      <p className="text-[11px] text-charcoal-muted mt-0.5 break-words">
+                      <p className="text-[11px] text-ink-muted mt-0.5 break-words">
                         Catatan: {detail.notes}
                       </p>
                     )}
                   </div>
-                  <span className="font-bold text-charcoal shrink-0 tabular-nums">
+                  <span className="font-mono font-bold text-ink shrink-0 tabular-nums">
                     {formatRupiah(detail.subtotal)}
                   </span>
                 </div>
               ))}
             </div>
 
-            {/* Metadata & Total */}
-            <div className="p-4 border-t border-dashed border-cream-300 bg-cream-50 space-y-2 text-xs">
+            <div className="p-4 receipt-edge bg-paper-50 space-y-2 text-xs">
               {order.customerName && (
                 <div className="flex justify-between gap-2">
-                  <span className="text-charcoal-muted font-medium">Pemesan</span>
-                  <span className="font-bold text-charcoal text-right">{order.customerName}</span>
+                  <span className="text-ink-muted font-medium">Pemesan</span>
+                  <span className="font-bold text-ink text-right">{order.customerName}</span>
                 </div>
               )}
               <div className="flex justify-between gap-2">
-                <span className="text-charcoal-muted font-medium">Tipe Pesanan</span>
-                <span className="font-bold text-charcoal text-right">
+                <span className="text-ink-muted font-medium">Tipe Pesanan</span>
+                <span className="font-bold text-ink text-right">
                   {order.orderType === 'DINE_IN'
                     ? `Dine In (${order.table?.tableNumber || '-'})`
                     : 'Take Away'}
                 </span>
               </div>
               <div className="flex justify-between gap-2">
-                <span className="text-charcoal-muted font-medium">Metode Pembayaran</span>
-                <span className="font-bold text-charcoal text-right">
+                <span className="text-ink-muted font-medium">Metode Bayar</span>
+                <span className="font-bold text-ink text-right">
                   {order.paymentMethod === 'CASH' ? 'Tunai di Kasir' : order.paymentMethod}
                 </span>
               </div>
-              <div className="pt-2.5 mt-1 border-t border-cream-200 flex items-baseline justify-between">
-                <span className="font-extrabold text-sm text-charcoal">Total Pembayaran</span>
-                <span className="font-extrabold text-base text-brand-500 tabular-nums">
+              <div className="pt-2.5 mt-1 border-t border-paper-200 flex items-baseline justify-between">
+                <span className="font-bold text-sm text-ink">Total Pembayaran</span>
+                <span className="font-mono font-bold text-base text-spice-500 tabular-nums">
                   {formatRupiah(order.total)}
                 </span>
               </div>
@@ -355,12 +358,12 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-4 sm:p-5 border-t border-cream-200 bg-cream-50 shrink-0">
+        {/* Modal Footer */}
+        <div className="p-4 sm:p-5 border-t border-paper-200 bg-paper-50 shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="w-full min-h-[48px] py-3 rounded-xl bg-white border border-cream-200 text-charcoal font-bold text-sm hover:bg-cream-100 active:scale-[0.99] transition-all"
+            className="w-full min-h-[48px] py-3 rounded-xl bg-white border border-paper-200 text-ink font-bold text-sm hover:bg-paper-100 active:scale-[0.99] transition-colors"
           >
             Tutup
           </button>

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -80,7 +81,7 @@ fun NotificationsScreen(
                     text = if (notifications.isEmpty()) {
                         "Tidak ada notifikasi aktif"
                     } else {
-                        "${notifications.size} notifikasi perlu ditindaklanjuti"
+                        "${notifications.size} notifikasi operasional"
                     },
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
@@ -89,6 +90,7 @@ fun NotificationsScreen(
                 Text(
                     text = lastUpdatedAt?.let { "Diperbarui ${formatClock(it)}" }
                         ?: "Memuat notifikasi...",
+                    fontFamily = FontFamily.Monospace,
                     fontSize = 11.sp,
                     color = AromaTextMuted
                 )
@@ -120,7 +122,7 @@ fun NotificationsScreen(
                         CircularProgressIndicator(
                             modifier = Modifier.size(16.dp),
                             strokeWidth = 2.dp,
-                            color = AromaTerracotta
+                            color = AromaCharcoal
                         )
                     } else {
                         Icon(
@@ -144,7 +146,7 @@ fun NotificationsScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(notifications, key = { it.id }) { item ->
                     NotificationCard(
@@ -171,68 +173,87 @@ private fun NotificationCard(
     AromaCard(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        borderColor = if (!notification.isRead) AromaTerracottaBorder else AromaBorder
+        borderColor = if (!notification.isRead) AromaTerracottaBorder else AromaBorder,
+        cornerRadius = 12.dp
     ) {
         Row(
-            modifier = Modifier.padding(14.dp),
-            verticalAlignment = Alignment.Top
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
         ) {
-            Surface(
-                modifier = Modifier.size(40.dp),
-                shape = RoundedCornerShape(12.dp),
-                color = style.background
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = style.icon,
-                        contentDescription = null,
-                        tint = style.tint,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+            if (!notification.isRead) {
+                Box(
+                    modifier = Modifier
+                        .width(3.dp)
+                        .fillMaxHeight()
+                        .background(AromaTerracotta)
+                )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = notification.title,
-                        modifier = Modifier.weight(1f),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = AromaCharcoal,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    if (!notification.isRead) {
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .background(AromaTerracotta, CircleShape)
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(14.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                Surface(
+                    modifier = Modifier.size(38.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    color = style.background
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = style.icon,
+                            contentDescription = null,
+                            tint = style.tint,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(3.dp))
+                Spacer(modifier = Modifier.width(12.dp))
 
-                Text(
-                    text = notification.message,
-                    fontSize = 12.sp,
-                    color = AromaTextSecondary,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = notification.title,
+                            modifier = Modifier.weight(1f),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AromaCharcoal,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        if (!notification.isRead) {
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(7.dp)
+                                    .background(AromaTerracotta, CircleShape)
+                            )
+                        }
+                    }
 
-                Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(3.dp))
 
-                Text(
-                    text = formatNotificationTime(notification.createdAt),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = style.tint
-                )
+                    Text(
+                        text = notification.message,
+                        fontSize = 12.sp,
+                        color = AromaTextSecondary,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = formatNotificationTime(notification.createdAt),
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = style.tint
+                    )
+                }
             }
         }
     }

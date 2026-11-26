@@ -23,6 +23,7 @@ private val LightColorScheme = lightColorScheme(
     background = AromaCream,
     onBackground = AromaCharcoal,
     surface = AromaSurface,
+    surfaceTint = AromaSurface,
     onSurface = AromaCharcoal,
     surfaceVariant = AromaCreamSoft,
     onSurfaceVariant = AromaTextSecondary,

@@ -60,11 +60,12 @@ Customer Web dan Admin Android berbagi sistem desain yang seragam:
 
 | Token | Kode Warna | Penggunaan |
 | :--- | :--- | :--- |
-| **Terracotta (Primary)** | `#C94F1D` | Aksi utama, highlight brand, indikator aktif |
-| **Warm Ivory (Canvas)** | `#FAF8F5` | Latar belakang utama halaman & layar |
-| **Espresso Charcoal (Ink)** | `#2B211D` | Teks utama, judul, elemen kontras tinggi |
-| **Pure White (Surface)** | `#FFFFFF` | Kartu, form input, modal, header, drawer |
-| **Success / Warning / Error** | `#1F7A52` / `#B87314` / `#C43A2F` | Status lunas, menunggu pembayaran, pembatalan & pengeluaran |
+| **Deep Roast Ink** | `#171311` | Teks utama, kontrol aktif, header tiket & ledger |
+| **Lengkuas Vermilion (Primary)** | `#C84319` | Aksi utama, highlight brand, CTA checkout & pos |
+| **Pandan Leaf Green (Success)** | `#14533C` | Tag meja aktif, status lunas, konfirmasi bayar |
+| **Alabaster Paper (Canvas)** | `#FBF9F5` | Latar belakang utama halaman & layar |
+| **Pure White (Surface)** | `#FFFFFF` | Kartu, panel tiket, form input, modal, drawer |
+| **Warning / Error / Info** | `#B4690E` / `#B92D26` / `#1D5A7E` | Menunggu bayar, pembatalan/biaya, antrean dapur |
 
 Detail lengkap sistem desain terdokumentasi pada [DESIGN.md](DESIGN.md).
 

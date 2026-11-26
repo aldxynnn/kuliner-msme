@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -89,14 +90,13 @@ fun ExpensesScreen() {
         ) {
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Summary Card
+            // Executive Dark Outflow Summary Sheet
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                shape = RoundedCornerShape(18.dp),
-                color = AromaSurface,
-                border = BorderStroke(1.dp, AromaErrorBorder)
+                shape = RoundedCornerShape(14.dp),
+                color = AromaCharcoal
             ) {
                 Row(
                     modifier = Modifier
@@ -108,35 +108,38 @@ fun ExpensesScreen() {
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
                             text = "TOTAL PENGELUARAN TERCATAT",
-                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            color = AromaTextMuted,
-                            letterSpacing = 0.6.sp
+                            color = AromaSurface.copy(alpha = 0.68f),
+                            letterSpacing = 0.9.sp
                         )
                         Text(
                             text = formatRupiah(totalExpense),
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = AromaError
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AromaTerracottaLight
                         )
                         Text(
                             text = "${expenses.size} catatan pengeluaran operasional",
                             fontSize = 12.sp,
-                            color = AromaTextSecondary
+                            color = AromaSurface.copy(alpha = 0.72f)
                         )
                     }
 
                     Surface(
                         modifier = Modifier.size(44.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        color = AromaErrorSoft
+                        shape = RoundedCornerShape(10.dp),
+                        color = AromaInkSoft,
+                        border = BorderStroke(1.dp, AromaInkDivider)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 Icons.Default.MoneyOff,
                                 contentDescription = null,
-                                tint = AromaError,
-                                modifier = Modifier.size(22.dp)
+                                tint = AromaTerracottaLight,
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
@@ -157,69 +160,87 @@ fun ExpensesScreen() {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 20.dp, vertical = 4.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(expenses) { exp ->
-                        AromaCard(modifier = Modifier.fillMaxWidth()) {
+                        AromaCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            cornerRadius = 12.dp
+                        ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(14.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .height(IntrinsicSize.Min)
                             ) {
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                                Box(
+                                    modifier = Modifier
+                                        .width(4.dp)
+                                        .fillMaxHeight()
+                                        .background(AromaError)
+                                )
+
+                                Row(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(14.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                        verticalArrangement = Arrangement.spacedBy(5.dp)
                                     ) {
-                                        AromaTag(
-                                            label = exp.category,
-                                            backgroundColor = AromaCreamSoft,
-                                            textColor = AromaCharcoal,
-                                            borderColor = AromaBorder
-                                        )
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            AromaTag(
+                                                label = exp.category,
+                                                backgroundColor = AromaCreamSoft,
+                                                textColor = AromaCharcoal,
+                                                borderColor = AromaBorder
+                                            )
+                                            Text(
+                                                text = exp.date.take(10),
+                                                fontFamily = FontFamily.Monospace,
+                                                fontSize = 11.sp,
+                                                color = AromaTextMuted
+                                            )
+                                        }
+
                                         Text(
-                                            text = exp.date.take(10),
-                                            fontSize = 11.sp,
-                                            color = AromaTextMuted
+                                            text = exp.description,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp,
+                                            color = AromaCharcoal
+                                        )
+
+                                        Text(
+                                            text = formatRupiah(exp.amount),
+                                            fontFamily = FontFamily.Monospace,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 15.sp,
+                                            color = AromaError
                                         )
                                     }
 
-                                    Text(
-                                        text = exp.description,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 14.sp,
-                                        color = AromaCharcoal
-                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
 
-                                    Text(
-                                        text = formatRupiah(exp.amount),
-                                        fontWeight = FontWeight.ExtraBold,
-                                        fontSize = 15.sp,
-                                        color = AromaError
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                Surface(
-                                    onClick = { handleDelete(exp.id) },
-                                    modifier = Modifier.size(38.dp),
-                                    shape = RoundedCornerShape(10.dp),
-                                    color = AromaErrorSoft,
-                                    border = BorderStroke(1.dp, AromaErrorBorder)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Icon(
-                                            Icons.Default.Delete,
-                                            contentDescription = "Hapus",
-                                            tint = AromaError,
-                                            modifier = Modifier.size(16.dp)
-                                        )
+                                    Surface(
+                                        onClick = { handleDelete(exp.id) },
+                                        modifier = Modifier.size(36.dp),
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = AromaErrorSoft,
+                                        border = BorderStroke(1.dp, AromaErrorBorder)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(
+                                                Icons.Default.Delete,
+                                                contentDescription = "Hapus",
+                                                tint = AromaError,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -238,12 +259,12 @@ fun ExpensesScreen() {
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 12.dp)
                 .height(50.dp),
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = AromaTerracotta,
                 contentColor = AromaSurface
             ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
         ) {
             Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(6.dp))
@@ -259,7 +280,7 @@ fun ExpensesScreen() {
         AlertDialog(
             onDismissRequest = { isDialogVisible = false },
             containerColor = AromaSurface,
-            shape = RoundedCornerShape(22.dp),
+            shape = RoundedCornerShape(18.dp),
             title = {
                 Text(
                     text = "Catat Pengeluaran Baru",
@@ -275,7 +296,7 @@ fun ExpensesScreen() {
                         label = { Text("Keterangan Pengeluaran") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = aromaTextFieldColors()
                     )
                     OutlinedTextField(
@@ -285,7 +306,7 @@ fun ExpensesScreen() {
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = aromaTextFieldColors()
                     )
                     OutlinedTextField(
@@ -294,7 +315,7 @@ fun ExpensesScreen() {
                         label = { Text("Kategori (mis. Bahan Baku / Operasional)") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = aromaTextFieldColors()
                     )
                 }
@@ -319,7 +340,7 @@ fun ExpensesScreen() {
                             }
                         }
                     },
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AromaTerracotta)
                 ) {
                     Text("Simpan", fontWeight = FontWeight.Bold)

@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --aroma-terracotta: #C94F1D;
-  --aroma-terracotta-dark: #B04115;
-  --aroma-ivory: #FAF8F5;
-  --aroma-linen: #F4EFE8;
+  --aroma-paper: #FBF9F5;
+  --aroma-stone: #F3EFE8;
   --aroma-surface: #FFFFFF;
-  --aroma-charcoal: #2B211D;
-  --aroma-border: #E8E0D6;
+  --aroma-ink: #171311;
+  --aroma-spice: #C84319;
+  --aroma-pandan: #14533C;
+  --aroma-border: #E6DFD5;
 }
 
 @layer base {
@@ -23,14 +23,18 @@
   body {
     overflow-x: clip;
     -webkit-tap-highlight-color: transparent;
-    background-color: var(--aroma-ivory);
-    color: var(--aroma-charcoal);
+    background-color: var(--aroma-paper);
+    color: var(--aroma-ink);
   }
 }
 
 @layer utilities {
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+
+  .receipt-edge {
+    border-top: 1px dashed #D5CBBF;
   }
 }
 

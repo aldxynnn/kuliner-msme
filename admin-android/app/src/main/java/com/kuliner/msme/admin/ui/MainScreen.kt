@@ -1,5 +1,6 @@
 package com.kuliner.msme.admin.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,6 +26,7 @@ import com.kuliner.msme.admin.data.model.User
 import com.kuliner.msme.admin.notification.NotificationCenter
 import com.kuliner.msme.admin.notification.OrderAlerts
 import com.kuliner.msme.admin.ui.components.CountBadge
+import com.kuliner.msme.admin.ui.components.NotificationBellButton
 import com.kuliner.msme.admin.ui.screens.*
 import com.kuliner.msme.admin.ui.theme.*
 import kotlinx.coroutines.delay
@@ -100,7 +102,16 @@ fun MainScreen(
         Screen.Products
     )
 
+    val topLevelTabRoutes = setOf(
+        Screen.Dashboard.route,
+        Screen.Orders.route,
+        Screen.CashierOrder.route,
+        Screen.Payments.route,
+        Screen.Products.route
+    )
+
     val isDashboard = currentRoute == Screen.Dashboard.route
+    val isTopLevelTab = currentRoute in topLevelTabRoutes
 
     Scaffold(
         containerColor = AromaCream,
@@ -111,47 +122,89 @@ fun MainScreen(
                     shadowElevation = 0.dp
                 ) {
                     Column(modifier = Modifier.statusBarsPadding()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                                .padding(horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            IconButton(
-                                onClick = { currentRoute = Screen.Dashboard.route },
-                                modifier = Modifier.size(48.dp)
+                        if (isTopLevelTab) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(60.dp)
+                                    .padding(start = 20.dp, end = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Kembali",
-                                    tint = AromaCharcoal,
-                                    modifier = Modifier.size(21.dp)
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = when (currentRoute) {
+                                            Screen.Orders.route -> "Antrean Pesanan"
+                                            Screen.CashierOrder.route -> "Terminal Kasir POS"
+                                            Screen.Payments.route -> "Konfirmasi Bayar"
+                                            Screen.Products.route -> "Kelola Katalog Menu"
+                                            else -> "AROMA POS"
+                                        },
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = AromaCharcoal,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        text = when (currentRoute) {
+                                            Screen.Orders.route -> "Pantau status & alur dapur"
+                                            Screen.CashierOrder.route -> "Input pesanan langsung kasir"
+                                            Screen.Payments.route -> "Verifikasi tagihan & riwayat lunas"
+                                            Screen.Products.route -> "Atur stok, harga, foto & urutan"
+                                            else -> "AROMA POS"
+                                        },
+                                        fontSize = 11.sp,
+                                        color = AromaTextMuted,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                NotificationBellButton(
+                                    unreadCount = unreadNotifications,
+                                    onClick = { currentRoute = Screen.Notifications.route }
                                 )
                             }
-                            Spacer(modifier = Modifier.width(2.dp))
-                            Text(
-                                text = when (currentRoute) {
-                                    Screen.Orders.route -> "Pesanan"
-                                    Screen.CashierOrder.route -> "Kasir POS"
-                                    Screen.Payments.route -> "Konfirmasi Pembayaran"
-                                    Screen.Products.route -> "Kelola Menu"
-                                    Screen.Categories.route -> "Kelola Kategori"
-                                    Screen.Tables.route -> "Meja & QR Code"
-                                    Screen.Expenses.route -> "Biaya Operasional"
-                                    Screen.Reports.route -> "Laporan Surplus"
-                                    Screen.Notifications.route -> "Notifikasi"
-                                    Screen.Profile.route -> "Profil & Akun"
-                                    else -> "AROMA POS"
-                                },
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = AromaCharcoal,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
+                        } else {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp)
+                                    .padding(horizontal = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                IconButton(
+                                    onClick = { currentRoute = Screen.Dashboard.route },
+                                    modifier = Modifier.size(48.dp)
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Kembali",
+                                        tint = AromaCharcoal,
+                                        modifier = Modifier.size(21.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(2.dp))
+                                Text(
+                                    text = when (currentRoute) {
+                                        Screen.Categories.route -> "Kelola Kategori"
+                                        Screen.Tables.route -> "Meja & QR Code"
+                                        Screen.Expenses.route -> "Biaya Operasional"
+                                        Screen.Reports.route -> "Laporan Surplus"
+                                        Screen.Notifications.route -> "Pusat Notifikasi"
+                                        Screen.Profile.route -> "Profil & Akun"
+                                        else -> "AROMA POS"
+                                    },
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = AromaCharcoal,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
                         }
-                        HorizontalDivider(color = AromaDivider, thickness = 1.dp)
+                        HorizontalDivider(color = AromaBorder, thickness = 1.dp)
                     }
                 }
             }
@@ -166,13 +219,14 @@ fun MainScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(64.dp)
-                            .padding(horizontal = 4.dp),
+                            .height(68.dp)
+                            .padding(horizontal = 6.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         mainNavItems.forEach { screen ->
                             val isSelected = currentRoute == screen.route
+                            val isCenterPos = screen == Screen.CashierOrder
                             val badgeCount = when (screen.route) {
                                 Screen.Orders.route -> NotificationCenter.unreadForRoute(
                                     notifications,
@@ -185,43 +239,92 @@ fun MainScreen(
                                 else -> 0
                             }
 
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                                    .clickable { currentRoute = screen.route },
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.SpaceBetween
-                            ) {
+                            if (isCenterPos) {
                                 Box(
                                     modifier = Modifier
-                                        .width(28.dp)
-                                        .height(3.dp)
-                                        .clip(RoundedCornerShape(bottomStart = 3.dp, bottomEnd = 3.dp))
-                                        .background(
-                                            if (isSelected) AromaTerracotta else Color.Transparent
-                                        )
-                                )
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
+                                        .weight(1f)
+                                        .fillMaxHeight(),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    NavIconWithBadge(
-                                        icon = screen.icon,
-                                        label = screen.title,
-                                        tint = if (isSelected) AromaTerracotta else AromaTextMuted,
-                                        count = badgeCount
+                                    Surface(
+                                        onClick = { currentRoute = screen.route },
+                                        modifier = Modifier
+                                            .fillMaxWidth(0.88f)
+                                            .height(48.dp),
+                                        shape = RoundedCornerShape(14.dp),
+                                        color = if (isSelected) AromaTerracotta else AromaCharcoal,
+                                        border = if (isSelected) null else BorderStroke(
+                                            1.dp,
+                                            AromaCharcoal
+                                        ),
+                                        shadowElevation = 0.dp
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.fillMaxSize(),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = screen.icon,
+                                                contentDescription = screen.title,
+                                                tint = AromaSurface,
+                                                modifier = Modifier.size(19.dp)
+                                            )
+                                            Spacer(modifier = Modifier.height(1.dp))
+                                            Text(
+                                                text = "POS",
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.ExtraBold,
+                                                color = AromaSurface,
+                                                letterSpacing = 0.6.sp
+                                            )
+                                        }
+                                    }
+                                }
+                            } else {
+                                Column(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                        .clickable { currentRoute = screen.route },
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(22.dp)
+                                            .height(2.5.dp)
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    bottomStart = 3.dp,
+                                                    bottomEnd = 3.dp
+                                                )
+                                            )
+                                            .background(
+                                                if (isSelected) AromaTerracotta else Color.Transparent
+                                            )
                                     )
-                                    Spacer(modifier = Modifier.height(2.dp))
-                                    Text(
-                                        text = screen.title,
-                                        fontSize = 11.sp,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                        color = if (isSelected) AromaTerracotta else AromaTextMuted,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        NavIconWithBadge(
+                                            icon = screen.icon,
+                                            label = screen.title,
+                                            tint = if (isSelected) AromaCharcoal else AromaTextMuted,
+                                            count = badgeCount
+                                        )
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = screen.title,
+                                            fontSize = 11.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (isSelected) AromaCharcoal else AromaTextMuted,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
                                 }
                             }
                         }

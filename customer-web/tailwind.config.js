@@ -7,55 +7,58 @@ export default {
   theme: {
     extend: {
       colors: {
-        brand: {
-          50: '#FFF3EC',
-          100: '#FDE4D6',
-          200: '#F2D5C6',
-          300: '#E8B297',
-          400: '#DE8257',
-          500: '#C94F1D', // Aroma Primary Terracotta (preserved from main)
-          600: '#B04115',
-          700: '#983610',
-          800: '#7C2B0D',
-          900: '#62220A',
+        paper: {
+          50: '#FBF9F5',  // Warm Alabaster Paper canvas
+          100: '#F3EFE8', // Warm Stone tint
+          200: '#E6DFD5', // Warm Sand hairline border
+          300: '#D5CBBF', // Dashed ticket divider
         },
-        cream: {
-          50: '#FAF8F5',  // Warm Ivory canvas
-          100: '#F4EFE8', // Soft linen surface
-          200: '#E8E0D6', // Hairline border & divider
-          300: '#DBD0C3', // Stronger divider
+        ink: {
+          DEFAULT: '#171311', // Deep Roast Ink
+          soft: '#26201D',
+          secondary: '#4E4640',
+          muted: '#7C726B',
+          light: '#A0968E',
         },
-        charcoal: {
-          DEFAULT: '#2B211D', // Warm Espresso Charcoal (preserved from main)
-          secondary: '#635852',
-          muted: '#8C8078',
-          light: '#ABA098',
+        spice: {
+          50: '#FDF1EC',
+          100: '#FADFD4',
+          200: '#F2C9B8',
+          500: '#C84319', // Burnt Lengkuas Vermilion
+          600: '#A93612',
+          700: '#8C2A0C',
+        },
+        pandan: {
+          50: '#EAF5F0',
+          200: '#B9DEC9',
+          500: '#1D6B4F',
+          600: '#14533C', // Pandan Leaf Deep Green
+          700: '#0F402E',
         },
         semantic: {
-          success: '#1F7A52',
-          'success-bg': '#EAF6F0',
-          'success-border': '#C3E6D5',
-          warning: '#B87314',
-          'warning-bg': '#FEF6E6',
-          'warning-border': '#F3DBA6',
-          error: '#C43A2F',
+          success: '#14533C',
+          'success-bg': '#EAF5F0',
+          'success-border': '#B9DEC9',
+          warning: '#B4690E',
+          'warning-bg': '#FEF5E7',
+          'warning-border': '#F2D49B',
+          error: '#B92D26',
           'error-bg': '#FDEEEC',
-          'error-border': '#F4C4BF',
-          info: '#25638A',
-          'info-bg': '#EDF5FA',
-          'info-border': '#C5DDEC',
+          'error-border': '#F3C1BE',
+          info: '#1D5A7E',
+          'info-bg': '#ECF5FA',
+          'info-border': '#BCD9EA',
         },
       },
       fontFamily: {
-        display: ['"Fraunces"', 'Georgia', 'serif'],
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        body: ['Inter', '"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        sans: ['"DM Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       boxShadow: {
-        'card': '0 1px 2px rgba(43, 33, 29, 0.04), 0 4px 12px rgba(43, 33, 29, 0.03)',
-        'card-hover': '0 6px 20px rgba(43, 33, 29, 0.08), 0 2px 6px rgba(201, 79, 29, 0.08)',
-        'dock': '0 10px 28px -6px rgba(201, 79, 29, 0.35), 0 4px 12px -2px rgba(43, 33, 29, 0.12)',
-        'sheet': '0 -8px 28px rgba(43, 33, 29, 0.12)',
+        ticket: '0 8px 30px -12px rgba(23, 19, 17, 0.08)',
+        dock: '0 14px 36px -8px rgba(23, 19, 17, 0.34)',
+        'card-hover': '0 12px 28px -14px rgba(23, 19, 17, 0.14)',
       },
       borderRadius: {
         '2xl': '1rem',

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -185,8 +186,8 @@ fun ProductsScreen() {
 
                 Surface(
                     onClick = { isSortingMode = !isSortingMode },
-                    modifier = Modifier.defaultMinSize(minHeight = 38.dp),
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.defaultMinSize(minHeight = 36.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = if (isSortingMode) AromaCharcoal else AromaSurface,
                     border = if (isSortingMode) null else BorderStroke(1.dp, AromaBorder)
                 ) {
@@ -197,7 +198,7 @@ fun ProductsScreen() {
                         Icon(
                             Icons.Default.SwapVert,
                             contentDescription = "Atur Urutan",
-                            tint = if (isSortingMode) AromaSurface else AromaTerracotta,
+                            tint = if (isSortingMode) AromaSurface else AromaCharcoal,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -205,7 +206,7 @@ fun ProductsScreen() {
                             text = if (isSortingMode) "Selesai" else "Urutkan",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
-                            color = if (isSortingMode) AromaSurface else AromaTerracotta
+                            color = if (isSortingMode) AromaSurface else AromaCharcoal
                         )
                     }
                 }
@@ -218,7 +219,7 @@ fun ProductsScreen() {
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
                         .padding(bottom = 10.dp),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = AromaTerracottaSoft,
                     border = BorderStroke(1.dp, AromaTerracottaBorder)
                 ) {
@@ -230,7 +231,7 @@ fun ProductsScreen() {
                             text = "Gunakan tombol panah naik/turun untuk menata urutan menu di Customer Web.",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
-                            color = AromaTerracottaDark
+                            color = AromaCharcoal
                         )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -245,8 +246,11 @@ fun ProductsScreen() {
                                     .weight(1f)
                                     .height(40.dp),
                                 shape = RoundedCornerShape(10.dp),
-                                border = BorderStroke(1.dp, AromaTerracottaBorder),
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = AromaCharcoal)
+                                border = BorderStroke(1.dp, AromaBorder),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = AromaSurface,
+                                    contentColor = AromaCharcoal
+                                )
                             ) {
                                 Text("Batal", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
@@ -282,7 +286,10 @@ fun ProductsScreen() {
                     itemsIndexed(products) { index, product ->
                         val imageUrl = getProductImageUrl(product.image)
 
-                        AromaCard(modifier = Modifier.fillMaxWidth()) {
+                        AromaCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            cornerRadius = 12.dp
+                        ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -291,8 +298,8 @@ fun ProductsScreen() {
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .size(72.dp)
-                                        .clip(RoundedCornerShape(14.dp))
+                                        .size(74.dp)
+                                        .clip(RoundedCornerShape(10.dp))
                                         .background(AromaCreamSoft),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -325,13 +332,14 @@ fun ProductsScreen() {
                                     ) {
                                         Text(
                                             text = (product.category?.name ?: "Menu").uppercase(),
+                                            fontFamily = FontFamily.Monospace,
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.Bold,
                                             color = AromaTerracotta,
                                             letterSpacing = 0.4.sp
                                         )
                                         Text(
-                                            text = "• ${if (product.isAvailable) "Tersedia" else "Habis"}",
+                                            text = "· ${if (product.isAvailable) "Tersedia" else "Habis"}",
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             color = if (product.isAvailable) AromaSuccess else AromaError
@@ -349,8 +357,9 @@ fun ProductsScreen() {
 
                                     Text(
                                         text = formatRupiah(product.price),
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.ExtraBold,
+                                        fontFamily = FontFamily.Monospace,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
                                         color = AromaCharcoal
                                     )
                                 }
@@ -366,14 +375,14 @@ fun ProductsScreen() {
                                             onClick = { if (index > 0) moveItem(index, -1) },
                                             enabled = index > 0,
                                             modifier = Modifier.size(34.dp),
-                                            shape = RoundedCornerShape(10.dp),
-                                            color = if (index > 0) AromaTerracottaSoft else AromaCreamSoft
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = if (index > 0) AromaCharcoal else AromaCreamSoft
                                         ) {
                                             Box(contentAlignment = Alignment.Center) {
                                                 Icon(
                                                     Icons.Default.ArrowUpward,
                                                     contentDescription = "Naik",
-                                                    tint = if (index > 0) AromaTerracotta else AromaTextMuted,
+                                                    tint = if (index > 0) AromaSurface else AromaTextMuted,
                                                     modifier = Modifier.size(18.dp)
                                                 )
                                             }
@@ -382,14 +391,14 @@ fun ProductsScreen() {
                                             onClick = { if (index < products.size - 1) moveItem(index, 1) },
                                             enabled = index < products.size - 1,
                                             modifier = Modifier.size(34.dp),
-                                            shape = RoundedCornerShape(10.dp),
-                                            color = if (index < products.size - 1) AromaTerracottaSoft else AromaCreamSoft
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = if (index < products.size - 1) AromaCharcoal else AromaCreamSoft
                                         ) {
                                             Box(contentAlignment = Alignment.Center) {
                                                 Icon(
                                                     Icons.Default.ArrowDownward,
                                                     contentDescription = "Turun",
-                                                    tint = if (index < products.size - 1) AromaTerracotta else AromaTextMuted,
+                                                    tint = if (index < products.size - 1) AromaSurface else AromaTextMuted,
                                                     modifier = Modifier.size(18.dp)
                                                 )
                                             }
@@ -405,7 +414,7 @@ fun ProductsScreen() {
                                             onCheckedChange = { handleToggleAvailability(product.id, it) },
                                             colors = SwitchDefaults.colors(
                                                 checkedThumbColor = AromaSurface,
-                                                checkedTrackColor = AromaTerracotta,
+                                                checkedTrackColor = AromaSuccess,
                                                 uncheckedThumbColor = AromaSurface,
                                                 uncheckedTrackColor = AromaBorder,
                                                 uncheckedBorderColor = AromaBorder
@@ -418,7 +427,7 @@ fun ProductsScreen() {
                                                     isDialogVisible = true
                                                 },
                                                 modifier = Modifier.size(34.dp),
-                                                shape = RoundedCornerShape(9.dp),
+                                                shape = RoundedCornerShape(8.dp),
                                                 color = AromaCreamSoft,
                                                 border = BorderStroke(1.dp, AromaBorder)
                                             ) {
@@ -434,7 +443,7 @@ fun ProductsScreen() {
                                             Surface(
                                                 onClick = { handleDeleteProduct(product.id) },
                                                 modifier = Modifier.size(34.dp),
-                                                shape = RoundedCornerShape(9.dp),
+                                                shape = RoundedCornerShape(8.dp),
                                                 color = AromaErrorSoft,
                                                 border = BorderStroke(1.dp, AromaErrorBorder)
                                             ) {
@@ -458,7 +467,7 @@ fun ProductsScreen() {
             }
         }
 
-        // Primary Add Product Button
+        // Primary Add Product CTA
         if (!isSortingMode) {
             Button(
                 onClick = {
@@ -470,12 +479,12 @@ fun ProductsScreen() {
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 12.dp)
                     .height(50.dp),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AromaTerracotta,
                     contentColor = AromaSurface
                 ),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(6.dp))
@@ -546,7 +555,7 @@ fun ProductsScreen() {
         AlertDialog(
             onDismissRequest = { isDialogVisible = false },
             containerColor = AromaSurface,
-            shape = RoundedCornerShape(22.dp),
+            shape = RoundedCornerShape(18.dp),
             title = {
                 Text(
                     text = if (editingProduct != null) "Edit Produk Menu" else "Tambah Menu Baru",
@@ -559,12 +568,11 @@ fun ProductsScreen() {
                     modifier = Modifier.verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Photo Picker Area
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(132.dp)
-                            .clip(RoundedCornerShape(14.dp))
+                            .clip(RoundedCornerShape(12.dp))
                             .clickable(enabled = !isUploadingPhoto) {
                                 photoPickerLauncher.launch("image/*")
                             },
@@ -585,11 +593,11 @@ fun ProductsScreen() {
 
                             if (isUploadingPhoto) {
                                 Surface(
-                                    shape = RoundedCornerShape(12.dp),
+                                    shape = RoundedCornerShape(10.dp),
                                     color = AromaSurface.copy(alpha = 0.9f)
                                 ) {
                                     CircularProgressIndicator(
-                                        color = AromaTerracotta,
+                                        color = AromaCharcoal,
                                         strokeWidth = 2.5.dp,
                                         modifier = Modifier
                                             .padding(12.dp)
@@ -598,12 +606,13 @@ fun ProductsScreen() {
                                 }
                             } else {
                                 Surface(
-                                    shape = RoundedCornerShape(10.dp),
+                                    shape = RoundedCornerShape(8.dp),
                                     color = if (displayUrl != null) {
-                                        AromaCharcoal.copy(alpha = 0.72f)
+                                        AromaCharcoal.copy(alpha = 0.78f)
                                     } else {
-                                        AromaTerracottaSoft
-                                    }
+                                        AromaSurface
+                                    },
+                                    border = if (displayUrl != null) null else BorderStroke(1.dp, AromaBorder)
                                 ) {
                                     Row(
                                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -613,14 +622,14 @@ fun ProductsScreen() {
                                         Icon(
                                             Icons.Default.AddAPhoto,
                                             contentDescription = "Pilih Foto",
-                                            tint = if (displayUrl != null) AromaSurface else AromaTerracotta,
+                                            tint = if (displayUrl != null) AromaSurface else AromaCharcoal,
                                             modifier = Modifier.size(16.dp)
                                         )
                                         Text(
                                             text = if (imageUrl.isBlank()) "Pilih Foto Menu" else "Ganti Foto",
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = if (displayUrl != null) AromaSurface else AromaTerracotta
+                                            color = if (displayUrl != null) AromaSurface else AromaCharcoal
                                         )
                                     }
                                 }
@@ -628,7 +637,6 @@ fun ProductsScreen() {
                         }
                     }
 
-                    // Category Selection
                     Text(
                         text = "Kategori Menu",
                         fontSize = 12.sp,
@@ -656,7 +664,7 @@ fun ProductsScreen() {
                         label = { Text("Nama Menu") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = aromaTextFieldColors()
                     )
                     OutlinedTextField(
@@ -666,7 +674,7 @@ fun ProductsScreen() {
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = aromaTextFieldColors()
                     )
                     OutlinedTextField(
@@ -675,7 +683,7 @@ fun ProductsScreen() {
                         label = { Text("Deskripsi Menu") },
                         maxLines = 3,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = aromaTextFieldColors()
                     )
                 }
@@ -711,7 +719,7 @@ fun ProductsScreen() {
                             }
                         }
                     },
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AromaTerracotta)
                 ) {
                     Text("Simpan", fontWeight = FontWeight.Bold)

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -17,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -104,46 +106,64 @@ fun TablesScreen() {
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(tables) { table ->
-                        AromaCard(modifier = Modifier.fillMaxWidth()) {
+                        AromaCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            cornerRadius = 12.dp
+                        ) {
                             Column(
                                 modifier = Modifier.padding(14.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Surface(
-                                    modifier = Modifier.size(46.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    color = AromaTerracottaSoft
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Icon(
-                                            Icons.Default.QrCode,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(22.dp),
-                                            tint = AromaTerracotta
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(7.dp)
+                                                .background(
+                                                    if (table.isAvailable) AromaSuccess else AromaTextMuted,
+                                                    CircleShape
+                                                )
+                                        )
+                                        Text(
+                                            text = if (table.isAvailable) "AKTIF" else "NONAKTIF",
+                                            fontFamily = FontFamily.Monospace,
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (table.isAvailable) AromaSuccess else AromaTextMuted
                                         )
                                     }
+
+                                    Icon(
+                                        Icons.Default.QrCode,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp),
+                                        tint = AromaCharcoal
+                                    )
                                 }
 
-                                Spacer(modifier = Modifier.height(10.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
 
                                 Text(
                                     text = table.tableNumber,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    fontSize = 15.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
                                     color = AromaCharcoal,
                                     textAlign = TextAlign.Center
                                 )
 
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                AromaTag(
-                                    label = if (table.isAvailable) "Tersedia" else "Tidak Aktif",
-                                    backgroundColor = if (table.isAvailable) AromaSuccessSoft else AromaCreamTrack,
-                                    textColor = if (table.isAvailable) AromaSuccess else AromaTextMuted,
-                                    borderColor = if (table.isAvailable) AromaSuccessBorder else AromaBorder
-                                )
-
                                 Spacer(modifier = Modifier.height(12.dp))
+
+                                AromaDashedDivider()
+
+                                Spacer(modifier = Modifier.height(10.dp))
 
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -154,12 +174,12 @@ fun TablesScreen() {
                                         onClick = { selectedQrTable = table },
                                         modifier = Modifier
                                             .weight(1f)
-                                            .height(38.dp),
-                                        shape = RoundedCornerShape(10.dp),
-                                        border = BorderStroke(1.dp, AromaTerracottaBorder),
+                                            .height(36.dp),
+                                        shape = RoundedCornerShape(8.dp),
+                                        border = BorderStroke(1.dp, AromaCharcoal),
                                         colors = ButtonDefaults.outlinedButtonColors(
-                                            containerColor = AromaTerracottaSoft,
-                                            contentColor = AromaTerracotta
+                                            containerColor = AromaCharcoal,
+                                            contentColor = AromaSurface
                                         ),
                                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
                                     ) {
@@ -168,8 +188,8 @@ fun TablesScreen() {
 
                                     Surface(
                                         onClick = { handleDelete(table.id) },
-                                        modifier = Modifier.size(38.dp),
-                                        shape = RoundedCornerShape(10.dp),
+                                        modifier = Modifier.size(36.dp),
+                                        shape = RoundedCornerShape(8.dp),
                                         color = AromaErrorSoft,
                                         border = BorderStroke(1.dp, AromaErrorBorder)
                                     ) {
@@ -198,12 +218,12 @@ fun TablesScreen() {
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 12.dp)
                 .height(50.dp),
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = AromaTerracotta,
                 contentColor = AromaSurface
             ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
         ) {
             Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(6.dp))
@@ -217,7 +237,7 @@ fun TablesScreen() {
         AlertDialog(
             onDismissRequest = { isDialogVisible = false },
             containerColor = AromaSurface,
-            shape = RoundedCornerShape(22.dp),
+            shape = RoundedCornerShape(18.dp),
             title = {
                 Text(
                     text = "Tambah Meja Baru",
@@ -232,7 +252,7 @@ fun TablesScreen() {
                     label = { Text("Nomor / Nama Meja") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = aromaTextFieldColors()
                 )
             },
@@ -253,7 +273,7 @@ fun TablesScreen() {
                             }
                         }
                     },
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AromaTerracotta)
                 ) {
                     Text("Simpan", fontWeight = FontWeight.Bold)
@@ -273,7 +293,7 @@ fun TablesScreen() {
         AlertDialog(
             onDismissRequest = { selectedQrTable = null },
             containerColor = AromaSurface,
-            shape = RoundedCornerShape(22.dp),
+            shape = RoundedCornerShape(18.dp),
             title = {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -282,22 +302,24 @@ fun TablesScreen() {
                     Surface(
                         modifier = Modifier.size(36.dp),
                         shape = RoundedCornerShape(10.dp),
-                        color = AromaTerracottaSoft
+                        color = AromaCharcoal
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
                                 Icons.Default.QrCode,
                                 contentDescription = null,
-                                tint = AromaTerracotta,
+                                tint = AromaSurface,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
                     }
                     Column {
                         Text(
-                            text = "QR Pemesanan",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = AromaTextMuted
+                            text = "TAUTAN QR PEMESANAN",
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = AromaTerracotta
                         )
                         Text(
                             text = selectedQrTable!!.tableNumber,
@@ -319,12 +341,13 @@ fun TablesScreen() {
                     )
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         color = AromaCreamSoft,
                         border = BorderStroke(1.dp, AromaBorder)
                     ) {
                         Text(
                             text = formattedQrUrl,
+                            fontFamily = FontFamily.Monospace,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = AromaTerracotta,
@@ -336,8 +359,8 @@ fun TablesScreen() {
             confirmButton = {
                 Button(
                     onClick = { selectedQrTable = null },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = AromaTerracotta)
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AromaCharcoal)
                 ) {
                     Text("Tutup", fontWeight = FontWeight.Bold)
                 }

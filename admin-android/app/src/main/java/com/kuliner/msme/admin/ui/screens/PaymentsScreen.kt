@@ -14,8 +14,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -92,7 +92,7 @@ fun PaymentsScreen() {
             .fillMaxSize()
             .background(AromaCream)
     ) {
-        // Segmented Tabs + Refresh Action
+        // Unified Commercial Segmented Tabs + Refresh Action
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -100,68 +100,20 @@ fun PaymentsScreen() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Surface(
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(12.dp),
-                color = AromaCreamTrack,
-                border = BorderStroke(1.dp, AromaBorder)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    val isUnpaid = selectedTab == 0
-                    Surface(
-                        onClick = { selectedTab = 0 },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(38.dp),
-                        shape = RoundedCornerShape(9.dp),
-                        color = if (isUnpaid) AromaSurface else Color.Transparent,
-                        shadowElevation = if (isUnpaid) 1.dp else 0.dp
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = "Menunggu Bayar",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isUnpaid) AromaTerracotta else AromaTextSecondary,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-
-                    val isHistory = selectedTab == 1
-                    Surface(
-                        onClick = { selectedTab = 1 },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(38.dp),
-                        shape = RoundedCornerShape(9.dp),
-                        color = if (isHistory) AromaSurface else Color.Transparent,
-                        shadowElevation = if (isHistory) 1.dp else 0.dp
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = "Riwayat Lunas",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isHistory) AromaTerracotta else AromaTextSecondary,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                }
-            }
+            AromaSegmentedControl(
+                options = listOf(
+                    "Menunggu Bayar" to null,
+                    "Riwayat Lunas" to null
+                ),
+                selectedIndex = selectedTab,
+                onSelect = { selectedTab = it },
+                modifier = Modifier.weight(1f)
+            )
 
             Surface(
                 onClick = { loadData() },
-                modifier = Modifier.size(46.dp),
-                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.size(44.dp),
+                shape = RoundedCornerShape(10.dp),
                 color = AromaSurface,
                 border = BorderStroke(1.dp, AromaBorder)
             ) {
@@ -203,104 +155,125 @@ fun PaymentsScreen() {
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(unpaidOrders) { order ->
-                        AromaCard(modifier = Modifier.fillMaxWidth()) {
-                            Column(
-                                modifier = Modifier.padding(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                        AromaCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            cornerRadius = 12.dp
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(IntrinsicSize.Min)
                             ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = order.orderNumber,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        fontSize = 15.sp,
-                                        color = AromaCharcoal,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                        AromaTag(
-                                            label = order.paymentMethod,
-                                            backgroundColor = AromaTerracottaSoft,
-                                            textColor = AromaTerracotta,
-                                            borderColor = AromaTerracottaBorder
-                                        )
-                                        AromaStatusBadge(visual = paymentStatusVisual("PENDING"))
-                                    }
-                                }
-
-                                Text(
-                                    text = "${order.customerName ?: "Pelanggan"} • ${
-                                        if (order.orderType == "DINE_IN") {
-                                            "Dine In (${order.table?.tableNumber ?: "-"})"
-                                        } else {
-                                            "Take Away"
-                                        }
-                                    }",
-                                    fontSize = 12.sp,
-                                    color = AromaTextMuted
+                                // Left Amber Verification Rail
+                                Box(
+                                    modifier = Modifier
+                                        .width(4.dp)
+                                        .fillMaxHeight()
+                                        .background(AromaWarning)
                                 )
 
-                                Text(
-                                    text = order.orderDetails.joinToString(", ") { "${it.quantity}× ${it.productName}" },
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = AromaCharcoal,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-
-                                HorizontalDivider(color = AromaDivider, thickness = 1.dp)
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                                Column(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(14.dp),
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
                                 ) {
-                                    Column(modifier = Modifier.weight(1f)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
                                         Text(
-                                            text = "Total Tagihan",
-                                            fontSize = 11.sp,
-                                            color = AromaTextMuted
-                                        )
-                                        Text(
-                                            text = formatRupiah(order.total),
-                                            fontWeight = FontWeight.ExtraBold,
-                                            fontSize = 16.sp,
+                                            text = order.orderNumber,
+                                            fontFamily = FontFamily.Monospace,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp,
                                             color = AromaCharcoal,
                                             maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.weight(1f)
                                         )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                            AromaTag(
+                                                label = order.paymentMethod,
+                                                backgroundColor = AromaTerracottaSoft,
+                                                textColor = AromaTerracotta,
+                                                borderColor = AromaTerracottaBorder
+                                            )
+                                            AromaStatusBadge(visual = paymentStatusVisual("PENDING"))
+                                        }
                                     }
 
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "${order.customerName ?: "Pelanggan"} · ${
+                                            if (order.orderType == "DINE_IN") {
+                                                "Dine In (${order.table?.tableNumber ?: "-"})"
+                                            } else {
+                                                "Take Away"
+                                            }
+                                        }",
+                                        fontSize = 12.sp,
+                                        color = AromaTextMuted
+                                    )
 
-                                    Button(
-                                        onClick = { handleConfirmPayment(order.id) },
-                                        modifier = Modifier.height(44.dp),
-                                        shape = RoundedCornerShape(12.dp),
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = AromaTerracotta,
-                                            contentColor = AromaSurface
-                                        ),
-                                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+                                    Text(
+                                        text = order.orderDetails.joinToString(", ") { "${it.quantity}× ${it.productName}" },
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = AromaCharcoal,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+
+                                    AromaDashedDivider()
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(
-                                            Icons.Default.CheckCircle,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(
-                                            text = "Konfirmasi Lunas",
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = "Total Tagihan",
+                                                fontSize = 11.sp,
+                                                color = AromaTextMuted
+                                            )
+                                            Text(
+                                                text = formatRupiah(order.total),
+                                                fontFamily = FontFamily.Monospace,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 16.sp,
+                                                color = AromaCharcoal,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+
+                                        Spacer(modifier = Modifier.width(8.dp))
+
+                                        Button(
+                                            onClick = { handleConfirmPayment(order.id) },
+                                            modifier = Modifier.height(42.dp),
+                                            shape = RoundedCornerShape(10.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = AromaSuccess,
+                                                contentColor = AromaSurface
+                                            ),
+                                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+                                        ) {
+                                            Icon(
+                                                Icons.Default.CheckCircle,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = "Konfirmasi Lunas",
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -322,51 +295,71 @@ fun PaymentsScreen() {
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(paymentHistory) { payment ->
-                        AromaCard(modifier = Modifier.fillMaxWidth()) {
-                            Column(
-                                modifier = Modifier.padding(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                        AromaCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            cornerRadius = 12.dp
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(IntrinsicSize.Min)
                             ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = payment.order?.orderNumber ?: "ORDER",
-                                        fontWeight = FontWeight.ExtraBold,
-                                        fontSize = 15.sp,
-                                        color = AromaCharcoal
-                                    )
-                                    AromaStatusBadge(visual = paymentStatusVisual("PAID"))
-                                }
-
-                                Text(
-                                    text = "Metode ${payment.paymentMethod} • Diverifikasi oleh ${
-                                        friendlyUserName(payment.confirmedByUser?.name, fallback = "Kasir")
-                                    }",
-                                    fontSize = 12.sp,
-                                    color = AromaTextMuted
+                                Box(
+                                    modifier = Modifier
+                                        .width(4.dp)
+                                        .fillMaxHeight()
+                                        .background(AromaSuccess)
                                 )
 
-                                HorizontalDivider(color = AromaDivider, thickness = 1.dp)
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                                Column(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(14.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = payment.order?.orderNumber ?: "ORDER",
+                                            fontFamily = FontFamily.Monospace,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp,
+                                            color = AromaCharcoal
+                                        )
+                                        AromaStatusBadge(visual = paymentStatusVisual("PAID"))
+                                    }
+
                                     Text(
-                                        text = "Nominal Diterima",
-                                        fontSize = 11.sp,
+                                        text = "Metode ${payment.paymentMethod} · Diverifikasi oleh ${
+                                            friendlyUserName(payment.confirmedByUser?.name, fallback = "Kasir")
+                                        }",
+                                        fontSize = 12.sp,
                                         color = AromaTextMuted
                                     )
-                                    Text(
-                                        text = formatRupiah(payment.amount),
-                                        fontWeight = FontWeight.ExtraBold,
-                                        fontSize = 16.sp,
-                                        color = AromaSuccess
-                                    )
+
+                                    AromaDashedDivider()
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Nominal Diterima",
+                                            fontSize = 11.sp,
+                                            color = AromaTextMuted
+                                        )
+                                        Text(
+                                            text = formatRupiah(payment.amount),
+                                            fontFamily = FontFamily.Monospace,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 16.sp,
+                                            color = AromaSuccess
+                                        )
+                                    }
                                 }
                             }
                         }

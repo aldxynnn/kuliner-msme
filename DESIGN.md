@@ -6,9 +6,9 @@ Panduan sistem desain resmi **AROMA POS** (*Ayam Goreng Lengkuas Aroma*) yang di
 
 ## 1. Arah Visual & Kepribadian Brand
 
-- **Modern & Matang:** Tampilan setara produk POS komersial siap pakai, bersih, dan terstruktur.
-- **Warm Culinary Character:** Nuansa hangat rempah Nusantara yang menggugah selera tanpa dekorasi berlebihan.
-- **Clarity First:** Hierarki informasi jelas, status pesanan & pembayaran mudah dibedakan dalam sekilas pandang, serta nyaman digunakan dalam operasional kasir maupun pemesanan pelanggan lewat ponsel.
+- **Contemporary Nusantara Atelier & Commercial POS:** Identitas desain arsitektural bertema *Architectural Spice & Paper* yang memadukan keterbacaan POS komersial modern dengan kehangatan rempah Nusantara.
+- **Tactile Paper & Crisp Hairlines:** Permukaan putih bersih dan *Warm Alabaster Paper* (`#FBF9F5`) dipisahkan garis tipis `1px/1dp` *Warm Sand* (`#E6DFD5`), ditopang blok kontras **Deep Roast Ink** (`#171311`) untuk header tiket, ledger omzet, dan kontrol aktif.
+- **Clarity First:** Hierarki informasi cepat dipindai, kode pesanan dan nominal harga memakai angka monospace (`tabular-nums`), dan setiap layar menampilkan status operasional secara jelas.
 
 ---
 
@@ -18,34 +18,33 @@ Panduan sistem desain resmi **AROMA POS** (*Ayam Goreng Lengkuas Aroma*) yang di
 
 | Token | Hex | Web (Tailwind) | Android (Compose) | Fungsi |
 | :--- | :--- | :--- | :--- | :--- |
-| **Terracotta** | `#C94F1D` | `brand-500` | `AromaTerracotta` | Warna primer, tombol CTA utama, indikator aktif |
-| **Terracotta Hover / Dark** | `#B04115` / `#A83E14` / `#983610` | `brand-600` / `brand-700` | `AromaTerracottaDark` | State hover/pressed & aksen teks kontras |
-| **Terracotta Soft** | `#FFF3EC` | `brand-50` | `AromaTerracottaSoft` | Latar chip aktif, container ikon, highlight halus |
-| **Terracotta Border** | `#F2D5C6` | `brand-200` | `AromaTerracottaBorder` | Border elemen terpilih & badge brand |
-| **Warm Ivory (Canvas)** | `#FAF8F5` | `cream-50` | `AromaCream` | Kanvas utama halaman/layar terang |
-| **Soft Linen** | `#F4EFE8` / `#EFE9E0` | `cream-100` | `AromaCreamSoft` / `AromaCreamTrack` | Latar inset input, thumbnail placeholder, track kontrol tersegmentasi |
-| **Warm Hairline** | `#E8E0D6` | `cream-200` | `AromaBorder` | Hairline border kartu, pembatas list, pemisah antar bagian |
-| **White Surface** | `#FFFFFF` | `white` | `AromaSurface` | Permukaan kartu, header, modal, drawer, navigation bar |
-| **Espresso Charcoal** | `#2B211D` | `charcoal` | `AromaCharcoal` | Teks utama dan heading berkontras tinggi |
-| **Charcoal Secondary** | `#635852` | `charcoal-secondary` | `AromaTextSecondary` | Teks deskripsi & label sekunder |
-| **Charcoal Muted** | `#8C8078` | `charcoal-muted` | `AromaTextMuted` | Caption, timestamp, placeholder |
+| **Deep Roast Ink** | `#171311` | `ink` | `AromaCharcoal` | Teks utama, kontrol aktif, header tiket pesanan, ledger eksekutif |
+| **Lengkuas Vermilion** | `#C84319` | `spice-500` | `AromaTerracotta` | Aksi primer checkout/tambah, indikator aktif, tombol CTA utama |
+| **Vermilion Hover / Dark** | `#A93612` / `#8C2A0C` | `spice-600` / `spice-700` | `AromaTerracottaDark` | State hover/pressed & aksen teks kontras |
+| **Vermilion Soft** | `#FDF1EC` | `spice-50` | `AromaTerracottaSoft` | Highlight halus, banner status dimasak, tag kategori |
+| **Vermilion Border** | `#F2C9B8` | `spice-200` | `AromaTerracottaBorder` | Border elemen terpilih & badge |
+| **Pandan Leaf Green** | `#14533C` | `pandan-600` | `AromaSuccess` | Badge meja aktif, status lunas/siap saji, switch tersedia, tombol konfirmasi lunas |
+| **Alabaster Paper** | `#FBF9F5` | `paper-50` | `AromaCream` | Kanvas utama halaman & layar |
+| **Warm Stone Tint** | `#F3EFE8` / `#EBE5DC` | `paper-100` | `AromaCreamSoft` / `AromaCreamTrack` | Latar inset input, placeholder thumbnail, track segmented control |
+| **Warm Sand Hairline** | `#E6DFD5` | `paper-200` | `AromaBorder` | Hairline border kartu & pembatas antar bagian (`#D5CBBF` untuk garis putus-putus tiket) |
+| **White Surface** | `#FFFFFF` | `white` | `AromaSurface` | Permukaan kartu, panel tiket, header, modal, bottom bar |
+| **Ink Secondary / Muted** | `#4E4640` / `#7C726B` | `ink-secondary` / `ink-muted` | `AromaTextSecondary` / `AromaTextMuted` | Deskripsi produk, metadata, timestamp, placeholder |
 
 ### Warna Semantik (Status & Feedback)
 
 | Status | Teks / Aksen | Latar Halus | Border | Penggunaan |
 | :--- | :--- | :--- | :--- | :--- |
-| **Success** | `#1F7A52` | `#E9F7F0` | `#BCE3CE` | Pembayaran `LUNAS`, `Siap Disajikan`, omzet, toast sukses |
-| **Warning** | `#B87314` | `#FEF4E6` | `#F2D6A2` | `Belum Bayar` / `MENUNGGU_PEMBAYARAN`, status live pesanan |
-| **Error** | `#C43A2F` | `#FCEEEC` | `#F3BEB9` | `DIBATALKAN`, pengeluaran, validasi error, tombol hapus/keluar |
-| **Info** | `#25638A` | `#EAF3F9` | `#BBD8EA` | `Masuk Antrean` (`MENUNGGU_DIPROSES`) |
+| **Success (Pandan)** | `#14533C` | `#EAF5F0` | `#B9DEC9` | Pembayaran `LUNAS`, `Siap Disajikan`, badge meja aktif, toast sukses |
+| **Warning (Turmeric)** | `#B4690E` | `#FEF5E7` | `#F2D49B` | `Belum Bayar` / `MENUNGGU_PEMBAYARAN`, notifikasi pesanan masuk |
+| **Error (Crimson)** | `#B92D26` | `#FDEEEC` | `#F3C1BE` | `DIBATALKAN`, pengeluaran, validasi error, tombol hapus/keluar |
+| **Info (Slate)** | `#1D5A7E` | `#ECF5FA` | `#BCD9EA` | `Masuk Antrean` (`MENUNGGU_DIPROSES`) |
 
 ---
 
 ## 3. Tipografi
 
-- **Customer Web:** `Fraunces` (`font-display` untuk judul editorial, nama modal, dan identitas masthead), `Plus Jakarta Sans` (`font-sans` untuk UI, label, tombol, harga), dan `Inter` (`font-body` untuk deskripsi panjang), dengan `tabular-nums` untuk nominal harga dan kuantitas.
-- **Admin Android:** Skala tipografi Material 3 terdefinisi pada `ui/theme/Type.kt` (`headlineMedium` 26sp, `headlineSmall` 22sp, `titleLarge` 19sp, `titleMedium` 16sp, `titleSmall` 14sp, `bodyLarge` 15sp, `bodyMedium` 13sp, `bodySmall` 12sp, `labelLarge` 14sp, `labelMedium` 12sp, `labelSmall` 11sp).
-- Menghindari judul yang terlalu besar atau penggunaan bobot super-tebal secara berlebihan pada label kecil.
+- **Customer Web:** `Playfair Display` (`font-display` untuk judul editorial, wordmark brand, dan nama hidangan modal), `DM Sans` (`font-sans` untuk UI, deskripsi, tombol), dan `JetBrains Mono` (`font-mono` untuk nomor pesanan, kode meja, metadata struk, dan nominal harga `tabular-nums`).
+- **Admin Android:** Skala tipografi Material 3 pada `ui/theme/Type.kt` yang memadukan `FontFamily.SansSerif` untuk keterbacaan UI, `AromaBrandSerifStyle` (`FontFamily.Serif`) untuk wordmark `"AROMA"` dan tajuk toko pada struk, serta `FontFamily.Monospace` untuk kode tiket (`ORD-...`), angka KPI, daftar nomor meja, dan nominal transaksi.
 
 ---
 
@@ -53,33 +52,33 @@ Panduan sistem desain resmi **AROMA POS** (*Ayam Goreng Lengkuas Aroma*) yang di
 
 - **Grid Spasi:** Kelipatan 4px / 4dp (`8`, `12`, `16`, `20`, `24`).
 - **Border Radius Konsisten:**
-  - Badge / Tag kecil: `8dp` / `rounded-lg`
-  - Tombol, input, filter pill: `12dp–14dp` / `rounded-xl`
-  - Kartu utama & container: `14dp–20dp` (`AromaCard` default `14.dp`) / `rounded-2xl`
-  - Modal / Bottom Sheet: `22dp–24dp` / `rounded-3xl`
-- **Elevasi & Border:** Mengutamakan permukaan putih terang dengan *hairline border* hangat (`1dp` `AromaBorder` / `border-cream-200`) di atas kanvas *Warm Ivory* (`#FAF8F5`), meminimalkan bayangan tebal dan menghindari gradient dekoratif serta blok warna gelap berlebihan.
-- **Touch Target:** Minimal `40dp–48dp` pada tombol navigasi, tombol aksi utama (`48dp–52dp`), serta stepper kuantitas yang nyaman disentuh.
+  - Badge / Tag & Filter Pill: `6dp–8dp` / `rounded-md` – `rounded-lg`
+  - Tombol & Kontrol Tersegmentasi: `10dp–12dp` / `rounded-xl` atau `rounded-full`
+  - Kartu utama & Panel Tiket: `12dp–16dp` (`AromaCard` default `12.dp`) / `rounded-2xl`
+  - Modal / Bottom Sheet: `18dp–24dp` / `rounded-3xl`
+- **Elevasi & Border:** Mengutamakan komposisi datar dengan *hairline border* `1dp/1px` dan `surfaceTint = AromaSurface` agar dialog maupun kartu tetap bersih di atas kanvas *Alabaster Paper* (`#FBF9F5`).
+- **Touch Target:** Minimal `40dp–48dp` pada navigasi utama, `48dp–54dp` pada CTA transaksi utama, serta kontrol kuantitas yang ergonomis.
 
 ---
 
 ## 5. Komponen Standar
 
 ### Customer Web (`customer-web/src/components/`)
-- `Header.tsx`: Sticky header putih bersih dengan identitas brand, tombol status pesanan live, badge meja QR, dan *segmented switcher* Dine In / Take Away berlatar linen `#F4EFE8`.
-- `CategoryBar.tsx`: Bar navigasi kategori *sticky* berlatar putih dengan garis bawah aktif terakota dan jumlah item per kategori.
-- `HeroSection.tsx`: Masthead kuliner editorial berlatar putih terang dengan tipografi `Fraunces` dan pill info ringkas (`100% Rempah Asli`, `Disajikan Hangat`, `Serang, Banten`).
-- `ProductCard.tsx`: Tata letak responsif — kartu horizontal ringkas berthumbnail kanan pada layar ponsel (`< 640px`) dan grid vertikal 2–3 kolom berfoto dominan 4:3 pada tablet/desktop.
-- `ProductDetailModal.tsx`: Bottom sheet di mobile / dialog terpusat di desktop dengan stepper kuantitas besar dan kolom catatan.
-- `CartDrawer.tsx`: Slide-over checkout drawer dengan thumbnail item, subtotal per baris, konfirmasi meja, dan pilihan metode pembayaran.
-- `OrderTrackingModal.tsx`: Indikator progres pesanan 5 langkah, kartu QRIS / instruksi tunai, tombol tutup outlined yang nyaman disentuh, dan ringkasan struk digital.
+- `Header.tsx`: Sticky bar arsitektural `64px` berlatar `paper-50/95` dengan wordmark `Playfair Display`, pemisah vertikal tipis, mode switcher *pill* (`Dine In` | `Take Away`) bertombol aktif `Deep Roast Ink`, status pesanan live, dan tag meja Pandan Green.
+- `CategoryBar.tsx`: Tab kategori *sticky* berbaris tunggal dengan garis bawah aktif `border-ink` dan superscript jumlah menu `font-mono`.
+- `HeroSection.tsx`: Etalase dua panel asimetris (*Editorial Copy Panel* di kiri + *Live Signature Menu Showcase* bergambar foto menu nyata dari backend di kanan, yang dapat diklik untuk membuka detail menu).
+- `ProductCard.tsx`: Kartu galeri editorial — baris horizontal berfoto kanan dengan pill `+ Tambah` / `✓ N×` di atas thumbnail pada mobile (`< sm`), serta kartu vertikal foto `4:3` berkontras tinggi pada tablet/desktop (`sm+`).
+- `ProductDetailModal.tsx`: Bottom sheet / dialog detail menu dengan foto penuh, catatan dapur, pemilih kuantitas bulat, dan CTA gelap `#171311`.
+- `CartDrawer.tsx`: Menyediakan **`CartOrderTicketPanel`** (panel tiket pesanan persisten di sisi kanan layar desktop `lg+` lengkap dengan garis putus-putus struk) dan **`CartDrawer`** (drawer geser untuk layar mobile/tablet) menggunakan logika checkout tunggal.
+- `OrderTrackingModal.tsx`: Pelacak tiket pesanan dengan header *Deep Roast* (`LIVE TRACKING`), progres 5 langkah Pandan/Vermilion, blok QRIS/Tunai, dan rincian struk digital.
 
 ### Admin Android (`admin-android/.../ui/`)
-- `ui/theme/Color.kt`, `Type.kt`, `Theme.kt`: Token warna terang hangat, tipografi, dan konfigurasi Material 3 + status bar.
-- `ui/components/AromaComponents.kt`: Komponen bersama (`AromaCard`, `AromaStatusBadge`, `AromaTag`, `AromaFilterPill`, `AromaSectionHeader`, `AromaLoadingState`, `AromaEmptyState`, `AromaFeedbackBanner`, `aromaTextFieldColors`, `formatRupiah`).
+- `ui/theme/Color.kt`, `Type.kt`, `Theme.kt`: Palet `Deep Roast` + `Alabaster Paper` + `Vermilion` + `Pandan Green`, tipografi Serif/Sans/Monospace, serta `surfaceTint = AromaSurface`.
+- `ui/components/AromaComponents.kt`: Komponen bersama (`AromaCard`, `AromaStatusBadge`, `AromaTag`, `AromaFilterPill`, `AromaSegmentedControl`, `AromaDashedDivider`, `AromaSectionHeader`, `AromaLoadingState`, `AromaEmptyState`, `AromaFeedbackBanner`, `aromaTextFieldColors`, `formatRupiah`).
 - `ui/components/NotificationComponents.kt`: `CountBadge` dan `NotificationBellButton`.
-- `ui/MainScreen.kt`: Top bar putih bersih `56.dp` dan bottom navigation bar datar `64.dp` (5 tab berlabel lengkap: `Beranda`, `Pesanan`, `POS`, `Bayar`, `Menu`) dengan indikator garis terakota di tepi atas.
-- `ui/screens/DashboardScreen.kt`, `ReportsScreen.kt`, `ProfileScreen.kt`: Lembaran kartu putih beraksen garis terakota `3.dp` di sisi atas dan panel menu terkelompok dengan `HorizontalDivider` sehingga bersih dan bebas kotak berlebihan.
-- `ui/screens/CashierOrderScreen.kt`, `PaymentsScreen.kt`: Kontrol tersegmentasi putih di atas track linen `#EFE9E0` serta bar ringkasan keranjang POS terakota `#C94F1D`.
+- `ui/MainScreen.kt`: Top bar kontekstual (header top-level berlonceng notifikasi tanpa panah kembali berlebih, dan header tombol kembali pada sub-layar) serta bottom bar `68.dp` dengan **pill terminal `POS` menonjol di tengah**.
+- `ui/screens/LoginScreen.kt`, `DashboardScreen.kt`, `ReportsScreen.kt`, `ExpensesScreen.kt`, `ProfileScreen.kt`: Blok ledger *Deep Roast Ink* (`#171311`), strip KPI gabungan *Pesanan Aktif | Belum Bayar*, bilah proporsi omzet vs pengeluaran, serta direktori manajemen usaha bernomor indeks monospace (`01`–`04`).
+- `ui/screens/OrdersScreen.kt`, `PaymentsScreen.kt`, `CashierOrderScreen.kt`, `ProductsScreen.kt`, `CategoriesScreen.kt`, `TablesScreen.kt`, `NotificationsScreen.kt`, `ReceiptDialog.kt`: Tiket dapur bergaris status kiri vertikal, *checkout bar* *Deep Roast* di kasir POS, verifikasi bayar Pandan Green, kartu meja QR monospace, dan dialog struk termal.
 
 ---
 

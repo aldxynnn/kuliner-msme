@@ -65,7 +65,7 @@ fun ReportsScreen() {
             .padding(horizontal = 20.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Segmented Period Selector + Refresh
+        // Bright Segmented Period Selector + Refresh
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -73,7 +73,7 @@ fun ReportsScreen() {
         ) {
             Surface(
                 modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 color = AromaCreamTrack,
                 border = BorderStroke(1.dp, AromaBorder)
             ) {
@@ -88,16 +88,17 @@ fun ReportsScreen() {
                         onClick = { period = "daily" },
                         modifier = Modifier
                             .weight(1f)
-                            .height(40.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = if (isDaily) AromaTerracotta else Color.Transparent
+                            .height(38.dp),
+                        shape = RoundedCornerShape(9.dp),
+                        color = if (isDaily) AromaSurface else Color.Transparent,
+                        shadowElevation = if (isDaily) 1.dp else 0.dp
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
                                 text = "Harian",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp,
-                                color = if (isDaily) AromaSurface else AromaCharcoal
+                                color = if (isDaily) AromaTerracotta else AromaTextSecondary
                             )
                         }
                     }
@@ -107,16 +108,17 @@ fun ReportsScreen() {
                         onClick = { period = "monthly" },
                         modifier = Modifier
                             .weight(1f)
-                            .height(40.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = if (isMonthly) AromaTerracotta else Color.Transparent
+                            .height(38.dp),
+                        shape = RoundedCornerShape(9.dp),
+                        color = if (isMonthly) AromaSurface else Color.Transparent,
+                        shadowElevation = if (isMonthly) 1.dp else 0.dp
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
                                 text = "Bulanan",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp,
-                                color = if (isMonthly) AromaSurface else AromaCharcoal
+                                color = if (isMonthly) AromaTerracotta else AromaTextSecondary
                             )
                         }
                     }
@@ -159,142 +161,163 @@ fun ReportsScreen() {
         } else {
             val r = report!!
             val isNegative = r.operatingSurplus < 0
+            val accentColor = if (isNegative) AromaError else AromaSuccess
 
-            // Operating Surplus Hero Panel (Solid Brand / Semantic Color)
-            Surface(
+            // Bright White Financial Statement Sheet
+            AromaCard(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                color = if (isNegative) AromaError else AromaTerracotta
+                cornerRadius = 16.dp
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Text(
-                        text = "SURPLUS OPERASIONAL • ${if (r.period == "daily") "HARI INI" else "BULAN INI"}",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = AromaSurface.copy(alpha = 0.85f),
-                        letterSpacing = 0.7.sp
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(3.dp)
+                            .background(if (isNegative) AromaError else AromaTerracotta)
                     )
 
-                    Text(
-                        text = formatRupiah(r.operatingSurplus),
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = (-0.5).sp,
-                        color = AromaSurface
-                    )
-
-                    HorizontalDivider(color = AromaSurface.copy(alpha = 0.18f), thickness = 1.dp)
-
-                    Text(
-                        text = r.note,
-                        fontSize = 12.sp,
-                        color = AromaSurface.copy(alpha = 0.92f),
-                        lineHeight = 18.sp
-                    )
-                }
-            }
-
-            // Breakdown Cards (Revenue vs Expenses)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                AromaCard(modifier = Modifier.weight(1f)) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(18.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Surface(
-                            modifier = Modifier.size(34.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            color = AromaSuccessSoft
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.TrendingUp,
-                                    contentDescription = null,
-                                    tint = AromaSuccess,
-                                    modifier = Modifier.size(18.dp)
+                            Text(
+                                text = "SURPLUS OPERASIONAL",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = AromaTerracotta,
+                                letterSpacing = 0.7.sp
+                            )
+                            AromaTag(
+                                label = if (r.period == "daily") "Hari Ini" else "Bulan Ini",
+                                backgroundColor = AromaCreamSoft,
+                                textColor = AromaCharcoal,
+                                borderColor = AromaBorder
+                            )
+                        }
+
+                        Text(
+                            text = formatRupiah(r.operatingSurplus),
+                            fontSize = 30.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = (-0.5).sp,
+                            color = accentColor
+                        )
+
+                        Text(
+                            text = r.note,
+                            fontSize = 12.sp,
+                            color = AromaTextSecondary,
+                            lineHeight = 18.sp
+                        )
+
+                        HorizontalDivider(color = AromaDivider, thickness = 1.dp)
+
+                        // Inline Revenue vs Expenses comparison
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(3.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.TrendingUp,
+                                        contentDescription = null,
+                                        tint = AromaSuccess,
+                                        modifier = Modifier.size(15.dp)
+                                    )
+                                    Text(
+                                        text = "Omzet Lunas",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = AromaTextMuted
+                                    )
+                                }
+                                Text(
+                                    text = formatRupiah(r.totalRevenue),
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 16.sp,
+                                    color = AromaCharcoal,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = "${r.transactionCount} transaksi",
+                                    fontSize = 11.sp,
+                                    color = AromaTextSecondary
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .width(1.dp)
+                                    .height(54.dp)
+                                    .background(AromaDivider)
+                            )
+
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(3.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.TrendingDown,
+                                        contentDescription = null,
+                                        tint = AromaError,
+                                        modifier = Modifier.size(15.dp)
+                                    )
+                                    Text(
+                                        text = "Pengeluaran",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = AromaTextMuted
+                                    )
+                                }
+                                Text(
+                                    text = formatRupiah(r.totalExpenses),
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 16.sp,
+                                    color = AromaError,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = "${r.expenses.size} catatan biaya",
+                                    fontSize = 11.sp,
+                                    color = AromaTextSecondary
                                 )
                             }
                         }
-                        Text(
-                            text = "Omzet Lunas",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = AromaTextMuted
-                        )
-                        Text(
-                            text = formatRupiah(r.totalRevenue),
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 15.sp,
-                            color = AromaSuccess,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = "${r.transactionCount} transaksi",
-                            fontSize = 11.sp,
-                            color = AromaTextSecondary
-                        )
-                    }
-                }
-
-                AromaCard(modifier = Modifier.weight(1f)) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Surface(
-                            modifier = Modifier.size(34.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            color = AromaErrorSoft
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.TrendingDown,
-                                    contentDescription = null,
-                                    tint = AromaError,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
-                        }
-                        Text(
-                            text = "Pengeluaran",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = AromaTextMuted
-                        )
-                        Text(
-                            text = formatRupiah(r.totalExpenses),
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 15.sp,
-                            color = AromaError,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = "${r.expenses.size} catatan biaya",
-                            fontSize = 11.sp,
-                            color = AromaTextSecondary
-                        )
                     }
                 }
             }
 
-            // Period Expenses Breakdown List (if present in report payload)
+            // Period Expenses Breakdown List
             if (r.expenses.isNotEmpty()) {
                 AromaSectionHeader(
                     title = "Rincian Pengeluaran Periode Ini",
                     subtitle = "${r.expenses.size} transaksi tercatat"
                 )
 
-                AromaCard(modifier = Modifier.fillMaxWidth()) {
+                AromaCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    cornerRadius = 14.dp
+                ) {
                     Column(modifier = Modifier.padding(vertical = 4.dp)) {
                         r.expenses.forEachIndexed { idx, exp ->
                             if (idx > 0) {

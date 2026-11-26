@@ -1,6 +1,7 @@
 package com.kuliner.msme.admin.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.kuliner.msme.admin.BuildConfig
 
 data class User(
     val id: String,
@@ -213,7 +214,7 @@ fun getProductImageUrl(imagePath: String?): String? {
     if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
         return imagePath
     }
-    val base = "https://aroma-backend-15717.containers.snapdeploy.app"
+    val base = BuildConfig.API_BASE_URL.removeSuffix("/").removeSuffix("/api")
     return if (imagePath.startsWith("/")) {
         "$base$imagePath"
     } else {

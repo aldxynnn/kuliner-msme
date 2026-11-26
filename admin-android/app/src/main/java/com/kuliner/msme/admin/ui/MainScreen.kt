@@ -114,7 +114,7 @@ fun MainScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(60.dp)
+                                .height(56.dp)
                                 .padding(horizontal = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -126,10 +126,10 @@ fun MainScreen(
                                     Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = "Kembali",
                                     tint = AromaCharcoal,
-                                    modifier = Modifier.size(22.dp)
+                                    modifier = Modifier.size(21.dp)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Spacer(modifier = Modifier.width(2.dp))
                             Text(
                                 text = when (currentRoute) {
                                     Screen.Orders.route -> "Pesanan"
@@ -166,8 +166,8 @@ fun MainScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(66.dp)
-                            .padding(horizontal = 6.dp),
+                            .height(64.dp)
+                            .padding(horizontal = 4.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -189,21 +189,23 @@ fun MainScreen(
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight()
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .clickable { currentRoute = screen.route }
-                                    .padding(vertical = 6.dp),
+                                    .clickable { currentRoute = screen.route },
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
+                                verticalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .width(50.dp)
-                                        .height(30.dp)
-                                        .clip(RoundedCornerShape(12.dp))
+                                        .width(28.dp)
+                                        .height(3.dp)
+                                        .clip(RoundedCornerShape(bottomStart = 3.dp, bottomEnd = 3.dp))
                                         .background(
-                                            if (isSelected) AromaTerracottaSoft else Color.Transparent
-                                        ),
-                                    contentAlignment = Alignment.Center
+                                            if (isSelected) AromaTerracotta else Color.Transparent
+                                        )
+                                )
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
                                 ) {
                                     NavIconWithBadge(
                                         icon = screen.icon,
@@ -211,16 +213,16 @@ fun MainScreen(
                                         tint = if (isSelected) AromaTerracotta else AromaTextMuted,
                                         count = badgeCount
                                     )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = screen.title,
+                                        fontSize = 11.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) AromaTerracotta else AromaTextMuted,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
                                 }
-                                Spacer(modifier = Modifier.height(3.dp))
-                                Text(
-                                    text = screen.title,
-                                    fontSize = 11.sp,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (isSelected) AromaTerracotta else AromaTextMuted,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
                             }
                         }
                     }
@@ -291,7 +293,7 @@ private fun NavIconWithBadge(
             count = count,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .offset(x = 6.dp, y = (-3).dp),
+                .offset(x = 6.dp, y = (-2).dp),
             borderColor = AromaSurface
         )
     }

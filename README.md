@@ -60,11 +60,11 @@ Customer Web dan Admin Android berbagi sistem desain yang seragam:
 
 | Token | Kode Warna | Penggunaan |
 | :--- | :--- | :--- |
-| **Terracotta (Primary)** | `#A9472D` | Aksi utama, highlight brand, status aktif |
-| **Warm Cream (Canvas)** | `#F6F0E6` | Latar belakang utama halaman & layar |
-| **Charcoal (Ink)** | `#292722` | Teks utama, judul, elemen kontras tinggi |
+| **Terracotta (Primary)** | `#C94F1D` | Aksi utama, highlight brand, indikator aktif |
+| **Warm Ivory (Canvas)** | `#FAF8F5` | Latar belakang utama halaman & layar |
+| **Espresso Charcoal (Ink)** | `#2B211D` | Teks utama, judul, elemen kontras tinggi |
 | **Pure White (Surface)** | `#FFFFFF` | Kartu, form input, modal, header, drawer |
-| **Success / Warning / Error** | `#1F7A4C` / `#B76E14` / `#C4382B` | Status lunas, menunggu pembayaran, pembatalan & pengeluaran |
+| **Success / Warning / Error** | `#1F7A52` / `#B87314` / `#C43A2F` | Status lunas, menunggu pembayaran, pembatalan & pengeluaran |
 
 Detail lengkap sistem desain terdokumentasi pada [DESIGN.md](DESIGN.md).
 
@@ -116,7 +116,8 @@ kuliner-msme/
 │   │       │                            # ReceiptDialog, Notifications, Profile
 │   │       ├── theme/                   # Color.kt, Type.kt, Theme.kt (Aroma POS Design System)
 │   │       └── util/                    # UserDisplay.kt
-│   └── build.gradle.kts
+│   ├── local.properties.example         # Template sdk.dir & aroma.apiBaseUrl lokal
+│   └── app/build.gradle.kts             # BuildConfig API_BASE_URL (debug: 10.0.2.2:3000)
 │
 ├── backend/                             # Backend REST API (NestJS + Prisma ORM)
 │   ├── prisma/                          # schema.prisma, migrations/, seed.ts
@@ -130,6 +131,7 @@ kuliner-msme/
 │   │   ├── expenses/                    # CRUD pengeluaran operasional
 │   │   ├── reports/                     # Ringkasan dashboard & laporan surplus harian/bulanan
 │   │   └── prisma/                      # PrismaService & PrismaModule
+│   ├── .env.example                     # Template env backend lokal
 │   ├── Dockerfile
 │   └── package.json
 │
@@ -143,6 +145,7 @@ kuliner-msme/
 │   │   ├── types.ts                     # TypeScript interfaces
 │   │   ├── App.tsx                      # Halaman pemesanan utama
 │   │   └── index.css                    # Design tokens & animasi halus
+│   ├── .env.example                     # Template VITE_API_BASE_URL lokal
 │   ├── Dockerfile
 │   ├── tailwind.config.js
 │   └── package.json
@@ -186,30 +189,34 @@ Akses layanan lokal:
 ### Opsi B: Menjalankan Customer Web & Backend Tanpa Docker
 
 ```bash
-# Backend (pastikan PostgreSQL aktif & DATABASE_URL terisi di backend/.env)
+# 1. Backend (pastikan PostgreSQL berjalan & salin template .env)
 cd backend
+cp .env.example .env    # sesuaikan DATABASE_URL / DIRECT_URL jika perlu
 npm install
+npx prisma generate
 npx prisma migrate deploy
-npm run prisma:seed
-npm run start:dev
+npx prisma db seed      # memuat .env otomatis & mengisi data awal secara idempotent
+npm run build
+npm run start:dev       # atau: node dist/src/main.js
 
-# Customer Web (terminal terpisah)
+# 2. Customer Web (terminal terpisah)
 cd customer-web
+cp .env.example .env    # VITE_API_BASE_URL=http://localhost:3000/api
 npm install
-npm run dev
+npm run dev             # akses di http://localhost:5173
 ```
 
 ### Menjalankan Admin Android (`admin-android`)
-1. Buka folder `admin-android/` di **Android Studio** (atau jalankan `./gradlew assembleDebug` dengan Android SDK terpasang).
-2. Konfigurasikan `DEFAULT_BASE_URL` di `admin-android/app/src/main/java/com/kuliner/msme/admin/data/api/RetrofitClient.kt`:
-   - Backend lokal via Android Emulator: `http://10.0.2.2:3000/api/`
-   - Backend lokal via perangkat fisik (Wi-Fi sama): `http://<IP-LOKAL-KOMPUTER>:3000/api/`
-   - Backend produksi: `https://aroma-backend-15717.containers.snapdeploy.app/api/`
-3. Login dengan akun seed awal:
+1. Salin `admin-android/local.properties.example` menjadi `admin-android/local.properties` lalu isi `sdk.dir` (atau biarkan Android Studio membuatnya otomatis saat membuka folder `admin-android/`).
+2. `BuildConfig.API_BASE_URL` di `admin-android/app/build.gradle.kts` secara otomatis dikonfigurasi per build type:
+   - **Debug (default Emulator ke backend lokal):** `http://10.0.2.2:3000/api/`
+   - **Override lokal (opsional di `admin-android/local.properties`):** tambahkan `aroma.apiBaseUrl=http://<IP-LOKAL-KOMPUTER>:3000/api/` untuk perangkat fisik pada Wi-Fi yang sama
+   - **Release:** `https://aroma-backend-15717.containers.snapdeploy.app/api/`
+3. Jalankan aplikasi ke Emulator/HP atau build APK debug, lalu login dengan akun seed awal:
    - Admin: `admin@kuliner.com` / `admin123`
    - Kasir: `kasir@kuliner.com` / `kasir123`
 
-Panduan instalasi lengkap, akses pgAdmin/Prisma Studio, dan troubleshooting tersedia di [docs/INSTALLATION.md](docs/INSTALLATION.md).
+Panduan instalasi lengkap, perintah menghentikan layanan, akses Prisma Studio, dan troubleshooting tersedia di [docs/INSTALLATION.md](docs/INSTALLATION.md).
 
 ---
 

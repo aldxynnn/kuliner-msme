@@ -102,7 +102,7 @@ fun PaymentsScreen() {
         ) {
             Surface(
                 modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 color = AromaCreamTrack,
                 border = BorderStroke(1.dp, AromaBorder)
             ) {
@@ -117,16 +117,17 @@ fun PaymentsScreen() {
                         onClick = { selectedTab = 0 },
                         modifier = Modifier
                             .weight(1f)
-                            .height(40.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = if (isUnpaid) AromaTerracotta else Color.Transparent
+                            .height(38.dp),
+                        shape = RoundedCornerShape(9.dp),
+                        color = if (isUnpaid) AromaSurface else Color.Transparent,
+                        shadowElevation = if (isUnpaid) 1.dp else 0.dp
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
                                 text = "Menunggu Bayar",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isUnpaid) AromaSurface else AromaCharcoal,
+                                color = if (isUnpaid) AromaTerracotta else AromaTextSecondary,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -138,16 +139,17 @@ fun PaymentsScreen() {
                         onClick = { selectedTab = 1 },
                         modifier = Modifier
                             .weight(1f)
-                            .height(40.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = if (isHistory) AromaTerracotta else Color.Transparent
+                            .height(38.dp),
+                        shape = RoundedCornerShape(9.dp),
+                        color = if (isHistory) AromaSurface else Color.Transparent,
+                        shadowElevation = if (isHistory) 1.dp else 0.dp
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
                                 text = "Riwayat Lunas",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isHistory) AromaSurface else AromaCharcoal,
+                                color = if (isHistory) AromaTerracotta else AromaTextSecondary,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )

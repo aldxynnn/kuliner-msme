@@ -1,7 +1,22 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+
+val localProps = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
+}
+
+val debugApiBaseUrl: String = (
+    project.findProperty("aroma.apiBaseUrl") as? String
+        ?: localProps.getProperty("aroma.apiBaseUrl")
+        ?: "http://10.0.2.2:3000/api/"
+    ).let { url -> if (url.endsWith("/")) url else "$url/" }
 
 android {
     namespace = "com.kuliner.msme.admin"
@@ -21,8 +36,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"$debugApiBaseUrl\"")
+        }
         release {
             isMinifyEnabled = false
+            buildConfigField(
+                "String",
+                "API_BASE_URL",
+                "\"https://aroma-backend-15717.containers.snapdeploy.app/api/\""
+            )
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -38,6 +61,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"

@@ -57,31 +57,41 @@ docker compose logs -f backend
 ## 3. Opsi 2: Menjalankan Backend & Customer Web Secara Manual
 
 ### Backend (`backend/`)
-Pastikan PostgreSQL berjalan dan variabel `DATABASE_URL`, `DIRECT_URL`, `JWT_SECRET`, serta `PORT` telah dikonfigurasi di `backend/.env`:
+Pastikan PostgreSQL berjalan, lalu salin template environment dan sesuaikan kredensial database bila perlu:
 
 ```bash
 cd backend
+cp .env.example .env
 npm install
 npx prisma generate
 npx prisma migrate deploy
-npm run prisma:seed
+npx prisma db seed
+npm run build
 npm run start:dev
 ```
+
+> **Catatan:** Gunakan `npx prisma db seed` agar file `backend/.env` dimuat otomatis. Untuk menjalankan hasil build produksi secara lokal, gunakan `node dist/src/main.js`.
 
 ### Customer Web (`customer-web/`)
 ```bash
 cd customer-web
+cp .env.example .env
 npm install
 npm run dev
 ```
 
-Secara default Vite mengarah ke `VITE_API_BASE_URL=http://localhost:3000/api` (dapat disesuaikan melalui file `customer-web/.env`).
+Secara default `customer-web/.env.example` mengarah ke `VITE_API_BASE_URL=http://localhost:3000/api`. Buka `http://localhost:5173` (atau simulasi QR meja `http://localhost:5173/?table=Meja%2001`).
 
-Untuk memeriksa build produksi Customer Web:
+Untuk memeriksa build produksi dan preview lokal Customer Web:
 ```bash
 cd customer-web
 npm run build
+npx vite preview --host 127.0.0.1 --port 5173
 ```
+
+### Menghentikan Layanan Lokal (Manual)
+- Hentikan masing-masing terminal `backend` (`start:dev`) dan `customer-web` (`vite`) menggunakan `Ctrl+C`.
+- Jika menggunakan instance PostgreSQL terpisah, hentikan layanan Postgres setelah selesai.
 
 ---
 
@@ -106,17 +116,18 @@ docker compose exec backend npm run prisma:seed
 
 Aplikasi Android POS berada di direktori `admin-android/`.
 
-1. Buka `admin-android/` di **Android Studio** dan tunggu *Gradle Sync* selesai.
-2. Periksa `DEFAULT_BASE_URL` pada `admin-android/app/src/main/java/com/kuliner/msme/admin/data/api/RetrofitClient.kt`:
-   - **Produksi (default repository):** `https://aroma-backend-15717.containers.snapdeploy.app/api/`
-   - **Android Emulator ke backend lokal:** `http://10.0.2.2:3000/api/`
-   - **Perangkat Android fisik ke backend lokal:** `http://<IP-LOKAL-KOMPUTER>:3000/api/` (pastikan berada di jaringan Wi-Fi yang sama)
-3. Jalankan aplikasi ke emulator/perangkat fisik atau build APK debug melalui terminal:
+1. Salin `admin-android/local.properties.example` menjadi `admin-android/local.properties` dan isi `sdk.dir` mengarah ke Android SDK lokal (atau langsung buka folder `admin-android/` di **Android Studio** agar `local.properties` dibuat otomatis).
+2. Alamat backend dikonfigurasi otomatis via `BuildConfig.API_BASE_URL` di `admin-android/app/build.gradle.kts` (`RetrofitClient.kt` dan helper gambar di `Models.kt`):
+   - **Android Emulator ke backend lokal (`debug` default):** `http://10.0.2.2:3000/api/`
+   - **Perangkat Android fisik via Wi-Fi yang sama (opsional):** tambahkan `aroma.apiBaseUrl=http://<IP-LOKAL-KOMPUTER>:3000/api/` di `admin-android/local.properties`
+   - **Build `release`:** `https://aroma-backend-15717.containers.snapdeploy.app/api/`
+   *(Alternatif jika menggunakan perangkat fisik lewat kabel USB: jalankan `adb reverse tcp:3000 tcp:3000` dengan URL `http://127.0.0.1:3000/api/`)*
+3. Jalankan aplikasi ke emulator/perangkat fisik dari Android Studio atau build APK debug melalui terminal (`admin-android/`):
    ```bash
    cd admin-android
    ./gradlew assembleDebug
    ```
-   *(Di Windows PowerShell gunakan `.\gradlew.bat assembleDebug`)*
+   *(Di Windows PowerShell dapat menjalankan `.\gradlew.bat assembleDebug` jika `gradle-wrapper.jar` tersedia, atau `gradle assembleDebug` / Run langsung dari Android Studio menggunakan JDK 17–21.)*
 4. Kredensial login default hasil seed:
    - **Admin:** `admin@kuliner.com` / `admin123`
    - **Kasir:** `kasir@kuliner.com` / `kasir123`
@@ -150,5 +161,5 @@ docker compose down
 
 ### Masalah Umum
 - **Port `3000`, `5173`, atau `5433` sudah dipakai:** Hentikan layanan yang menggunakan port tersebut atau ubah nilai `PORT` / `POSTGRES_PORT` pada `.env`.
-- **Android tidak bisa terhubung ke backend lokal:** Pastikan container/server backend aktif dan `DEFAULT_BASE_URL` di `RetrofitClient.kt` sudah menggunakan `10.0.2.2` (emulator) atau IP LAN host (HP fisik).
+- **Android tidak bisa terhubung ke backend lokal:** Pastikan server backend aktif pada port `3000`, `BuildConfig.API_BASE_URL` mengarah ke `http://10.0.2.2:3000/api/` (emulator) atau `aroma.apiBaseUrl` pada `admin-android/local.properties` diisi IP LAN komputer (HP fisik), serta lakukan Rebuild APK.
 - **Foto produk tidak tampil saat lokal:** Pastikan seed data telah dijalankan dan direktori `/uploads` pada backend berisi gambar atau kredensial Cloudinary telah dikonfigurasi untuk produksi.

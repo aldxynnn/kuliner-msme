@@ -2,43 +2,43 @@ package com.kuliner.msme.admin.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Aroma POS Core Brand Palette
-val AromaTerracotta = Color(0xFFA9472D)
-val AromaTerracottaDark = Color(0xFF8C3923)
-val AromaTerracottaLight = Color(0xFFC56045)
-val AromaTerracottaSoft = Color(0xFFFBF2EE)
-val AromaTerracottaBorder = Color(0xFFEAC0AF)
+// Aroma POS Bright Warm Culinary Palette (preserving main's brand identity)
+val AromaTerracotta = Color(0xFFC94F1D)
+val AromaTerracottaDark = Color(0xFFA83E14)
+val AromaTerracottaLight = Color(0xFFE06D3B)
+val AromaTerracottaSoft = Color(0xFFFFF3EC)
+val AromaTerracottaBorder = Color(0xFFF2D5C6)
 
-val AromaCream = Color(0xFFF6F0E6)
-val AromaCreamSoft = Color(0xFFFAF7F2)
-val AromaCreamTrack = Color(0xFFEBE2D4)
-val AromaSurface = Color(0xFFFFFFFF)
+val AromaCream = Color(0xFFFAF8F5)       // Warm Ivory canvas
+val AromaCreamSoft = Color(0xFFF4EFE8)   // Soft linen inset surface
+val AromaCreamTrack = Color(0xFFEFE9E0)  // Track / muted pill fill
+val AromaSurface = Color(0xFFFFFFFF)     // Crisp pure white surface
 
-val AromaCharcoal = Color(0xFF292722)
-val AromaTextSecondary = Color(0xFF5C574F)
-val AromaTextMuted = Color(0xFF827B71)
+val AromaCharcoal = Color(0xFF2B211D)    // Warm Espresso ink
+val AromaTextSecondary = Color(0xFF635852)
+val AromaTextMuted = Color(0xFF8C8078)
 
-val AromaBorder = Color(0xFFE4DACB)
-val AromaDivider = Color(0xFFEEE6DA)
+val AromaBorder = Color(0xFFE8E0D6)
+val AromaDivider = Color(0xFFF1EBE3)
 
 // Semantic Status Palette
-val AromaSuccess = Color(0xFF1F7A4C)
-val AromaSuccessSoft = Color(0xFFE8F6EE)
-val AromaSuccessBorder = Color(0xFFBDE5CE)
+val AromaSuccess = Color(0xFF1F7A52)
+val AromaSuccessSoft = Color(0xFFEAF6F0)
+val AromaSuccessBorder = Color(0xFFC3E6D5)
 
-val AromaWarning = Color(0xFFB76E14)
-val AromaWarningSoft = Color(0xFFFDF4E3)
-val AromaWarningBorder = Color(0xFFF2D6A2)
+val AromaWarning = Color(0xFFB87314)
+val AromaWarningSoft = Color(0xFFFEF6E6)
+val AromaWarningBorder = Color(0xFFF3DBA6)
 
-val AromaError = Color(0xFFC4382B)
-val AromaErrorSoft = Color(0xFFFCECEB)
-val AromaErrorBorder = Color(0xFFF3BEB9)
+val AromaError = Color(0xFFC43A2F)
+val AromaErrorSoft = Color(0xFFFDEEEC)
+val AromaErrorBorder = Color(0xFFF4C4BF)
 
 val AromaInfo = Color(0xFF25638A)
-val AromaInfoSoft = Color(0xFFEAF3F9)
-val AromaInfoBorder = Color(0xFFBBD8EA)
+val AromaInfoSoft = Color(0xFFEDF5FA)
+val AromaInfoBorder = Color(0xFFC5DDEC)
 
-// Legacy aliases kept mapped to Aroma POS design system
+// Legacy aliases mapped cleanly
 val PosBg = AromaCream
 val PosSurface = AromaSurface
 val PosPrimary = AromaTerracotta

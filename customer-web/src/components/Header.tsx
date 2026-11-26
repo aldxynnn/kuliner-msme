@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="w-10 h-10 rounded-xl object-cover border border-cream-200 shrink-0 bg-cream-50"
           />
           <div className="min-w-0">
-            <h1 className="font-extrabold text-base sm:text-lg text-charcoal tracking-tight leading-none truncate">
+            <h1 className="font-display font-bold text-lg sm:text-xl text-charcoal tracking-tight leading-none truncate">
               AROMA
             </h1>
             <p className="text-[11px] font-medium text-charcoal-muted leading-tight mt-0.5 truncate">
@@ -65,26 +65,26 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             onClick={() => onOrderTypeChange('DINE_IN')}
             aria-pressed={orderType === 'DINE_IN'}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
               orderType === 'DINE_IN'
-                ? 'bg-brand-500 text-white shadow-sm'
+                ? 'bg-white text-brand-600 shadow-sm border border-cream-200/80'
                 : 'text-charcoal-secondary hover:text-charcoal'
             }`}
           >
-            <Utensils className="w-3.5 h-3.5" />
+            <Utensils className={`w-3.5 h-3.5 ${orderType === 'DINE_IN' ? 'text-brand-500' : ''}`} />
             <span>Dine In</span>
           </button>
           <button
             type="button"
             onClick={() => onOrderTypeChange('TAKE_AWAY')}
             aria-pressed={orderType === 'TAKE_AWAY'}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
               orderType === 'TAKE_AWAY'
-                ? 'bg-brand-500 text-white shadow-sm'
+                ? 'bg-white text-brand-600 shadow-sm border border-cream-200/80'
                 : 'text-charcoal-secondary hover:text-charcoal'
             }`}
           >
-            <ShoppingBag className="w-3.5 h-3.5" />
+            <ShoppingBag className={`w-3.5 h-3.5 ${orderType === 'TAKE_AWAY' ? 'text-brand-500' : ''}`} />
             <span>Take Away</span>
           </button>
         </div>
@@ -108,7 +108,7 @@ export const Header: React.FC<HeaderProps> = ({
           )}
 
           {tableNumber && (
-            <div className="inline-flex items-center gap-1.5 min-h-[38px] px-3 py-1.5 rounded-xl bg-brand-50 text-brand-600 border border-brand-200 text-xs font-bold">
+            <div className="inline-flex items-center gap-1.5 min-h-[38px] px-3 py-1.5 rounded-xl bg-brand-50 text-brand-700 border border-brand-200 text-xs font-bold">
               <MapPin className="w-3.5 h-3.5 text-brand-500 shrink-0" />
               <span className="max-w-[96px] truncate">{tableNumber}</span>
             </div>
@@ -125,11 +125,11 @@ export const Header: React.FC<HeaderProps> = ({
             aria-pressed={orderType === 'DINE_IN'}
             className={`min-h-[36px] inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               orderType === 'DINE_IN'
-                ? 'bg-brand-500 text-white shadow-sm'
+                ? 'bg-white text-brand-600 shadow-sm border border-cream-200/80'
                 : 'text-charcoal-secondary hover:text-charcoal'
             }`}
           >
-            <Utensils className="w-3.5 h-3.5 shrink-0" />
+            <Utensils className={`w-3.5 h-3.5 shrink-0 ${orderType === 'DINE_IN' ? 'text-brand-500' : ''}`} />
             <span>Dine In</span>
           </button>
           <button
@@ -138,11 +138,11 @@ export const Header: React.FC<HeaderProps> = ({
             aria-pressed={orderType === 'TAKE_AWAY'}
             className={`min-h-[36px] inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               orderType === 'TAKE_AWAY'
-                ? 'bg-brand-500 text-white shadow-sm'
+                ? 'bg-white text-brand-600 shadow-sm border border-cream-200/80'
                 : 'text-charcoal-secondary hover:text-charcoal'
             }`}
           >
-            <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
+            <ShoppingBag className={`w-3.5 h-3.5 shrink-0 ${orderType === 'TAKE_AWAY' ? 'text-brand-500' : ''}`} />
             <span>Take Away</span>
           </button>
         </div>

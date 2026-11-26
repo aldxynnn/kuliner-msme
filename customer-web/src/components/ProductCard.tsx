@@ -23,27 +23,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <article
       onClick={() => product.isAvailable && onSelectProduct(product)}
-      className={`bg-white rounded-2xl border border-cream-200 overflow-hidden shadow-card flex flex-row sm:flex-col transition-all duration-200 group ${
+      className={`bg-white rounded-2xl border border-cream-200 overflow-hidden shadow-card flex flex-row-reverse sm:flex-col transition-all duration-200 group ${
         product.isAvailable
-          ? 'cursor-pointer hover:border-brand-300 hover:shadow-card-hover'
+          ? 'cursor-pointer hover:border-brand-200 hover:shadow-card-hover'
           : 'opacity-70 cursor-not-allowed bg-cream-50/70'
       }`}
     >
-      {/* Product Photo */}
-      <div className="relative w-28 h-28 m-3 sm:m-0 sm:w-full sm:h-auto sm:aspect-[4/3] rounded-xl sm:rounded-none bg-cream-50 overflow-hidden shrink-0 flex items-center justify-center">
+      {/* Product Photo — right side on mobile, full-bleed 4:3 on tablet/desktop */}
+      <div className="relative w-28 h-28 m-3.5 sm:m-0 sm:w-full sm:h-auto sm:aspect-[4/3] rounded-xl sm:rounded-none bg-cream-100 overflow-hidden shrink-0 flex items-center justify-center">
         {showImage ? (
           <img
             src={imageUrl}
             alt={product.name}
             loading="lazy"
             className={`w-full h-full object-cover transition-transform duration-300 ${
-              product.isAvailable ? 'group-hover:scale-[1.04]' : 'grayscale'
+              product.isAvailable ? 'group-hover:scale-[1.03]' : 'grayscale'
             }`}
             onError={() => setImgError(true)}
           />
         ) : (
           <div className="flex flex-col items-center justify-center text-charcoal-light p-3">
-            <UtensilsCrossed className="w-7 h-7 opacity-60" />
+            <UtensilsCrossed className="w-7 h-7 opacity-55" />
           </div>
         )}
 
@@ -57,8 +57,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Sold Out Overlay */}
         {!product.isAvailable && (
-          <div className="absolute inset-0 bg-charcoal/55 flex items-center justify-center p-2">
-            <span className="text-[11px] font-extrabold text-white uppercase tracking-wider px-3 py-1 rounded-lg bg-charcoal/80 border border-white/20">
+          <div className="absolute inset-0 bg-white/70 backdrop-blur-[1px] flex items-center justify-center p-2">
+            <span className="text-[11px] font-extrabold text-charcoal uppercase tracking-wider px-3 py-1 rounded-lg bg-white border border-cream-200 shadow-sm">
               Habis
             </span>
           </div>
@@ -66,10 +66,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Product Info */}
-      <div className="flex-1 flex flex-col justify-between min-w-0 py-3 pr-3 sm:p-4">
+      <div className="flex-1 flex flex-col justify-between min-w-0 py-3.5 pl-4 sm:p-4">
         <div>
           {product.category?.name && (
-            <p className="text-[11px] font-bold text-brand-500 uppercase tracking-wider">
+            <p className="text-[10px] font-bold text-brand-600 uppercase tracking-[0.08em]">
               {product.category.name}
             </p>
           )}
@@ -78,7 +78,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {product.name}
           </h3>
 
-          <p className="text-xs sm:text-[13px] font-body text-charcoal-muted mt-1 line-clamp-2 leading-relaxed">
+          <p className="text-xs sm:text-[13px] font-body text-charcoal-secondary mt-1 line-clamp-2 leading-relaxed">
             {product.description || 'Hidangan istimewa AROMA yang disajikan hangat dan segar.'}
           </p>
         </div>
@@ -99,7 +99,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               className={`min-h-[38px] px-3.5 py-1.5 rounded-xl inline-flex items-center gap-1.5 font-bold text-xs transition-all active:scale-95 shrink-0 ${
                 cartQuantity > 0
                   ? 'bg-semantic-success text-white hover:brightness-95'
-                  : 'bg-brand-500 text-white hover:bg-brand-600'
+                  : 'bg-brand-50 text-brand-600 border border-brand-200 hover:bg-brand-500 hover:text-white hover:border-brand-500'
               }`}
             >
               {cartQuantity > 0 ? (
@@ -115,7 +115,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               )}
             </button>
           ) : (
-            <span className="text-xs font-bold text-charcoal-light">Tidak tersedia</span>
+            <span className="text-xs font-bold text-charcoal-muted">Tidak tersedia</span>
           )}
         </div>
       </div>

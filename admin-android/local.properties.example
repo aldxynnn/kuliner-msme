@@ -1,0 +1,12 @@
+# Salin file ini menjadi local.properties (jangan commit local.properties ke Git).
+# Sesuaikan sdk.dir dengan lokasi Android SDK di komputer Anda.
+# Windows contoh: C\:\\Users\\NAMA_USER\\AppData\\Local\\Android\\Sdk
+# macOS contoh: /Users/NAMA_USER/Library/Android/sdk
+
+sdk.dir=C\:\\Users\\YOUR_USERNAME\\AppData\\Local\\Android\\Sdk
+
+# Opsional: Override Base URL API untuk build debug.
+# Default debug adalah http://10.0.2.2:3000/api/ (Android Emulator ke backend lokal).
+# Untuk HP fisik pada Wi-Fi yang sama: http://192.168.1.50:3000/api/
+# Untuk backend produksi: https://aroma-backend-15717.containers.snapdeploy.app/api/
+# aroma.apiBaseUrl=http://10.0.2.2:3000/api/

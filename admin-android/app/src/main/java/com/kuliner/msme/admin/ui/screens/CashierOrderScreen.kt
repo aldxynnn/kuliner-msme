@@ -179,12 +179,12 @@ fun CashierOrderScreen(
         ) {
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Segmented Order Type Selector
+            // Bright Segmented Order Type Selector (White active tab on Warm Linen track)
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 color = AromaCreamTrack,
                 border = BorderStroke(1.dp, AromaBorder)
             ) {
@@ -199,9 +199,10 @@ fun CashierOrderScreen(
                         onClick = { orderType = "DINE_IN" },
                         modifier = Modifier
                             .weight(1f)
-                            .height(42.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = if (isDineIn) AromaTerracotta else Color.Transparent
+                            .height(40.dp),
+                        shape = RoundedCornerShape(9.dp),
+                        color = if (isDineIn) AromaSurface else Color.Transparent,
+                        shadowElevation = if (isDineIn) 1.dp else 0.dp
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -210,15 +211,15 @@ fun CashierOrderScreen(
                             Icon(
                                 Icons.Default.TableBar,
                                 contentDescription = null,
-                                tint = if (isDineIn) AromaSurface else AromaTextSecondary,
-                                modifier = Modifier.size(17.dp)
+                                tint = if (isDineIn) AromaTerracotta else AromaTextSecondary,
+                                modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "Dine In",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp,
-                                color = if (isDineIn) AromaSurface else AromaCharcoal
+                                color = if (isDineIn) AromaTerracotta else AromaTextSecondary
                             )
                         }
                     }
@@ -231,9 +232,10 @@ fun CashierOrderScreen(
                         },
                         modifier = Modifier
                             .weight(1f)
-                            .height(42.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = if (isTakeAway) AromaTerracotta else Color.Transparent
+                            .height(40.dp),
+                        shape = RoundedCornerShape(9.dp),
+                        color = if (isTakeAway) AromaSurface else Color.Transparent,
+                        shadowElevation = if (isTakeAway) 1.dp else 0.dp
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -242,15 +244,15 @@ fun CashierOrderScreen(
                             Icon(
                                 Icons.Default.ShoppingBag,
                                 contentDescription = null,
-                                tint = if (isTakeAway) AromaSurface else AromaTextSecondary,
-                                modifier = Modifier.size(17.dp)
+                                tint = if (isTakeAway) AromaTerracotta else AromaTextSecondary,
+                                modifier = Modifier.size(16.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = "Take Away",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp,
-                                color = if (isTakeAway) AromaSurface else AromaCharcoal
+                                color = if (isTakeAway) AromaTerracotta else AromaTextSecondary
                             )
                         }
                     }
@@ -486,7 +488,7 @@ fun CashierOrderScreen(
             }
         }
 
-        // Grounded Charcoal Floating Cart Bar
+        // Bright Warm Terracotta Floating Cart Bar
         if (totalCartCount > 0) {
             Surface(
                 onClick = { isCartSheetVisible = true },
@@ -494,9 +496,9 @@ fun CashierOrderScreen(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
-                shape = RoundedCornerShape(18.dp),
-                color = AromaCharcoal,
-                shadowElevation = 6.dp
+                shape = RoundedCornerShape(16.dp),
+                color = AromaTerracotta,
+                shadowElevation = 4.dp
             ) {
                 Row(
                     modifier = Modifier
@@ -509,7 +511,7 @@ fun CashierOrderScreen(
                         Surface(
                             modifier = Modifier.size(38.dp),
                             shape = RoundedCornerShape(10.dp),
-                            color = AromaTerracotta
+                            color = AromaSurface.copy(alpha = 0.22f)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
@@ -527,7 +529,7 @@ fun CashierOrderScreen(
                             Text(
                                 text = "Total Pesanan",
                                 fontSize = 10.sp,
-                                color = AromaCream.copy(alpha = 0.75f),
+                                color = AromaSurface.copy(alpha = 0.85f),
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
@@ -541,10 +543,10 @@ fun CashierOrderScreen(
 
                     Button(
                         onClick = { isCartSheetVisible = true },
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = AromaTerracotta,
-                            contentColor = AromaSurface
+                            containerColor = AromaSurface,
+                            contentColor = AromaTerracotta
                         ),
                         contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
                     ) {

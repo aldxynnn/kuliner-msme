@@ -98,7 +98,7 @@ export const App: React.FC = () => {
       .catch((err) => {
         if (!active) return;
         console.error(err);
-        setLoadError('Tidak dapat memuat daftar menu. Pastikan koneksi internet Anda aktif.');
+        setLoadError('Tidak dapat memuat daftar menu. Pastikan backend aktif dan koneksi lancar.');
       })
       .finally(() => {
         if (active) setIsLoadingProducts(false);
@@ -192,7 +192,7 @@ export const App: React.FC = () => {
   const hasActiveFilters = Boolean(selectedCategoryId || searchQuery.trim());
 
   return (
-    <div className="min-h-screen flex flex-col bg-cream-100 text-charcoal font-sans">
+    <div className="min-h-screen flex flex-col bg-cream-50 text-charcoal font-sans">
       {/* Unified Sticky Top Shell (Navbar + Category Bar) */}
       <div className="sticky top-0 z-30">
         <Header
@@ -213,13 +213,16 @@ export const App: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-5 pb-32 space-y-6">
-        {/* Compact Editorial Culinary Header */}
+        {/* Bright Editorial Culinary Masthead */}
         <HeroSection tableNumber={tableNumber} orderType={orderType} />
 
         {/* Search & Section Toolbar */}
-        <section aria-label="Pencarian Menu" className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <section
+          aria-label="Pencarian Menu"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+        >
           <div>
-            <h2 className="font-extrabold text-lg sm:text-xl text-charcoal tracking-tight">
+            <h2 className="font-display font-bold text-xl sm:text-2xl text-charcoal tracking-tight">
               {selectedCategoryName}
             </h2>
             <p className="text-xs text-charcoal-muted mt-0.5">
@@ -261,23 +264,23 @@ export const App: React.FC = () => {
             {Array.from({ length: 6 }).map((_, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-2xl border border-cream-200 overflow-hidden flex flex-row sm:flex-col animate-pulse"
+                className="bg-white rounded-2xl border border-cream-200 overflow-hidden flex flex-row-reverse sm:flex-col animate-pulse"
               >
-                <div className="w-28 h-28 m-3 sm:m-0 sm:w-full sm:h-44 rounded-xl sm:rounded-none bg-cream-200/70 shrink-0" />
-                <div className="flex-1 p-3 sm:p-4 space-y-2.5">
-                  <div className="h-3 w-16 rounded bg-cream-200/80" />
+                <div className="w-28 h-28 m-3.5 sm:m-0 sm:w-full sm:h-44 rounded-xl sm:rounded-none bg-cream-100 shrink-0" />
+                <div className="flex-1 p-4 space-y-2.5">
+                  <div className="h-3 w-16 rounded bg-cream-100" />
                   <div className="h-4 w-3/4 rounded bg-cream-200" />
-                  <div className="h-3 w-full rounded bg-cream-200/60" />
+                  <div className="h-3 w-full rounded bg-cream-100" />
                   <div className="pt-3 flex items-center justify-between">
                     <div className="h-4 w-20 rounded bg-cream-200" />
-                    <div className="h-9 w-24 rounded-xl bg-cream-200/80" />
+                    <div className="h-9 w-24 rounded-xl bg-cream-100" />
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : loadError ? (
-          <div className="bg-white rounded-3xl border border-semantic-error-border p-8 sm:p-10 text-center space-y-4 shadow-card">
+          <div className="bg-white rounded-2xl border border-semantic-error-border p-8 sm:p-10 text-center space-y-4 shadow-card">
             <div className="w-12 h-12 mx-auto rounded-2xl bg-semantic-error-bg text-semantic-error flex items-center justify-center">
               <AlertCircle className="w-6 h-6" />
             </div>
@@ -300,7 +303,7 @@ export const App: React.FC = () => {
             </button>
           </div>
         ) : products.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-cream-200 p-10 sm:p-14 text-center space-y-4 shadow-card">
+          <div className="bg-white rounded-2xl border border-cream-200 p-10 sm:p-14 text-center space-y-4 shadow-card">
             <div className="w-14 h-14 mx-auto rounded-2xl bg-cream-100 border border-cream-200 flex items-center justify-center text-charcoal-muted">
               <UtensilsCrossed className="w-6 h-6" />
             </div>
@@ -341,40 +344,40 @@ export const App: React.FC = () => {
       </main>
 
       {/* Subtle Store Footer */}
-      <footer className="border-t border-cream-200 bg-cream-50/80 py-6 px-4 text-center">
+      <footer className="border-t border-cream-200 bg-white/70 py-6 px-4 text-center">
         <p className="text-xs font-bold text-charcoal">AROMA – Ayam Goreng Lengkuas</p>
         <p className="text-[11px] text-charcoal-muted mt-1">
           Ruko Puri Cempaka Blok R1 No. 10, Panancangan, Cipocok Jaya, Kota Serang, Banten
         </p>
       </footer>
 
-      {/* Subtle Add-to-Cart Feedback Toast */}
+      {/* Bright Subtle Add-to-Cart Feedback Toast */}
       {addedToast && (
         <div
           role="status"
-          className={`fixed left-1/2 -translate-x-1/2 z-40 px-4 py-2.5 rounded-xl bg-charcoal text-white text-xs font-bold shadow-dock flex items-center gap-2 max-w-[90vw] animate-aroma-sheet ${
+          className={`fixed left-1/2 -translate-x-1/2 z-40 px-4 py-2.5 rounded-xl bg-white text-charcoal border border-cream-200 text-xs font-bold shadow-card-hover flex items-center gap-2 max-w-[90vw] animate-aroma-sheet ${
             totalCartCount > 0 ? 'bottom-24' : 'bottom-6'
           }`}
         >
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <CheckCircle2 className="w-4 h-4 text-semantic-success shrink-0" />
           <span className="truncate">{addedToast}</span>
         </div>
       )}
 
-      {/* Floating Bottom Cart Dock */}
+      {/* Bright Warm Terracotta Floating Bottom Cart Dock */}
       {totalCartCount > 0 && (
         <div className="fixed bottom-4 inset-x-4 max-w-xl mx-auto z-30">
           <button
             type="button"
             onClick={() => setIsCartOpen(true)}
-            className="w-full min-h-[64px] bg-charcoal hover:bg-charcoal/95 text-white rounded-2xl px-4 py-3 shadow-dock flex items-center justify-between gap-3 active:scale-[0.99] transition-all border border-white/10"
+            className="w-full min-h-[64px] bg-brand-500 hover:bg-brand-600 text-white rounded-2xl px-4 py-3 shadow-dock flex items-center justify-between gap-3 active:scale-[0.99] transition-all"
           >
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center font-extrabold text-sm tabular-nums shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-white/20 text-white flex items-center justify-center font-extrabold text-sm tabular-nums shrink-0">
                 {totalCartCount}
               </div>
               <div className="text-left min-w-0">
-                <p className="text-[11px] font-semibold text-cream-200/80 uppercase tracking-wider">
+                <p className="text-[11px] font-semibold text-brand-100 uppercase tracking-wider">
                   Total Keranjang
                 </p>
                 <p className="font-extrabold text-base text-white tabular-nums truncate">
@@ -383,7 +386,7 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 font-bold text-xs bg-brand-500 text-white px-4 py-2.5 rounded-xl shrink-0">
+            <div className="inline-flex items-center gap-1.5 font-bold text-xs bg-white text-brand-600 px-4 py-2.5 rounded-xl shadow-sm shrink-0">
               <ShoppingBag className="w-4 h-4" />
               <span>Lihat Pesanan</span>
               <ArrowRight className="w-3.5 h-3.5" />

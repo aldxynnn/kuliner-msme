@@ -360,7 +360,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ order, o
           <button
             type="button"
             onClick={onClose}
-            className="w-full min-h-[48px] py-3 rounded-xl bg-charcoal text-white font-bold text-sm hover:bg-charcoal/90 active:scale-[0.99] transition-all"
+            className="w-full min-h-[48px] py-3 rounded-xl bg-white border border-cream-200 text-charcoal font-bold text-sm hover:bg-cream-100 active:scale-[0.99] transition-all"
           >
             Tutup
           </button>

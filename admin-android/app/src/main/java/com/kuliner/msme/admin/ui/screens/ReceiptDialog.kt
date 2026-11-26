@@ -173,7 +173,7 @@ fun ReceiptDialog(
 
             paint.textSize = 14f
             paint.isFakeBoldText = true
-            paint.color = android.graphics.Color.rgb(169, 71, 45)
+            paint.color = android.graphics.Color.rgb(201, 79, 29)
             canvas.drawText("TOTAL: ${formatRupiah(receipt.total)}", 20f, y, paint)
 
             pdfDocument.finishPage(page)
@@ -412,15 +412,16 @@ fun ReceiptDialog(
                         Text("Cetak", fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
                     }
 
-                    Button(
+                    OutlinedButton(
                         onClick = { handleSavePdf() },
                         modifier = Modifier
                             .weight(1f)
                             .height(46.dp),
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = AromaCharcoal,
-                            contentColor = AromaSurface
+                        border = BorderStroke(1.dp, AromaBorder),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = AromaCreamSoft,
+                            contentColor = AromaCharcoal
                         ),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {

@@ -108,7 +108,7 @@ fun AromaCard(
     onClick: (() -> Unit)? = null,
     containerColor: Color = AromaSurface,
     borderColor: Color = AromaBorder,
-    cornerRadius: Dp = 16.dp,
+    cornerRadius: Dp = 14.dp,
     content: @Composable () -> Unit
 ) {
     val shape = RoundedCornerShape(cornerRadius)
@@ -204,13 +204,13 @@ fun AromaFilterPill(
 ) {
     Surface(
         onClick = onClick,
-        modifier = modifier.defaultMinSize(minHeight = 38.dp),
-        shape = RoundedCornerShape(12.dp),
+        modifier = modifier.defaultMinSize(minHeight = 36.dp),
+        shape = RoundedCornerShape(10.dp),
         color = if (selected) AromaTerracotta else AromaSurface,
         border = if (selected) null else BorderStroke(1.dp, AromaBorder)
     ) {
         Box(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+            modifier = Modifier.padding(horizontal = 13.dp, vertical = 8.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -307,8 +307,8 @@ fun AromaEmptyState(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Surface(
-                modifier = Modifier.size(60.dp),
-                shape = RoundedCornerShape(18.dp),
+                modifier = Modifier.size(56.dp),
+                shape = RoundedCornerShape(16.dp),
                 color = iconBackground
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -316,7 +316,7 @@ fun AromaEmptyState(
                         imageVector = icon,
                         contentDescription = null,
                         tint = iconTint,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(26.dp)
                     )
                 }
             }

@@ -114,12 +114,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <ShoppingBag className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 id="cart-drawer-title" className="font-extrabold text-base text-charcoal truncate">
+              <div className="flex items-center gap-2 min-w-0">
+                <h2 id="cart-drawer-title" className="font-display font-bold text-base sm:text-lg text-charcoal truncate">
                   Keranjang Pesanan
                 </h2>
                 {totalItems > 0 && (
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-brand-50 text-brand-600 tabular-nums">
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-brand-50 text-brand-600 tabular-nums whitespace-nowrap shrink-0">
                     {totalItems} item
                   </span>
                 )}
@@ -213,7 +213,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                           type="button"
                           onClick={() => onRemoveItem(item.product.id)}
                           aria-label={`Hapus ${item.product.name}`}
-                          className="w-8 h-8 rounded-lg text-charcoal-muted hover:text-semantic-error hover:bg-semantic-error-bg flex items-center justify-center transition-colors shrink-0"
+                          className="w-10 h-10 rounded-xl text-charcoal-muted hover:text-semantic-error hover:bg-semantic-error-bg flex items-center justify-center transition-colors shrink-0"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -224,12 +224,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                           {formatRupiah(item.product.price * item.quantity)}
                         </span>
 
-                        <div className="flex items-center gap-1.5 bg-cream-100 border border-cream-200 rounded-xl p-1">
+                        <div className="flex items-center gap-1 bg-cream-100 border border-cream-200 rounded-xl p-1">
                           <button
                             type="button"
                             onClick={() => onUpdateQuantity(item.product.id, item.quantity - 1)}
                             aria-label="Kurangi jumlah"
-                            className="w-8 h-8 flex items-center justify-center bg-white text-charcoal hover:bg-cream-50 rounded-lg transition-colors"
+                            className="w-9 h-9 flex items-center justify-center bg-white text-charcoal hover:bg-cream-50 rounded-lg transition-colors"
                           >
                             <Minus className="w-3.5 h-3.5" />
                           </button>
@@ -240,7 +240,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                             type="button"
                             onClick={() => onUpdateQuantity(item.product.id, item.quantity + 1)}
                             aria-label="Tambah jumlah"
-                            className="w-8 h-8 flex items-center justify-center bg-brand-500 text-white hover:bg-brand-600 rounded-lg transition-colors"
+                            className="w-9 h-9 flex items-center justify-center bg-brand-500 text-white hover:bg-brand-600 rounded-lg transition-colors"
                           >
                             <Plus className="w-3.5 h-3.5" />
                           </button>

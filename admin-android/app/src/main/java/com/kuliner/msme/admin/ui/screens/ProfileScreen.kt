@@ -29,6 +29,7 @@ import com.kuliner.msme.admin.data.api.TokenManager
 import com.kuliner.msme.admin.data.model.User
 import com.kuliner.msme.admin.ui.components.AromaCard
 import com.kuliner.msme.admin.ui.components.AromaSectionHeader
+import com.kuliner.msme.admin.ui.components.AromaTag
 import com.kuliner.msme.admin.ui.theme.*
 import com.kuliner.msme.admin.ui.util.friendlyUserName
 
@@ -78,69 +79,72 @@ fun ProfileScreen(
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Account Identity Panel (Solid Aroma Terracotta)
-        Surface(
+        // Bright White Account Identity Card
+        AromaCard(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            color = AromaTerracotta
+            cornerRadius = 16.dp
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Surface(
-                    modifier = Modifier.size(68.dp),
-                    shape = CircleShape,
-                    color = AromaSurface
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = initial,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = AromaTerracotta
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = displayName,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = AromaSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(3.dp)
+                        .background(AromaTerracotta)
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = AromaSurface.copy(alpha = 0.18f)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 22.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Surface(
+                        modifier = Modifier.size(64.dp),
+                        shape = CircleShape,
+                        color = AromaTerracottaSoft,
+                        border = BorderStroke(1.5.dp, AromaTerracottaBorder)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = initial,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = AromaTerracotta
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
                     Text(
-                        text = roleLabel,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = AromaSurface
+                        text = displayName,
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = AromaCharcoal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    AromaTag(
+                        label = roleLabel,
+                        backgroundColor = AromaTerracottaSoft,
+                        textColor = AromaTerracotta,
+                        borderColor = AromaTerracottaBorder
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = displayEmail,
+                        fontSize = 12.sp,
+                        color = AromaTextMuted,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = displayEmail,
-                    fontSize = 12.sp,
-                    color = AromaSurface.copy(alpha = 0.85f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
             }
         }
 
@@ -157,7 +161,10 @@ fun ProfileScreen(
         // Account Info Section
         AromaSectionHeader(title = "Informasi Akun")
 
-        AromaCard(modifier = Modifier.fillMaxWidth()) {
+        AromaCard(
+            modifier = Modifier.fillMaxWidth(),
+            cornerRadius = 14.dp
+        ) {
             Column {
                 AccountInfoRow(
                     icon = Icons.Default.Email,
@@ -198,7 +205,7 @@ fun ProfileScreen(
         Surface(
             onClick = { showLogoutDialog = true },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(14.dp),
             color = AromaErrorSoft,
             border = BorderStroke(1.dp, AromaErrorBorder)
         ) {
@@ -237,7 +244,7 @@ fun ProfileScreen(
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
             containerColor = AromaSurface,
-            shape = RoundedCornerShape(22.dp),
+            shape = RoundedCornerShape(20.dp),
             title = {
                 Text(
                     text = "Keluar dari akun?",
@@ -287,7 +294,7 @@ private fun AccountInfoRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Surface(
-            modifier = Modifier.size(38.dp),
+            modifier = Modifier.size(36.dp),
             shape = RoundedCornerShape(10.dp),
             color = iconBackground
         ) {

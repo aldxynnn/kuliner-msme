@@ -3,12 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --aroma-terracotta: #A9472D;
-  --aroma-terracotta-dark: #923B24;
-  --aroma-cream: #F6F0E6;
+  --aroma-terracotta: #C94F1D;
+  --aroma-terracotta-dark: #B04115;
+  --aroma-ivory: #FAF8F5;
+  --aroma-linen: #F4EFE8;
   --aroma-surface: #FFFFFF;
-  --aroma-charcoal: #292722;
-  --aroma-border: #E8DFD1;
+  --aroma-charcoal: #2B211D;
+  --aroma-border: #E8E0D6;
 }
 
 @layer base {
@@ -22,7 +23,7 @@
   body {
     overflow-x: clip;
     -webkit-tap-highlight-color: transparent;
-    background-color: var(--aroma-cream);
+    background-color: var(--aroma-ivory);
     color: var(--aroma-charcoal);
   }
 }
@@ -33,7 +34,6 @@
   }
 }
 
-/* Subtle modal & sheet entrance transitions */
 @keyframes aromaFadeIn {
   from {
     opacity: 0;
@@ -46,7 +46,7 @@
 @keyframes aromaSlideUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -92,7 +92,6 @@
   animation: aromaScaleIn 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Hide horizontal scrollbar on category pill strip */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

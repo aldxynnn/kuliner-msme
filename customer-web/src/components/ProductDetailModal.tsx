@@ -107,7 +107,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             <div className="flex items-start justify-between gap-4">
               <h2
                 id="product-detail-title"
-                className="font-extrabold text-lg sm:text-xl text-charcoal leading-snug"
+                className="font-display font-bold text-xl sm:text-2xl text-charcoal leading-snug"
               >
                 {product.name}
               </h2>

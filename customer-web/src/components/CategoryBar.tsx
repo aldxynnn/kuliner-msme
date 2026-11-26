@@ -15,30 +15,30 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
 }) => {
   const getCategoryIcon = (name: string) => {
     const lower = name.toLowerCase();
-    if (lower.includes('minum')) return <Coffee className="w-4 h-4 shrink-0" />;
+    if (lower.includes('minum')) return <Coffee className="w-3.5 h-3.5 shrink-0" />;
     if (lower.includes('tambahan') || lower.includes('camilan') || lower.includes('dessert')) {
-      return <Cookie className="w-4 h-4 shrink-0" />;
+      return <Cookie className="w-3.5 h-3.5 shrink-0" />;
     }
-    return <Utensils className="w-4 h-4 shrink-0" />;
+    return <Utensils className="w-3.5 h-3.5 shrink-0" />;
   };
 
   return (
     <nav
       aria-label="Kategori Menu"
-      className="bg-cream-100/95 backdrop-blur-md border-b border-cream-200/90"
+      className="bg-white/95 backdrop-blur-md border-b border-cream-200"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar">
         <button
           type="button"
           onClick={() => onSelectCategory(null)}
           aria-pressed={selectedCategoryId === null}
-          className={`min-h-[40px] inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-[13px] font-bold whitespace-nowrap transition-all shrink-0 ${
+          className={`min-h-[44px] inline-flex items-center gap-2 px-3.5 py-2.5 text-xs sm:text-[13px] whitespace-nowrap border-b-2 transition-colors shrink-0 ${
             selectedCategoryId === null
-              ? 'bg-brand-500 text-white shadow-sm'
-              : 'bg-white text-charcoal-secondary border border-cream-200 hover:border-brand-300 hover:text-charcoal'
+              ? 'border-brand-500 text-brand-600 font-bold'
+              : 'border-transparent text-charcoal-secondary font-semibold hover:text-charcoal'
           }`}
         >
-          <LayoutGrid className="w-4 h-4 shrink-0" />
+          <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
           <span>Semua Menu</span>
         </button>
 
@@ -51,10 +51,10 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
               type="button"
               onClick={() => onSelectCategory(cat.id)}
               aria-pressed={isSelected}
-              className={`min-h-[40px] inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-[13px] font-bold whitespace-nowrap transition-all shrink-0 ${
+              className={`min-h-[44px] inline-flex items-center gap-2 px-3.5 py-2.5 text-xs sm:text-[13px] whitespace-nowrap border-b-2 transition-colors shrink-0 ${
                 isSelected
-                  ? 'bg-brand-500 text-white shadow-sm'
-                  : 'bg-white text-charcoal-secondary border border-cream-200 hover:border-brand-300 hover:text-charcoal'
+                  ? 'border-brand-500 text-brand-600 font-bold'
+                  : 'border-transparent text-charcoal-secondary font-semibold hover:text-charcoal'
               }`}
             >
               {getCategoryIcon(cat.name)}
@@ -63,7 +63,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
                 <span
                   className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md tabular-nums ${
                     isSelected
-                      ? 'bg-white/20 text-white'
+                      ? 'bg-brand-50 text-brand-600'
                       : 'bg-cream-100 text-charcoal-muted'
                   }`}
                 >
